@@ -1,18 +1,18 @@
 #include "../inc/minishell.h"
 
-int main(void)
+int	main(void)
 {
-    char    *input;
+	char	*input;
 
-    while (1)
-    {
-        input = readline("Minishell> ");
-        if (input == NULL)
-            break ;
-        if (*input)
-            add_history(input);
-        printf("%s\n", input);
-        free(input);
-    }
-    return (0);
+	while (1)
+	{
+		input = readline("Minishell> ");
+		if (input == NULL)
+			break ;
+		if (*input)
+			add_history(input);
+		printf("%s\n", input);
+		free(input);
+	}
+	return (0);
 }
