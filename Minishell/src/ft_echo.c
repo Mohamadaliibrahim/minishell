@@ -4,11 +4,17 @@ void	skip_echo(char **input)
 {
 	while (**input && (**input == ' ' || **input == '\t'))
 		(*input)++;
-	if (ft_strncmp(*input, "echo ", 5) == 0 || ft_strcmp(*input, "echo") == 0)
+	if (ft_strncmp(*input, "echo", 4) == 0
+		&& ((*input)[4] == ' ' || (*input)[4] == '\0'))
 	{
 		*input += 4;
 		while (**input == ' ')
 			(*input)++;
+	}
+	else
+	{
+		fprintf(stderr, "Error: expected 'echo' command.\n");
+		*input = NULL;
 	}
 }
 
@@ -70,12 +76,16 @@ void	check_echo(char *input, char *start, char *quoted_token)
 	t_echo	*next;
 	t_echo	*input_tokens;
 	int		has_n_flag;
+	int		space_exists;
+	int		first_token_printed;
 
 	current = NULL;
 	new_node = NULL;
 	next = NULL;
 	input_tokens = NULL;
 	skip_echo(&input);
+	if (!input)
+		return ;
 	has_n_flag = handle_echo_n(&input);
 	if (has_n_flag && *input == '\0')
 		return ;
@@ -84,10 +94,16 @@ void	check_echo(char *input, char *start, char *quoted_token)
 		printf("\n");
 		return ;
 	}
+	space_exists = 0;
+	first_token_printed = 0;
 	while (*input)
 	{
+		space_exists = 0;
 		while (*input == ' ')
+		{
+			space_exists = 1;
 			input++;
+		}
 		if (*input == '"' || *input == '\'')
 		{
 			quoted_token = extract_quoted_token(&input, *input);
@@ -99,8 +115,13 @@ void	check_echo(char *input, char *start, char *quoted_token)
 				if (!input_tokens)
 					input_tokens = new_node;
 				else
+				{
+					if (first_token_printed && space_exists)
+						printf(" ");
 					current->next = new_node;
+				}
 				current = new_node;
+				first_token_printed = 1;
 			}
 		}
 		else if (*input)
@@ -114,8 +135,13 @@ void	check_echo(char *input, char *start, char *quoted_token)
 			if (!input_tokens)
 				input_tokens = new_node;
 			else
+			{
+				if (first_token_printed && space_exists)
+					printf(" ");
 				current->next = new_node;
+			}
 			current = new_node;
+			first_token_printed = 1;
 		}
 	}
 	current = input_tokens;
@@ -123,7 +149,7 @@ void	check_echo(char *input, char *start, char *quoted_token)
 	{
 		printf("%s", current->token);
 		current = current->next;
-		if (current)
+		if (current && space_exists && first_token_printed)
 			printf(" ");
 	}
 	if (!has_n_flag)
@@ -137,3 +163,4 @@ void	check_echo(char *input, char *start, char *quoted_token)
 		current = next;
 	}
 }
+

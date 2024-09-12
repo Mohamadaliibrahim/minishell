@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/12 15:52:22 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/12 20:37:26 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ void	check(char *input, char **env)
 				check_cmnd(input, token, env);
 			else if (token->token_type == UNKNOWN)
 				printf("Error\n");
-			// token = token->next;
 		}
 		free(token);
 	}
