@@ -58,6 +58,11 @@ void	check(char *input, char **env)
 		{
 			if (token->token_type == CMND)
 				do_comand(token, env);
+			else if (token->token_type == UNKNOWN)
+			{
+				printf("Error\n");
+				break ;
+			}
 			token = token->next;
 		}
 		free(token);
