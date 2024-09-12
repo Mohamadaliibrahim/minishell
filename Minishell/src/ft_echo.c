@@ -10,21 +10,36 @@ void	skip_echo(char **input)
 		while (**input == ' ')
 			(*input)++;
 	}
-
 }
 
 int	handle_echo_n(char **input)
 {
 	int	has_n_flag;
+	int	first_flag_found;
+	int	i;
 
 	has_n_flag = 0;
-	while (ft_strncmp(*input, "-n", 2) == 0
-		&& (*input)[2] == ' ')
+	first_flag_found = 0;
+	while (**input == '-' && (*input)[1] == 'n')
 	{
-		has_n_flag = 1;
-		*input += 2;
-		while (**input == ' ')
-			(*input)++;
+		i = 1;
+		while ((*input)[i] == 'n')
+			i++;
+		if ((*input)[i] == ' ' || (*input)[i] == '\0')
+		{
+			if (!first_flag_found)
+			{
+				has_n_flag = 1;
+				first_flag_found = 1;
+				*input += i;
+				while (**input == ' ')
+					(*input)++;
+			}
+			else
+				break ;
+		}
+		else
+			break ;
 	}
 	return (has_n_flag);
 }
@@ -48,7 +63,7 @@ char	*extract_quoted_token(char **input, char quote_type)
 	return (NULL);
 }
 
-void check_echo(char *input, char *start, char	*quoted_token)
+void	check_echo(char *input, char *start, char *quoted_token)
 {
 	t_echo	*current;
 	t_echo	*new_node;
@@ -57,16 +72,22 @@ void check_echo(char *input, char *start, char	*quoted_token)
 	int		has_n_flag;
 
 	current = NULL;
+	new_node = NULL;
+	next = NULL;
 	input_tokens = NULL;
 	skip_echo(&input);
 	has_n_flag = handle_echo_n(&input);
-	if (*input == '\0')
+	if (has_n_flag && *input == '\0')
 		return ;
+	if (!has_n_flag && *input == '\0')
+	{
+		printf("\n");
+		return ;
+	}
 	while (*input)
 	{
 		while (*input == ' ')
 			input++;
-
 		if (*input == '"' || *input == '\'')
 		{
 			quoted_token = extract_quoted_token(&input, *input);
@@ -75,12 +96,10 @@ void check_echo(char *input, char *start, char	*quoted_token)
 				new_node = malloc(sizeof(t_echo));
 				new_node->token = quoted_token;
 				new_node->next = NULL;
-
 				if (!input_tokens)
 					input_tokens = new_node;
 				else
 					current->next = new_node;
-
 				current = new_node;
 			}
 		}
@@ -92,7 +111,6 @@ void check_echo(char *input, char *start, char	*quoted_token)
 			new_node = malloc(sizeof(t_echo));
 			new_node->token = ft_strndup(start, input - start);
 			new_node->next = NULL;
-
 			if (!input_tokens)
 				input_tokens = new_node;
 			else
@@ -101,18 +119,15 @@ void check_echo(char *input, char *start, char	*quoted_token)
 		}
 	}
 	current = input_tokens;
-	if (!current)
-		printf("\n");
-	else
+	while (current)
 	{
-		while (current)
-		{
-			printf("%s", current->token);
-			current = current->next;
-		}
-		if (!has_n_flag)
-			printf("\n");
+		printf("%s", current->token);
+		current = current->next;
+		if (current)
+			printf(" ");
 	}
+	if (!has_n_flag)
+		printf("\n");
 	current = input_tokens;
 	while (current)
 	{
