@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
+/*   Updated: 2024/09/12 15:52:22 by mohamibr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 void	do_comand(t_token *token, char **env)
@@ -5,18 +17,32 @@ void	do_comand(t_token *token, char **env)
 	int		pid;
 	int		status;
 	char	*av[2];
+	char	*cmd_path;
 
+	(void)cmd_path;
 	av[0] = token->tokens;
 	av[1] = NULL;
+	if (ft_strncmp(token->tokens, "/", 1) == 0
+		|| ft_strncmp(token->tokens, "./", 2) == 0
+		|| ft_strncmp(token->tokens, "../", 3) == 0)
+		cmd_path = ft_strdup(token->tokens);
+	else
+		cmd_path = find_in_path(token->tokens);
+	if (!cmd_path)
+	{
+		printf("Error");
+		return ;
+	}
 	pid = fork();
 	if (pid == 0)
 	{
-		if (execve(find_in_path(token->tokens), av, env) == -1)
+		if (execve(cmd_path, av, env) == -1)
 			perror("Error");
 		exit(EXIT_FAILURE);
 	}
-	else
+	else if (pid)
 		waitpid(pid, &status, 0);
+	free(cmd_path);
 }
 
 int	check_for_quotations(char *input)
@@ -39,6 +65,21 @@ int	check_for_quotations(char *input)
 	if (single_quote_open || double_quote_open)
 		return (0);
 	return (1);
+
+}
+
+void	check_cmnd(char *input, t_token *token, char **env)
+{
+	char	*start;
+	char	*quoted_token;
+
+	start = NULL;
+	quoted_token = NULL;
+	if ((ft_strcmp(token->tokens, "ls") == 0)
+		|| (ft_strcmp(token->tokens, "clear") == 0))
+		do_comand(token, env);
+	else if ((ft_strcmp(token->tokens, "echo") == 0))
+		check_echo(input, start, quoted_token);
 }
 
 void	check(char *input, char **env)
@@ -54,16 +95,13 @@ void	check(char *input, char **env)
 	}
 	else
 	{
-		while (token)
+		if (token)
 		{
 			if (token->token_type == CMND)
-				do_comand(token, env);
+				check_cmnd(input, token, env);
 			else if (token->token_type == UNKNOWN)
-			{
 				printf("Error\n");
-				break ;
-			}
-			token = token->next;
+			// token = token->next;
 		}
 		free(token);
 	}

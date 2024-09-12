@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/12 11:06:07 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/12 12:29:01 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,11 @@ char	*find_in_path(char *cmd)
 	int		i;
 
 	path_env = getenv("PATH");
+	if (!path_env)
+		return (NULL);
 	paths = ft_split(path_env, ':');
+	if (!paths)
+		return (NULL);
 	i = -1;
 	while (paths[++i])
 	{
@@ -73,12 +77,19 @@ int	check_type(char *token)
 {
 	char	*cmd_path;
 
-	if (access(token, F_OK) != 0)
-		cmd_path = find_in_path(token);
-	if (cmd_path != NULL || access(token, F_OK) == 0)
+	if (ft_strncmp(token, "/", 1) == 0
+		|| ft_strncmp(token, "./", 2) == 0
+		|| ft_strncmp(token, "../", 3) == 0)
 	{
-		if (cmd_path)
-			free(cmd_path);
+		if (access(token, X_OK) == 0)
+			return (CMND);
+		else
+			return (UNKNOWN);
+	}
+	cmd_path = find_in_path(token);
+	if (cmd_path != NULL)
+	{
+		free(cmd_path);
 		return (CMND);
 	}
 	else if (ft_strcmp(token, "|") == 0)

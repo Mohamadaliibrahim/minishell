@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/12 11:09:03 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/12 15:51:47 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,15 @@ typedef enum e_token_type
 	UNKNOWN
 }					t_token_type;
 
+typedef struct s_echo
+{
+	char			*token;
+	struct s_echo	*next;
+	struct s_echo	*prev;
+}					t_echo;
+
+
+
 typedef struct s_token
 {
 	char			*tokens;
@@ -49,5 +58,6 @@ void	tokenize_input(char *input, t_token **token_list);
 char	*find_in_path(char *cmd);
 void	free_token_list(t_token *head);
 int		check_type(char *token);
-
+char	*ft_strndup(const char *s, size_t n);
+void	check_echo(char *input, char *start, char *quoted_token);
 #endif
