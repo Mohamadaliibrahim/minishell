@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/12 15:51:47 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/12 16:17:58 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ typedef struct s_echo
 {
 	char			*token;
 	struct s_echo	*next;
-	struct s_echo	*prev;
 }					t_echo;
 
 

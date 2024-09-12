@@ -1,14 +1,18 @@
 #include "../inc/minishell.h"
 
-static void	skip_echo(char **input)
+void	skip_echo(char **input)
 {
 	while (**input && (**input == ' ' || **input == '\t'))
 		(*input)++;
-	if (ft_strncmp(*input, "echo ", 5) == 0)
+	if (ft_strncmp(*input, "echo ", 5) == 0 || ft_strcmp(*input, "echo") == 0)
+	{
 		*input += 4;
+		while (**input == ' ')
+			(*input)++;
+	}
 }
 
-static char	*extract_quoted_token(char **input, char quote_type)
+char	*extract_quoted_token(char **input, char quote_type)
 {
 	char	*end;
 	char	*start;
@@ -67,7 +71,6 @@ void check_echo(char *input, char *start, char	*quoted_token)
 			new_node = malloc(sizeof(t_echo));
 			new_node->token = ft_strndup(start, input - start);
 			new_node->next = NULL;
-			new_node->prev = current;
 
 			if (!input_tokens)
 				input_tokens = new_node;
@@ -77,7 +80,7 @@ void check_echo(char *input, char *start, char	*quoted_token)
 		}
 	}
 	current = input_tokens;
-	if ((ft_strcmp(current->token, "echo") == 0) && !(current->next))
+	if (!current)
 		printf("\n");
 	else
 	{
