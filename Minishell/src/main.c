@@ -45,6 +45,7 @@ void	check(char *input, char **env)
 {
 	t_token	*token;
 
+	token = NULL;
 	tokenize_input(input, &token);
 	if (!check_for_quotations(input))
 	{

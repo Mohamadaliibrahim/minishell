@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/12 11:07:42 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/12 11:44:09 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ static void	add_token(t_token **head, char *input)
 	t_token	*tmp;
 
 	new_node = new_token(input);
+	if (!new_node)
+		return ;
 	if (!*head)
 		*head = new_node;
 	else
@@ -42,6 +44,18 @@ static void	add_token(t_token **head, char *input)
 		tmp->next = new_node;
 		new_node->previous = tmp;
 	}
+}
+
+static char	*ft_strndup(const char *s, size_t n)
+{
+	char	*dup;
+
+	dup = malloc(n + 1);
+	if (!dup)
+		return (NULL);
+	ft_memcpy(dup, s, n);
+	dup[n] = '\0';
+	return (dup);
 }
 
 static char	*extract_quoted_token(char **input, char quote_type)
@@ -56,7 +70,7 @@ static char	*extract_quoted_token(char **input, char quote_type)
 		end++;
 	if (*end == quote_type)
 	{
-		token = strndup(start, end - start);
+		token = ft_strndup(start, end - start);
 		*input = end + 1;
 		return (token);
 	}
@@ -76,6 +90,8 @@ void	tokenize_input(char *input, t_token **token_list)
 			quote_token = extract_quoted_token(&input, *input);
 			if (quote_token)
 				add_token(token_list, quote_token);
+			else
+				return ;
 		}
 		else if (*input)
 		{
