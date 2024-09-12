@@ -3,30 +3,51 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/11 13:24:32 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/12 11:09:03 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include "../libft/libft.h"
+# include <fcntl.h>
+# include <readline/history.h>
+# include <readline/readline.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <unistd.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <fcntl.h>
 # include <string.h>
-# include "../libft/libft.h"
+# include <sys/wait.h>
+# include <unistd.h>
+
+typedef enum e_token_type
+{
+	CMND,
+	PIPE,
+	REDIRECT_IN,
+	REDIRECT_OUT,
+	APPEND,
+	HEREDOC,
+	VARIABLE,
+	QUOTE,
+	DQUOTE,
+	UNKNOWN
+}					t_token_type;
 
 typedef struct s_token
 {
-    char	*tokens;
-    struct s_token	*next;
-    struct s_token *previous;
-}	t_token;
+	char			*tokens;
+	int				token_type;
+	struct s_token	*next;
+	struct s_token	*previous;
+}					t_token;
+
+void	tokenize_input(char *input, t_token **token_list);
+char	*find_in_path(char *cmd);
+void	free_token_list(t_token *head);
+int		check_type(char *token);
 
 #endif
