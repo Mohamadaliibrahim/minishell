@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/12 20:37:26 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/13 09:55:20 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ void	check_cmnd(char *input, t_token *token, char **env)
 		do_comand(token, env);
 	else if ((ft_strcmp(token->tokens, "echo") == 0))
 		check_echo(input, start, quoted_token);
+	// else
 }
 
 void	check(char *input, char **env)
@@ -88,6 +89,7 @@ void	check(char *input, char **env)
 
 	token = NULL;
 	tokenize_input(input, &token);
+	// (void)env;
 	if (!check_for_quotations(input))
 	{
 		printf("Error\n");
@@ -95,6 +97,11 @@ void	check(char *input, char **env)
 	}
 	else
 	{
+		// while (token)
+		// {
+		// 	printf("%s\n", token->tokens);
+		// 	token = token->next;
+		// }
 		if (token)
 		{
 			if (token->token_type == CMND)

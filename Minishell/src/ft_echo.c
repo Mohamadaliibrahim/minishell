@@ -115,11 +115,7 @@ void	check_echo(char *input, char *start, char *quoted_token)
 				if (!input_tokens)
 					input_tokens = new_node;
 				else
-				{
-					if (first_token_printed && space_exists)
-						printf(" ");
 					current->next = new_node;
-				}
 				current = new_node;
 				first_token_printed = 1;
 			}
@@ -135,11 +131,7 @@ void	check_echo(char *input, char *start, char *quoted_token)
 			if (!input_tokens)
 				input_tokens = new_node;
 			else
-			{
-				if (first_token_printed && space_exists)
-					printf(" ");
 				current->next = new_node;
-			}
 			current = new_node;
 			first_token_printed = 1;
 		}
