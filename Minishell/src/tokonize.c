@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/13 22:59:33 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/13 23:13:59 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,10 +91,6 @@ void	tokenize_input(char *input, t_token **token_list)
 void	process_token(char **input, t_token **token_list)
 {
 	char	*token;
-	char	*tmp;
-	char	quote_char;
-	char	*start;
-	char	*old_token;
 
 	token = ft_strdup("");
 	if (!token)
@@ -102,48 +98,73 @@ void	process_token(char **input, t_token **token_list)
 	while (**input && **input != ' ')
 	{
 		if (**input == '\\')
-		{
-			(*input)++;
-			if (**input)
-			{
-				tmp = ft_strndup(*input, 1);
-				old_token = token;
-				token = ft_strjoin(token, tmp);
-				free(old_token);
-				free(tmp);
-				(*input)++;
-			}
-		}
+			handle_backslash(input, &token);
 		else if (**input == '\'' || **input == '"')
 		{
-			quote_char = **input;
-			tmp = extract_quoted_token(input, quote_char);
-			if (tmp)
+			if (!handle_quote(input, &token))
 			{
-				old_token = token;
-				token = ft_strjoin(token, tmp);
-				free(old_token);
-				free(tmp);
-			}
-			else
-			{
-				// Handle error: unmatched quote
 				free(token);
 				return ;
 			}
 		}
 		else
-		{
-			start = *input;
-			while (**input && **input != ' ' && **input != '\'' && **input != '"' && **input != '\\')
-				(*input)++;
-			tmp = ft_strndup(start, *input - start);
-			old_token = token;
-			token = ft_strjoin(token, tmp);
-			free(old_token);
-			free(tmp);
-		}
+			handle_unquoted(input, &token);
 	}
 	add_token(token_list, token);
 	free(token);
+}
+
+void	handle_backslash(char **input, char **token)
+{
+	char	*tmp;
+	char	*old_token;
+
+	(*input)++;
+	if (**input)
+	{
+		tmp = ft_strndup(*input, 1);
+		old_token = *token;
+		*token = ft_strjoin(*token, tmp);
+		free(old_token);
+		free(tmp);
+		(*input)++;
+	}
+}
+
+int	handle_quote(char **input, char **token)
+{
+	char	quote_char;
+	char	*tmp;
+	char	*old_token;
+
+	quote_char = **input;
+	tmp = extract_quoted_token(input, quote_char);
+	if (tmp)
+	{
+		old_token = *token;
+		*token = ft_strjoin(*token, tmp);
+		free(old_token);
+		free(tmp);
+		return (1);
+	}
+	else
+		return (0);
+}
+
+void	handle_unquoted(char **input, char **token)
+{
+	char	*start;
+	char	*tmp;
+	char	*old_token;
+
+	start = *input;
+	while (**input && **input != ' '
+		&& **input != '\''
+		&& **input != '"' && **input != '\\')
+		(*input)++;
+	tmp = ft_strndup(start, *input - start);
+	old_token = *token;
+	*token = ft_strjoin(*token, tmp);
+	free(old_token);
+	free(tmp);
 }

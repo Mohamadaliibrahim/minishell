@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/13 22:36:37 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/13 23:23:16 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ void	check_cmnd(char *input, t_token *token, char **env)
 		ft_pwd(token);
 }
 
+
 void	check(char *input, char **env)
 {
 	t_token	*token;
@@ -108,7 +109,7 @@ void	check(char *input, char **env)
 			else if (token->token_type == UNKNOWN)
 				printf("%s : Command not found\n", token->tokens);
 		}
-		free(token);
+		free_token_list(token);
 	}
 }
 

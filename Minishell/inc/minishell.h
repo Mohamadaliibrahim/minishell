@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/13 22:33:11 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/13 23:14:09 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,8 @@ void	ft_pwd(t_token *token);
 void	ft_cd(t_token *token);
 void	process_token(char **input, t_token **token_list);
 void	tokenize_input(char *input, t_token **token_list);
+void	handle_unquoted(char **input, char **token);
+int		handle_quote(char **input, char **token);
+void	handle_backslash(char **input, char **token);
+void	process_token(char **input, t_token **token_list);
 #endif
