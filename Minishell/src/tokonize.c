@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/12 18:03:54 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/13 22:59:33 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,29 +76,74 @@ static char	*extract_quoted_token(char **input, char quote_type)
 	}
 	return (NULL);
 }
+
 void	tokenize_input(char *input, t_token **token_list)
 {
-	char	*quote_token;
-	char	*start;
-
 	while (*input)
 	{
 		while (*input == ' ')
 			input++;
-		if (*input == '\'' || *input == '"')
+		if (*input)
+			process_token(&input, token_list);
+	}
+}
+
+void	process_token(char **input, t_token **token_list)
+{
+	char	*token;
+	char	*tmp;
+	char	quote_char;
+	char	*start;
+	char	*old_token;
+
+	token = ft_strdup("");
+	if (!token)
+		return ;
+	while (**input && **input != ' ')
+	{
+		if (**input == '\\')
 		{
-			quote_token = extract_quoted_token(&input, *input);
-			if (quote_token)
-				add_token(token_list, quote_token);
-			else
-				return ;
+			(*input)++;
+			if (**input)
+			{
+				tmp = ft_strndup(*input, 1);
+				old_token = token;
+				token = ft_strjoin(token, tmp);
+				free(old_token);
+				free(tmp);
+				(*input)++;
+			}
 		}
-		else if (*input)
+		else if (**input == '\'' || **input == '"')
 		{
-			start = input;
-			while (*input && *input != ' ' && *input != '\'' && *input != '"')
-				input++;
-			add_token(token_list, strndup(start, input - start));
+			quote_char = **input;
+			tmp = extract_quoted_token(input, quote_char);
+			if (tmp)
+			{
+				old_token = token;
+				token = ft_strjoin(token, tmp);
+				free(old_token);
+				free(tmp);
+			}
+			else
+			{
+				// Handle error: unmatched quote
+				free(token);
+				return ;
+			}
+		}
+		else
+		{
+			start = *input;
+			while (**input && **input != ' ' && **input != '\'' && **input != '"' && **input != '\\')
+				(*input)++;
+			tmp = ft_strndup(start, *input - start);
+			old_token = token;
+			token = ft_strjoin(token, tmp);
+			free(old_token);
+			free(tmp);
 		}
 	}
+	add_token(token_list, token);
+	free(token);
 }

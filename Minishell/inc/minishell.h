@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/12 20:37:32 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/13 22:33:11 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -37,13 +38,6 @@ typedef enum e_token_type
 	UNKNOWN
 }					t_token_type;
 
-typedef struct s_echo
-{
-	char			*token;
-	struct s_echo	*next;
-}					t_echo;
-
-
 
 typedef struct s_token
 {
@@ -58,5 +52,9 @@ char	*find_in_path(char *cmd);
 void	free_token_list(t_token *head);
 int		check_type(char *token);
 char	*ft_strndup(const char *s, size_t n);
-void	check_echo(char *input, char *start, char *quoted_token);
+void	check_echo(t_token *token);
+void	ft_pwd(t_token *token);
+void	ft_cd(t_token *token);
+void	process_token(char **input, t_token **token_list);
+void	tokenize_input(char *input, t_token **token_list);
 #endif

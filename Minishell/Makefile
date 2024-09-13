@@ -3,7 +3,8 @@ CFLAGS = -Wall -Wextra -Werror -g -Iinc/ -Ilibft/
 
 NAME = minishell
 
-SRC = src/main.c src/tokonize.c src/utils.c src/ft_echo.c
+SRC = src/main.c src/tokonize.c src/utils.c src/ft_echo.c\
+	  src/ft_pwd_and_cd.c
 OBJS = $(SRC:.c=.o)
 
 LIBFT = libft/libft.a

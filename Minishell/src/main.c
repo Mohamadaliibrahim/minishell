@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/13 09:55:20 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/13 22:36:37 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,17 +70,14 @@ int	check_for_quotations(char *input)
 
 void	check_cmnd(char *input, t_token *token, char **env)
 {
-	char	*start;
-	char	*quoted_token;
-
-	start = NULL;
-	quoted_token = NULL;
+	(void)input;
 	if ((ft_strcmp(token->tokens, "ls") == 0)
 		|| (ft_strcmp(token->tokens, "clear") == 0))
 		do_comand(token, env);
 	else if ((ft_strcmp(token->tokens, "echo") == 0))
-		check_echo(input, start, quoted_token);
-	// else
+		check_echo(token);
+	else if ((ft_strcmp(token->tokens, "pwd") == 0))
+		ft_pwd(token);
 }
 
 void	check(char *input, char **env)
@@ -88,16 +85,16 @@ void	check(char *input, char **env)
 	t_token	*token;
 
 	token = NULL;
+	(void)env;
 	tokenize_input(input, &token);
-	// (void)env;
 	if (!check_for_quotations(input))
 	{
-		printf("Error\n");
+		printf("Syntax error\n");
 		free(token);
 	}
 	else
 	{
-		// while (token)
+		// while(token)
 		// {
 		// 	printf("%s\n", token->tokens);
 		// 	token = token->next;
@@ -106,8 +103,10 @@ void	check(char *input, char **env)
 		{
 			if (token->token_type == CMND)
 				check_cmnd(input, token, env);
+			else if ((ft_strcmp(token->tokens, "cd") == 0))
+				ft_cd(token);
 			else if (token->token_type == UNKNOWN)
-				printf("Error\n");
+				printf("%s : Command not found\n", token->tokens);
 		}
 		free(token);
 	}

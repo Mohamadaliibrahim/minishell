@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_echo.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/13 10:08:35 by mohamibr          #+#    #+#             */
+/*   Updated: 2024/09/13 23:08:06 by mohamibr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 void	skip_echo(char **input)
 {
 	while (**input && (**input == ' ' || **input == '\t'))
 		(*input)++;
-	if (ft_strncmp(*input, "echo", 4) == 0
-		&& ((*input)[4] == ' ' || (*input)[4] == '\0'))
+	if (ft_strncmp(*input, "echo", 4) == 0 && ((*input)[4] == ' '
+		|| (*input)[4] == '\0'))
 	{
 		*input += 4;
 		while (**input == ' ')
@@ -18,36 +30,27 @@ void	skip_echo(char **input)
 	}
 }
 
-int	handle_echo_n(char **input)
+char	*remove_qoutes(char *str)
 {
-	int	has_n_flag;
-	int	first_flag_found;
-	int	i;
+	int		i;
+	int		j;
+	int		x;
+	char	*dest;
 
-	has_n_flag = 0;
-	first_flag_found = 0;
-	while (**input == '-' && (*input)[1] == 'n')
+	x = ft_strlen(str);
+	dest = malloc(sizeof(char) * (x + 1));
+	if (!dest)
+		return (NULL);
+	j = 0;
+	i = 0;
+	while (i < x)
 	{
-		i = 1;
-		while ((*input)[i] == 'n')
-			i++;
-		if ((*input)[i] == ' ' || (*input)[i] == '\0')
-		{
-			if (!first_flag_found)
-			{
-				has_n_flag = 1;
-				first_flag_found = 1;
-				*input += i;
-				while (**input == ' ')
-					(*input)++;
-			}
-			else
-				break ;
-		}
-		else
-			break ;
+		if (str[i] != '\'' && str[i] != '"')
+			dest[j++] = str[i];
+		i++;
 	}
-	return (has_n_flag);
+	dest[j] = '\0';
+	return (dest);
 }
 
 char	*extract_quoted_token(char **input, char quote_type)
@@ -69,90 +72,67 @@ char	*extract_quoted_token(char **input, char quote_type)
 	return (NULL);
 }
 
-void	check_echo(char *input, char *start, char *quoted_token)
+bool	check_n_helper(bool n, t_token **token)
 {
-	t_echo	*current;
-	t_echo	*new_node;
-	t_echo	*next;
-	t_echo	*input_tokens;
-	int		has_n_flag;
-	int		space_exists;
-	int		first_token_printed;
-
-	current = NULL;
-	new_node = NULL;
-	next = NULL;
-	input_tokens = NULL;
-	skip_echo(&input);
-	if (!input)
-		return ;
-	has_n_flag = handle_echo_n(&input);
-	if (has_n_flag && *input == '\0')
-		return ;
-	if (!has_n_flag && *input == '\0')
-	{
-		printf("\n");
-		return ;
-	}
-	space_exists = 0;
-	first_token_printed = 0;
-	while (*input)
-	{
-		space_exists = 0;
-		while (*input == ' ')
-		{
-			space_exists = 1;
-			input++;
-		}
-		if (*input == '"' || *input == '\'')
-		{
-			quoted_token = extract_quoted_token(&input, *input);
-			if (quoted_token)
-			{
-				new_node = malloc(sizeof(t_echo));
-				new_node->token = quoted_token;
-				new_node->next = NULL;
-				if (!input_tokens)
-					input_tokens = new_node;
-				else
-					current->next = new_node;
-				current = new_node;
-				first_token_printed = 1;
-			}
-		}
-		else if (*input)
-		{
-			start = input;
-			while (*input && *input != ' ' && *input != '"' && *input != '\'')
-				input++;
-			new_node = malloc(sizeof(t_echo));
-			new_node->token = ft_strndup(start, input - start);
-			new_node->next = NULL;
-			if (!input_tokens)
-				input_tokens = new_node;
-			else
-				current->next = new_node;
-			current = new_node;
-			first_token_printed = 1;
-		}
-	}
-	current = input_tokens;
-	while (current)
-	{
-		printf("%s", current->token);
-		current = current->next;
-		if (current && space_exists && first_token_printed)
-			printf(" ");
-	}
-	if (!has_n_flag)
-		printf("\n");
-	current = input_tokens;
-	while (current)
-	{
-		next = current->next;
-		free(current->token);
-		free(current);
-		current = next;
-	}
+	n = true;
+	*token = (*token)->next;
+	return (n);
 }
 
+bool	check_n(t_token **token)
+{
+	bool	n;
+	int		i;
+
+	n = false;
+	while (*token)
+	{
+		if ((*token)->tokens[0] == '-' && (*token)->tokens[1] == 'n'
+			&& (*token)->tokens[2] != '\0')
+		{
+			i = 2;
+			while ((*token)->tokens[i] == 'n')
+				i++;
+			if ((*token)->tokens[i] != '\0')
+				break ;
+			n = true;
+			*token = (*token)->next;
+		}
+		else if ((*token)->tokens[0] == '-' && (*token)->tokens[1] == 'n'
+			&& (*token)->tokens[2] == '\0')
+			n = check_n_helper(n, token);
+		else
+			break ;
+	}
+	return (n);
+}
+
+void	do_n(t_token *token)
+{
+	bool	n;
+	int		f;
+
+	f = 1;
+	n = check_n(&token);
+	while (token)
+	{
+		if (!f)
+			printf(" ");
+		printf("%s", token->tokens);
+		f = 0;
+		token = token->next;
+	}
+	if (!n)
+		printf("\n");
+}
+
+void	check_echo(t_token *token)
+{
+	if (!token->next)
+	{
+		printf("\n");
+		return ;
+	}
+	token = token->next;
+	do_n(token);
+}
