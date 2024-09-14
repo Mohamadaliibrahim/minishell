@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/13 10:57:20 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/14 11:55:58 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,28 +27,54 @@ void	ft_pwd(t_token *token)
 	}
 }
 
+char	*get_cd_path(t_token *token)
+{
+	char	*path;
+
+	if (token->next == NULL || ft_strcmp(token->next->tokens, "~") == 0)
+	{
+		path = getenv("HOME");
+		if (!path)
+		{
+			ft_putstr_fd("cd: HOME not set\n", 2);
+			return (NULL);
+		}
+	}
+	else if (ft_strcmp(token->next->tokens, ".") == 0)
+	{
+		path = getenv("PWD");
+	}
+	else
+	{
+		path = token->next->tokens;
+	}
+	return (path);
+}
+
+
 void	ft_cd(t_token *token)
 {
 	char	*path;
-	char	*home_dir;
+	char	*old_pwd;
+	char	*new_pwd;
 
-	if (token->next == NULL)
+	if (token->next && token->next->next)
 	{
-		home_dir = getenv("HOME");
-		if (!home_dir)
-		{
-			perror("cd: HOME not set");
-			return ;
-		}
-		path = home_dir;
+		ft_putstr_fd("cd: too many arguments\n", 2);
+		return ;
 	}
-	else
-		path = token->next->tokens;
+	path = get_cd_path(token);
+	if (!path)
+		return ;
+	old_pwd = getenv("PWD");
 	if (chdir(path) == -1)
 		perror("cd");
 	else
 	{
-		setenv("OLDPWD", getenv("PWD"), 1);
-		setenv("PWD", path, 1);
+		setenv("OLDPWD", old_pwd, 1);
+		new_pwd = getcwd(NULL, 0);
+		setenv("PWD", new_pwd, 1);
+		free(new_pwd);
 	}
 }
+

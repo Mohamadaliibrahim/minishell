@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/13 23:23:16 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/14 11:33:12 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,9 @@ int	check_for_quotations(char *input)
 	double_quote_open = 0;
 	while (input[i])
 	{
-		if (input[i] == '"')
+		if (input[i] == '"' && !single_quote_open)
 			double_quote_open = !double_quote_open;
-		else if (input[i] == '\'')
+		else if (input[i] == '\'' && !double_quote_open)
 			single_quote_open = !single_quote_open;
 		i++;
 	}
