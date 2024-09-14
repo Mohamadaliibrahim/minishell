@@ -1,33 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd_and_cd.c                                    :+:      :+:    :+:   */
+/*   pwd_cd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mmachlou <mmachlou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/14 11:55:58 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/14 16:56:59 by mmachlou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include "../../inc/minishell.h"
 
-
-void	ft_pwd(t_token *token)
-{
-	char	*pwd;
-
-	if (token->next != NULL)
-		printf("Error: too many arguments\n");
-	else
-	{
-		pwd = getcwd(NULL, 0);
-		printf("%s\n", pwd);
-		free(pwd);
-	}
-}
-
-char	*get_cd_path(t_token *token)
+static char	*get_cd_path(t_token *token)
 {
 	char	*path;
 
@@ -51,6 +36,19 @@ char	*get_cd_path(t_token *token)
 	return (path);
 }
 
+void	ft_pwd(t_token *token)
+{
+	char	*pwd;
+
+	if (token->next != NULL)
+		printf("Error: too many arguments\n");
+	else
+	{
+		pwd = getcwd(NULL, 0);
+		printf("%s\n", pwd);
+		free(pwd);
+	}
+}
 
 void	ft_cd(t_token *token)
 {

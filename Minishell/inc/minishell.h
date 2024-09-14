@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mmachlou <mmachlou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/13 23:14:09 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/14 16:48:18 by mmachlou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,27 @@ typedef struct s_token
 	struct s_token	*next;
 	struct s_token	*previous;
 }					t_token;
-
+/*tokenize*/
+void	add_token(t_token **head, char *input);
+char	*extract_quoted_token(char **input, char quote_type);
 void	tokenize_input(char *input, t_token **token_list);
-char	*find_in_path(char *cmd);
-void	free_token_list(t_token *head);
+/*tokenize_check*/
 int		check_type(char *token);
-char	*ft_strndup(const char *s, size_t n);
+void	check(char *input, char **env);
+/*tokenize_tools*/
+void	process_token(char **input, t_token **token_list);
+/*cmd*/
+char	*find_in_path(char *cmd);
+void	check_cmnd(char *input, t_token *token, char **env);
+/*echo*/
 void	check_echo(t_token *token);
+/*pwd_cd */
 void	ft_pwd(t_token *token);
 void	ft_cd(t_token *token);
-void	process_token(char **input, t_token **token_list);
-void	tokenize_input(char *input, t_token **token_list);
-void	handle_unquoted(char **input, char **token);
-int		handle_quote(char **input, char **token);
-void	handle_backslash(char **input, char **token);
-void	process_token(char **input, t_token **token_list);
+/*utils*/
+char	*ft_strndup(const char *s, size_t n);
+void	ft_free_2darray(char **tokens);
+void	free_token_list(t_token *head);
+
+
 #endif
