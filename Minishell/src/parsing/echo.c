@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmachlou <mmachlou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:35 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/14 16:56:55 by mmachlou         ###   ########.fr       */
+/*   Updated: 2024/09/15 10:36:04 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,11 @@ static bool	check_n(t_token **token)
 	return (n);
 }
 
-void	check_echo(t_token *token)
+void	check_echo(t_token *token, t_shell *shell)
 {
 	bool	n;
 	int		first;
+	char	*expanded_token;
 
 	if (!token->next)
 	{
@@ -51,10 +52,12 @@ void	check_echo(t_token *token)
 	first = 1;
 	while (token)
 	{
+		expanded_token = expand_env_var(token->tokens, shell);
 		if (!first)
 			printf(" ");
-		printf("%s", token->tokens);
+		printf("%s", expanded_token);
 		first = 0;
+		free(expanded_token);
 		token = token->next;
 	}
 	if (!n)

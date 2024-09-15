@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmachlou <mmachlou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/14 16:56:51 by mmachlou         ###   ########.fr       */
+/*   Updated: 2024/09/15 11:40:56 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,38 @@ char	*find_in_path(char *cmd)
 	return (NULL);
 }
 
+int execute_command(char **args, t_shell *shell)
+{
+	pid_t	pid;
+	int		status;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		// Child process
+		execve(args[0], args, shell->env);
+		// If execve fails
+		perror("execve");
+		exit(EXIT_FAILURE);
+	}
+	else if (pid < 0)
+	{
+		// Fork failed
+		perror("fork");
+		shell->last_exit_status = 1;
+	}
+	else
+	{
+		// Parent process
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			shell->last_exit_status = WEXITSTATUS(status);
+		else
+			shell->last_exit_status = 1;
+	}
+	return (shell->last_exit_status);
+}
+
 static void	do_comand(t_token *token, char **env)
 {
 	int		pid;
@@ -80,12 +112,15 @@ static void	do_comand(t_token *token, char **env)
 
 void	check_cmnd(char *input, t_token *token, char **env)
 {
+	t_shell shell;
+	init_shell(&shell, env);
+
 	(void)input;
 	if ((ft_strcmp(token->tokens, "ls") == 0)
 		|| (ft_strcmp(token->tokens, "clear") == 0))
 		do_comand(token, env);
 	else if ((ft_strcmp(token->tokens, "echo") == 0))
-		check_echo(token);
+		check_echo(token, &shell);
 	else if ((ft_strcmp(token->tokens, "pwd") == 0))
 		ft_pwd(token);
 }

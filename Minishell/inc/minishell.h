@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmachlou <mmachlou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/14 16:48:18 by mmachlou         ###   ########.fr       */
+/*   Updated: 2024/09/15 10:48:41 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ typedef struct s_token
 	struct s_token	*next;
 	struct s_token	*previous;
 }					t_token;
+
+typedef struct s_shell
+{
+	char	**env;
+	int		last_exit_status;
+}	t_shell;
+
 /*tokenize*/
 void	add_token(t_token **head, char *input);
 char	*extract_quoted_token(char **input, char quote_type);
@@ -58,8 +65,11 @@ void	process_token(char **input, t_token **token_list);
 /*cmd*/
 char	*find_in_path(char *cmd);
 void	check_cmnd(char *input, t_token *token, char **env);
+int 	execute_command(char **args, t_shell *shell);
 /*echo*/
-void	check_echo(t_token *token);
+void	check_echo(t_token *token, t_shell *shell);
+/*env*/
+char	*expand_env_var(char *str, t_shell *shell);
 /*pwd_cd */
 void	ft_pwd(t_token *token);
 void	ft_cd(t_token *token);
@@ -67,6 +77,7 @@ void	ft_cd(t_token *token);
 char	*ft_strndup(const char *s, size_t n);
 void	ft_free_2darray(char **tokens);
 void	free_token_list(t_token *head);
+void	init_shell(t_shell *shell, char **envp);
 
 
 #endif
