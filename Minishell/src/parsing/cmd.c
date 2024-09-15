@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/15 14:53:55 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/15 20:41:32 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ char	*find_in_path(char *cmd)
 	return (NULL);
 }
 
-int execute_command(char **args, t_shell *shell)
+int	execute_command(char **args, t_shell *shell)
 {
 	pid_t	pid;
 	int		status;
@@ -53,21 +53,17 @@ int execute_command(char **args, t_shell *shell)
 	pid = fork();
 	if (pid == 0)
 	{
-		// Child process
 		execve(args[0], args, shell->env);
-		// If execve fails
 		perror("execve");
 		exit(EXIT_FAILURE);
 	}
 	else if (pid < 0)
 	{
-		// Fork failed
 		perror("fork");
 		shell->last_exit_status = 1;
 	}
 	else
 	{
-		// Parent process
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 			shell->last_exit_status = WEXITSTATUS(status);
@@ -110,12 +106,11 @@ static void	do_comand(t_token *token, char **env)
 	free(cmd_path);
 }
 
-void	check_cmnd(char *input, t_token *token, char **env, t_env_cpy *env_cpy)
+void	ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy)
 {
 	t_shell	shell;
 
 	init_shell(&shell, env);
-	(void)input;
 	if ((ft_strcmp(token->tokens, "ls") == 0)
 		|| (ft_strcmp(token->tokens, "clear") == 0))
 		do_comand(token, env);
@@ -125,5 +120,9 @@ void	check_cmnd(char *input, t_token *token, char **env, t_env_cpy *env_cpy)
 		ft_pwd(token);
 	else if ((ft_strcmp(token->tokens, "env") == 0))
 		ft_env(token, env_cpy);
+	else if ((ft_strcmp(token->tokens, "export") == 0))
+		ft_export(token, env_cpy);
+	else if ((ft_strcmp(token->tokens, "cd") == 0))
+		ft_cd(token);
 	free_shell(&shell);
 }

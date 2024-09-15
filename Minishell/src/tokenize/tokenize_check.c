@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/15 14:42:43 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/15 19:40:53 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,16 @@ int	check_type(char *token)
 		|| ft_strncmp(token, "./", 2) == 0
 		|| ft_strncmp(token, "../", 3) == 0)
 	{
-		if (access(token, X_OK) == 0)
+		if (access(token, X_OK) == 0
+			|| (ft_strcmp(token, "cd") == 0)
+			|| (ft_strcmp(token, "export") == 0))
 			return (CMND);
 		else
 			return (UNKNOWN);
 	}
+	if ((ft_strcmp(token, "cd") == 0)
+		|| (ft_strcmp(token, "export") == 0))
+		return (CMND);
 	cmd_path = find_in_path(token);
 	if (cmd_path != NULL)
 	{
@@ -77,10 +82,9 @@ static int	check_for_quotations(char *input)
 
 void	check(char *input, char **env, t_env_cpy *env_cpy)
 {
-	t_token	*token;
+	t_token		*token;
 
 	token = NULL;
-	(void)env;
 	tokenize_input(input, &token);
 	if (!check_for_quotations(input))
 	{
@@ -89,17 +93,10 @@ void	check(char *input, char **env, t_env_cpy *env_cpy)
 	}
 	else
 	{
-		// while(token)
-		// {
-		// 	printf("%s\n", token->tokens);
-		// 	token = token->next;
-		// }
 		if (token)
 		{
 			if (token->token_type == CMND)
-				check_cmnd(input, token, env, env_cpy);
-			else if ((ft_strcmp(token->tokens, "cd") == 0))
-				ft_cd(token);
+				ft_cmd(token, env, env_cpy);
 			else if (token->token_type == UNKNOWN)
 				printf("%s : Command not found\n", token->tokens);
 		}

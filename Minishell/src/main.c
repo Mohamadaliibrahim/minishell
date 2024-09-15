@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/15 14:53:49 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/15 19:40:31 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,3 +66,4 @@ int	main(int ac, char **av, char **env)
 	rl_free_line_state();
 	return (0);
 }
+	 
