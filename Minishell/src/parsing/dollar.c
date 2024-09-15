@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dollar.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 10:14:18 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/15 11:40:26 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/15 11:45:46 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,45 +23,43 @@ static char	*get_special_var(char c, t_shell *shell)
 
 static char	*handle_dollar(char *str, int *i, t_shell *shell)
 {
-    char	*var_name;
-    char	*var_value;
-    int		j;
+	char	*var_name;
+	char	*var_value;
+	int		j;
 
-    (*i)++;
-    if (str[*i] == '?' || str[*i] == '$')
-    {
-        var_value = get_special_var(str[*i], shell);
-        (*i)++;
-    }
-    else if (!ft_isalnum(str[*i]) && str[*i] != '_')
-    {
-        if (str[*i] == 0 || ft_strchr(":= \t", str[*i]))
-        {
-            var_value = ft_strdup("$");
-        }
-        else
-        {
-            var_value = ft_strdup("");
-        }
-    }
-    else
-    {
-        j = *i;
-        while (str[j] && (ft_isalnum(str[j]) || str[j] == '_'))
-            j++;
-        var_name = ft_substr(str, *i, j - *i);
-        var_value = getenv(var_name);
-        free(var_name);
-        if (!var_value)
-            var_value = ft_strdup("");
-        else
-            var_value = ft_strdup(var_value);
-        *i = j;
-    }
-    return (var_value);
+	(*i)++;
+	if (str[*i] == '?' || str[*i] == '$')
+	{
+		var_value = get_special_var(str[*i], shell);
+		(*i)++;
+	}
+	else if (!ft_isalnum(str[*i]) && str[*i] != '_')
+	{
+		if (str[*i] == 0 || ft_strchr(":= \t", str[*i]))
+		{
+			var_value = ft_strdup("$");
+		}
+		else
+		{
+			var_value = ft_strdup("");
+		}
+	}
+	else
+	{
+		j = *i;
+		while (str[j] && (ft_isalnum(str[j]) || str[j] == '_'))
+			j++;
+		var_name = ft_substr(str, *i, j - *i);
+		var_value = getenv(var_name);
+		free(var_name);
+		if (!var_value)
+			var_value = ft_strdup("");
+		else
+			var_value = ft_strdup(var_value);
+		*i = j;
+	}
+	return (var_value);
 }
-
-
 
 static char	*ft_strjoin_free(char *s1, char *s2)
 {

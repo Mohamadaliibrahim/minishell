@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/15 10:46:29 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/15 14:42:43 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static int	check_for_quotations(char *input)
 
 }
 
-void	check(char *input, char **env)
+void	check(char *input, char **env, t_env_cpy *env_cpy)
 {
 	t_token	*token;
 
@@ -97,7 +97,7 @@ void	check(char *input, char **env)
 		if (token)
 		{
 			if (token->token_type == CMND)
-				check_cmnd(input, token, env);
+				check_cmnd(input, token, env, env_cpy);
 			else if ((ft_strcmp(token->tokens, "cd") == 0))
 				ft_cd(token);
 			else if (token->token_type == UNKNOWN)

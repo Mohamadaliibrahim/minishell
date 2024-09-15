@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/15 11:40:56 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/15 14:53:55 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,11 +110,11 @@ static void	do_comand(t_token *token, char **env)
 	free(cmd_path);
 }
 
-void	check_cmnd(char *input, t_token *token, char **env)
+void	check_cmnd(char *input, t_token *token, char **env, t_env_cpy *env_cpy)
 {
-	t_shell shell;
-	init_shell(&shell, env);
+	t_shell	shell;
 
+	init_shell(&shell, env);
 	(void)input;
 	if ((ft_strcmp(token->tokens, "ls") == 0)
 		|| (ft_strcmp(token->tokens, "clear") == 0))
@@ -123,4 +123,7 @@ void	check_cmnd(char *input, t_token *token, char **env)
 		check_echo(token, &shell);
 	else if ((ft_strcmp(token->tokens, "pwd") == 0))
 		ft_pwd(token);
+	else if ((ft_strcmp(token->tokens, "env") == 0))
+		ft_env(token, env_cpy);
+	free_shell(&shell);
 }

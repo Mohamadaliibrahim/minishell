@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmachlou <mmachlou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/14 16:57:19 by mmachlou         ###   ########.fr       */
+/*   Updated: 2024/09/15 14:51:32 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,3 +52,31 @@ void	free_token_list(t_token *head)
 	}
 }
 
+void	free_env_list(t_env_cpy *head)
+{
+	t_env_cpy	*tmp;
+
+	while (head)
+	{
+		tmp = head;
+		head = head->next;
+		if (tmp->env)
+			free(tmp->env);
+		if (tmp->type)
+			free(tmp->type);
+		free(tmp);
+	}
+}
+
+void	free_shell(t_shell *shell)
+{
+	if (shell->env)
+	{
+		for (int i = 0; shell->env[i]; i++)
+		{
+			free(shell->env[i]);
+		}
+		free(shell->env);
+	}
+}
+// stop!
