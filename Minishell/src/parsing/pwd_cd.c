@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd_cd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmachlou <mmachlou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/14 16:56:59 by mmachlou         ###   ########.fr       */
+/*   Updated: 2024/09/16 09:43:21 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,13 @@ void	ft_pwd(t_token *token)
 	}
 }
 
-void	ft_cd(t_token *token)
+void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 {
 	char	*path;
 	char	*old_pwd;
 	char	*new_pwd;
 
+	update_env(env_cpy);
 	if (token->next && token->next->next)
 	{
 		ft_putstr_fd("cd: too many arguments\n", 2);

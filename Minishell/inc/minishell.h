@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/15 20:21:00 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/16 09:43:37 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void		add_token(t_token **head, char *input);
 char		*extract_quoted_token(char **input, char quote_type);
 void		tokenize_input(char *input, t_token **token_list);
 t_env_cpy	*cpy_env(char **env);
+t_env_cpy	*update_env(t_env_cpy *env);
 /*tokenize_check*/
 int			check_type(char *token);
 void		check(char *input, char **env, t_env_cpy *env_cpy);
@@ -89,7 +90,7 @@ char		*expand_env_var(char *str, t_shell *shell);
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 /*pwd_cd */
 void		ft_pwd(t_token *token);
-void		ft_cd(t_token *token);
+void		ft_cd(t_token *token, t_env_cpy *env_cpy);
 /*utils*/
 char		*ft_strndup(const char *s, size_t n);
 void		ft_free_2darray(char **tokens);

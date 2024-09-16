@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:12:58 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/15 14:58:08 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/16 09:46:33 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void	ft_env(t_token *token, t_env_cpy *env_cpy)
 {
 	if (!env_check(token))
 		return ;
+	env_cpy = update_env(env_cpy);
 	while (env_cpy)
 	{
 		if (env_cpy->equal == true)

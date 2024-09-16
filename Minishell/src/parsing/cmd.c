@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/15 20:41:32 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/16 09:42:58 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,6 @@ void	ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy)
 	else if ((ft_strcmp(token->tokens, "export") == 0))
 		ft_export(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "cd") == 0))
-		ft_cd(token);
+		ft_cd(token, env_cpy);
 	free_shell(&shell);
 }
