@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/17 13:00:20 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/17 20:10:29 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,12 @@
 
 void	print_export(t_env_cpy *env_cpy)
 {
-	while (env_cpy)
-	{
-		printf("declare -x %s", env_cpy->type);
-		if (env_cpy->equal == true)
-			printf("=\"%s\"\n", env_cpy->env);
-		else
-			printf("\n");
-		env_cpy = env_cpy->next;
-	}
+	printf("declare -x %s", env_cpy->type);
+	if (env_cpy->equal == true)
+		printf("=\"%s\"\n", env_cpy->env);
+	else
+		printf("\n");
+	env_cpy = env_cpy->next;
 }
 
 t_env_cpy	*fill_token(t_env_cpy *env_cpy, char *str)
@@ -84,7 +81,7 @@ int	check_ex(char *str)
 void	ft_export(t_token *token, t_env_cpy *env_cpy)
 {
 	if (!token->next)
-		print_export(env_cpy);
+		print_sorted(env_cpy);
 	else
 	{
 		token = token->next;

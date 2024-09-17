@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/17 18:53:34 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/17 23:45:32 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ int	check_type(char *token)
 			return (UNKNOWN);
 	}
 	if ((ft_strcmp(token, "cd") == 0)
-		|| (ft_strcmp(token, "export") == 0))
+		|| (ft_strcmp(token, "export") == 0)
+		|| (ft_strcmp(token, "unset") == 0))
 		return (CMND);
 	cmd_path = find_in_path(token);
 	if (cmd_path != NULL)

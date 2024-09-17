@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/17 19:58:33 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/17 23:58:36 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ typedef struct s_env_cpy
 	char				*env;
 	char				*type;
 	bool				equal;
-	int		last_exit_status;
+	int					last_exit_status;
 	struct s_env_cpy	*next;
 	struct s_env_cpy	*previous;
 }					t_env_cpy;
@@ -73,13 +73,16 @@ char		*return_path(char *env);
 char		*find_in_path(char *cmd);
 void		ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy);
 /*echo*/
-void 		check_echo(t_token *token, t_env_cpy *env_list);
+void		check_echo(t_token *token, t_env_cpy *env_list);
+/*unset*/
+void		ft_unset(t_token *token, t_env_cpy *env_cpy);
+void		free_single_env_list(t_env_cpy *head);
 /*export*/
 void		ft_export(t_token *token, t_env_cpy *env_cpy);
 void		print_sorted(t_env_cpy *head);
 void		print_export(t_env_cpy *env_cpy);
 t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal);
-
+void		update_pwd_oldpwd(t_env_cpy *env, char *new_pwd, char *old_pwd);
 /*env*/
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 /*pwd_cd */
@@ -93,7 +96,7 @@ void		free_env_list(t_env_cpy *head);
 char		*return_type(char *env);
 char		*return_path(char *env);
 bool		check_for_equal(char *env);
-char *expand_token_if_variable(char *token, t_env_cpy *env_list);
-void execute_command(t_token *token, char **env, t_env_cpy *env_list);
+char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
+
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_tools.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/17 19:58:15 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/17 23:44:15 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	process_token(char **input, t_token **token_list)
 			}
 		}
 		else if (ft_strncmp(*input, "$\"", 2) == 0)
-			handle_quote(input, &token);  // Corrected: input is already char **
+			handle_quote(input, &token);
 		else
 			handle_unquoted(input, &token);
 	}
