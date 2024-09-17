@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/16 09:42:58 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/17 16:53:38 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,34 +45,6 @@ char	*find_in_path(char *cmd)
 	return (NULL);
 }
 
-int	execute_command(char **args, t_shell *shell)
-{
-	pid_t	pid;
-	int		status;
-
-	pid = fork();
-	if (pid == 0)
-	{
-		execve(args[0], args, shell->env);
-		perror("execve");
-		exit(EXIT_FAILURE);
-	}
-	else if (pid < 0)
-	{
-		perror("fork");
-		shell->last_exit_status = 1;
-	}
-	else
-	{
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			shell->last_exit_status = WEXITSTATUS(status);
-		else
-			shell->last_exit_status = 1;
-	}
-	return (shell->last_exit_status);
-}
-
 static void	do_comand(t_token *token, char **env)
 {
 	int		pid;
@@ -108,14 +80,11 @@ static void	do_comand(t_token *token, char **env)
 
 void	ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy)
 {
-	t_shell	shell;
-
-	init_shell(&shell, env);
 	if ((ft_strcmp(token->tokens, "ls") == 0)
 		|| (ft_strcmp(token->tokens, "clear") == 0))
 		do_comand(token, env);
 	else if ((ft_strcmp(token->tokens, "echo") == 0))
-		check_echo(token, &shell);
+		check_echo(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "pwd") == 0))
 		ft_pwd(token);
 	else if ((ft_strcmp(token->tokens, "env") == 0))
@@ -124,5 +93,4 @@ void	ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy)
 		ft_export(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "cd") == 0))
 		ft_cd(token, env_cpy);
-	free_shell(&shell);
 }

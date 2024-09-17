@@ -3,137 +3,112 @@
 /*                                                        :::      ::::::::   */
 /*   dollar.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/15 10:14:18 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/15 11:45:46 by mohamibr         ###   ########.fr       */
+/*   Created: 2024/09/17 14:24:44 by mustafa-mac       #+#    #+#             */
+/*   Updated: 2024/09/17 20:05:44 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-static char	*get_special_var(char c, t_shell *shell)
+// Append normal characters to the result
+char *append_char(char *result, char c)
 {
-	if (c == '?')
-		return (ft_itoa(shell->last_exit_status));
-	else if (c == '$')
-		return (ft_itoa(getpid()));
-	return (ft_strdup(""));
+    char temp_str[2];
+
+    temp_str[0] = c;
+    temp_str[1] = '\0';
+    char *temp = ft_strjoin(result, temp_str);
+    free(result);
+    return (temp);
 }
 
-static char	*handle_dollar(char *str, int *i, t_shell *shell)
+// Retrieve environment value
+char *get_env_value(char *var_name, t_env_cpy *env_list)
 {
-	char	*var_name;
-	char	*var_value;
-	int		j;
+    t_env_cpy *current;
 
-	(*i)++;
-	if (str[*i] == '?' || str[*i] == '$')
-	{
-		var_value = get_special_var(str[*i], shell);
-		(*i)++;
-	}
-	else if (!ft_isalnum(str[*i]) && str[*i] != '_')
-	{
-		if (str[*i] == 0 || ft_strchr(":= \t", str[*i]))
-		{
-			var_value = ft_strdup("$");
-		}
-		else
-		{
-			var_value = ft_strdup("");
-		}
-	}
-	else
-	{
-		j = *i;
-		while (str[j] && (ft_isalnum(str[j]) || str[j] == '_'))
-			j++;
-		var_name = ft_substr(str, *i, j - *i);
-		var_value = getenv(var_name);
-		free(var_name);
-		if (!var_value)
-			var_value = ft_strdup("");
-		else
-			var_value = ft_strdup(var_value);
-		*i = j;
-	}
-	return (var_value);
+    current = env_list;
+    while (current)
+    {
+        if (ft_strcmp(current->type, var_name) == 0)
+            return (current->env);  // Return the environment value
+        current = current->next;
+    }
+    return NULL;  // Return NULL if the variable is not found
 }
 
-static char	*ft_strjoin_free(char *s1, char *s2)
+// Expand environment variable
+char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
 {
-	char	*joined_str;
-	size_t	len1;
-	size_t	len2;
+    char *var_name = token + (*i) + 1;
+    int var_len = 0;
 
-	if (!s1 && !s2)
-		return (NULL);
-	len1 = 0;
-	if (s1)
-		len1 = ft_strlen(s1);
-	len2 = 0;
-	if (s2)
-		len2 = ft_strlen(s2);
-	joined_str = (char *)malloc(sizeof(char) * (len1 + len2 + 1));
-	if (!joined_str)
-	{
-		free(s1);
-		return (NULL);
-	}
-	if (s1)
-		strcpy(joined_str, s1);
-	if (s2)
-		strcpy(joined_str + len1, s2);
-	joined_str[len1 + len2] = '\0';
-	free(s1);
-	return (joined_str);
+    while (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_')
+        var_len++;
+    if (ft_strncmp(var_name, "UID", var_len) == 0 && var_len == 3)
+    {
+        result = ft_strjoin(result, "1000");
+        (*i) += var_len + 1;
+        return result;
+    }
+    char *env_value = get_env_value(ft_substr(var_name, 0, var_len), env_list);
+    if (!env_value)
+        env_value = "";
+
+    char *temp = ft_strjoin(result, env_value);
+    free(result);
+    *i += var_len + 1;
+    return temp;
 }
 
-static char	*ft_charjoin_free(char *s, char c)
-{
-	char	*new_str;
-	size_t	len;
 
-	if (!s)
-		len = 0;
-	else
-		len = ft_strlen(s);
-	new_str = (char *)malloc(sizeof(char) * (len + 2));
-	if (!new_str)
-	{
-		free(s);
-		return (NULL);
-	}
-	if (s)
-		strcpy(new_str, s);
-	new_str[len] = c;
-	new_str[len + 1] = '\0';
-	free(s);
-	return (new_str);
+// Handle $$ expansion (PID)
+char *handle_double_dollar(char *result)
+{
+    char *pid_str;
+    char *temp;
+
+    pid_str = ft_itoa(getpid());
+    temp = ft_strjoin(result, pid_str);
+    free(result);
+    free(pid_str);
+    return (temp);
 }
 
-char	*expand_env_var(char *str, t_shell *shell)
+// Handle $"VARIABLE" expansion
+char *handle_double_quote(char *token, char *result, int *i)
 {
-	char	*expanded_str;
-	char	*var_value;
-	int		i;
+    (*i) += 2;
+    while (token[*i] && token[*i] != '"')
+    {
+        result = append_char(result, token[*i]);
+        (*i)++;
+    }
+    if (token[*i] == '"')
+        (*i)++;
+    return (result);
+}
 
-	i = 0;
-	expanded_str = ft_strdup("");
-	while (str[i])
-	{
-		if (str[i] == '$')
-		{
-			var_value = handle_dollar(str, &i, shell);
-			expanded_str = ft_strjoin_free(expanded_str, var_value);
-			free(var_value);
-		}
-		else
-		{
-			expanded_str = ft_charjoin_free(expanded_str, str[i]);
-			i++;
-		}
-	}
-	return (expanded_str);
+// Main function to expand tokens
+char *expand_token_if_variable(char *token, t_env_cpy *env_list)
+{
+    char *result;
+    int i;
+
+    i = 0;
+    result = ft_strdup("");
+    while (token[i])
+    {
+        if (token[i] == '$' && token[i + 1] == '$')
+            result = handle_double_dollar(result), i += 2;
+        else if (token[i] == '$' && token[i + 1] == '"')
+            result = handle_double_quote(token, result, &i);
+        else if (token[i] == '$')
+            result = expand_variable(token, &i, env_list, result);
+        else
+            result = append_char(result, token[i]), i++;
+    }
+    return (result);
 }

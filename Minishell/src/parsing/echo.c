@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:35 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/15 10:36:04 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/17 19:32:13 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,30 +36,29 @@ static bool	check_n(t_token **token)
 	return (n);
 }
 
-void	check_echo(t_token *token, t_shell *shell)
+void check_echo(t_token *token, t_env_cpy *env_list)
 {
-	bool	n;
-	int		first;
-	char	*expanded_token;
+    bool n;
+    int first;
 
-	if (!token->next)
-	{
-		printf("\n");
-		return ;
-	}
-	token = token->next;
-	n = check_n(&token);
-	first = 1;
-	while (token)
-	{
-		expanded_token = expand_env_var(token->tokens, shell);
-		if (!first)
-			printf(" ");
-		printf("%s", expanded_token);
-		first = 0;
-		free(expanded_token);
-		token = token->next;
-	}
-	if (!n)
-		printf("\n");
+    if (!token->next)
+    {
+        printf("\n");
+        return;
+    }
+    token = token->next;
+    n = check_n(&token);
+    first = 1;
+    while (token)
+    {
+        if (!first)
+            printf(" ");
+        char *expanded_token = expand_token_if_variable(token->tokens, env_list);
+                printf("%s", expanded_token);
+        first = 0;
+        free(expanded_token);
+        token = token->next;
+    }
+    if (!n)
+        printf("\n");
 }

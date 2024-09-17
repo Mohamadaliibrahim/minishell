@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/15 19:40:53 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/17 18:53:34 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ int	check_type(char *token)
 		return (UNKNOWN);
 	else if (ft_strncmp(token, "$", 1) == 0)
 		return (VARIABLE);
+	else if (ft_strncmp(token, "$\"", 2) == 0)
+		return (QUOTE);
 	else if (ft_strcmp(token, "'") == 0 || ft_strcmp(token, "\"") == 0)
 		return (QUOTE);
 	else if (ft_strcmp(token, ";") == 0)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/15 19:40:13 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/17 14:31:50 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,16 +67,3 @@ void	free_env_list(t_env_cpy *head)
 		free(tmp);
 	}
 }
-
-void	free_shell(t_shell *shell)
-{
-	if (shell->env)
-	{
-		for (int i = 0; shell->env[i]; i++)
-		{
-			free(shell->env[i]);
-		}
-		free(shell->env);
-	}
-}
-// stop!

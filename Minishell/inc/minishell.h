@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/17 12:56:07 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/17 19:58:33 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,10 @@ typedef struct s_env_cpy
 	char				*env;
 	char				*type;
 	bool				equal;
+	int		last_exit_status;
 	struct s_env_cpy	*next;
 	struct s_env_cpy	*previous;
 }					t_env_cpy;
-
-typedef struct s_shell
-{
-	char	**env;
-	int		last_exit_status;
-}			t_shell;
 
 /*tokenize*/
 void		add_token(t_token **head, char *input);
@@ -77,9 +72,8 @@ char		*return_path(char *env);
 /*cmd*/
 char		*find_in_path(char *cmd);
 void		ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy);
-int			execute_command(char **args, t_shell *shell);
 /*echo*/
-void		check_echo(t_token *token, t_shell *shell);
+void 		check_echo(t_token *token, t_env_cpy *env_list);
 /*export*/
 void		ft_export(t_token *token, t_env_cpy *env_cpy);
 void		print_sorted(t_env_cpy *head);
@@ -87,7 +81,6 @@ void		print_export(t_env_cpy *env_cpy);
 t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal);
 
 /*env*/
-char		*expand_env_var(char *str, t_shell *shell);
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 /*pwd_cd */
 void		ft_pwd(t_token *token);
@@ -96,11 +89,11 @@ void		ft_cd(t_token *token, t_env_cpy *env_cpy);
 char		*ft_strndup(const char *s, size_t n);
 void		ft_free_2darray(char **tokens);
 void		free_token_list(t_token *head);
-void		init_shell(t_shell *shell, char **envp);
 void		free_env_list(t_env_cpy *head);
-void		free_shell(t_shell *shell);
 char		*return_type(char *env);
 char		*return_path(char *env);
 bool		check_for_equal(char *env);
+char *expand_token_if_variable(char *token, t_env_cpy *env_list);
+void execute_command(t_token *token, char **env, t_env_cpy *env_list);
 
 #endif
