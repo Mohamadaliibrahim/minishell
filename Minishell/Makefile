@@ -8,7 +8,8 @@ SRC = src/main.c src/tokenize/tokenize.c src/tokenize/tokenize_check.c \
       src/parsing/cmd.c src/parsing/echo.c src/parsing/pwd_cd.c \
 	  src/parsing/dollar.c src/tokenize/env_tokenizeing.c\
 	  src/parsing/ft_env.c src/parsing/ft_export.c\
-	  src/parsing/sort_export.c src/parsing/update_pwd.c
+	  src/parsing/sort_export.c src/parsing/update_pwd.c\
+	  src/parsing/ft_export_update.c\
 
 OBJS = $(SRC:.c=.o)
 

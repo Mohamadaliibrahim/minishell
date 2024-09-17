@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/16 09:43:37 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/17 12:56:07 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ void		check_echo(t_token *token, t_shell *shell);
 void		ft_export(t_token *token, t_env_cpy *env_cpy);
 void		print_sorted(t_env_cpy *head);
 void		print_export(t_env_cpy *env_cpy);
+t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal);
 
 /*env*/
 char		*expand_env_var(char *str, t_shell *shell);

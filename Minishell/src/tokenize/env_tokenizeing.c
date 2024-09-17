@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:03:44 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/15 19:11:10 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/17 12:47:46 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,13 @@ char	*return_type(char *env)
 	char	*dest;
 
 	i = 0;
-	while (env[i] != '=')
+	while (env[i] != '\0' && env[i] != '=')
 		i++;
 	dest = malloc(sizeof(char) * (i + 1));
+	if (!dest)
+		return (NULL);
 	i = 0;
-	while (env[i] != '=')
+	while (env[i] != '\0' && env[i] != '=')
 	{
 		dest[i] = env[i];
 		i++;
@@ -55,6 +57,26 @@ char	*return_type(char *env)
 	dest[i] = '\0';
 	return (dest);
 }
+
+
+// char	*return_type(char *env)
+// {
+// 	int		i;
+// 	char	*dest;
+
+// 	i = 0;
+// 	while (env[i] != '=')
+// 		i++;
+// 	dest = malloc(sizeof(char) * (i + 1));
+// 	i = 0;
+// 	while (env[i] != '=')
+// 	{
+// 		dest[i] = env[i];
+// 		i++;
+// 	}
+// 	dest[i] = '\0';
+// 	return (dest);
+// }
 
 bool	check_for_equal(char *env)
 {
