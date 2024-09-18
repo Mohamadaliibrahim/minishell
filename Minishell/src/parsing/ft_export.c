@@ -77,7 +77,6 @@ int	check_ex(char *str)
 	return (1);
 }
 
-
 void	ft_export(t_token *token, t_env_cpy *env_cpy)
 {
 	if (!token->next)

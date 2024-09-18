@@ -47,6 +47,7 @@ char	*expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
 	int		var_len;
 	char	*env_value;
 	char	*temp;
+	char	*substr;
 
 	var_name = token + (*i) + 1;
 	var_len = 0;
@@ -58,7 +59,9 @@ char	*expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
 		(*i) += var_len + 1;
 		return (result);
 	}
-	env_value = get_env_value(ft_substr(var_name, 0, var_len), env_list);
+	substr = ft_substr(var_name, 0, var_len);
+	env_value = get_env_value(substr, env_list);
+	free(substr);
 	if (!env_value)
 		env_value = "";
 	temp = ft_strjoin(result, env_value);

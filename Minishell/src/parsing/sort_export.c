@@ -12,7 +12,6 @@
 
 #include "../../inc/minishell.h"
 
-
 t_env_cpy	*find_smallest(t_env_cpy *head, t_env_cpy *exclude)
 {
 	t_env_cpy	*smallest;

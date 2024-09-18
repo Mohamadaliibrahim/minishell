@@ -1,41 +1,41 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_export.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
+/*   Updated: 2024/09/17 20:10:29 by mohamibr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../inc/minishell.h"
-
-t_env_cpy	*remove_it(t_env_cpy *env_cpy)
-{
-	t_env_cpy	*before;
-	t_env_cpy	*after;
-
-	before = env_cpy->previous;
-	after = env_cpy->next;
-	if (!before)
-	{
-		if (after)
-			after->previous = NULL;
-	}
-	else
-	{
-		before->next = after;
-		if (after)
-			after->previous = before;
-	}
-	free_single_env_list(env_cpy);
-	if (after)
-		return (after);
-	else
-		return (before);
-}
 
 void	remove_env(char *type, t_env_cpy *env_cpy)
 {
+	t_env_cpy	*prev;
 	t_env_cpy	*current;
 
 	current = env_cpy;
+	prev = NULL;
 	while (current)
 	{
-		if (current->type && ft_strcmp(current->type, type) == 0)
-			current = remove_it(current);
-		else
-			current = current->next;
+		if (ft_strcmp(current->type, type) == 0)
+		{
+			if (prev)
+				prev->next = current->next;
+			else
+				env_cpy = current->next;
+			if (current->next)
+				current->next->previous = prev;
+			free(current->env);
+			free(current->type);
+			free(current);
+			return ;
+		}
+		prev = current;
+		current = current->next;
 	}
 }
 
@@ -50,7 +50,10 @@ void	ft_unset(t_token *token, t_env_cpy *env_cpy)
 	{
 		type = return_type(token->tokens);
 		if (type)
+		{
 			remove_env(type, env_cpy);
+			free(type);
+		}
 		token = token->next;
 	}
 }

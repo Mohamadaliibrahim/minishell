@@ -71,8 +71,12 @@ t_env_cpy	*update_env(t_env_cpy *env)
 		return (head);
 	oldpwd = find_and_set_oldpwd(env, pwd);
 	if (!oldpwd)
+	{
+		free(pwd);
 		return (head);
+	}
 	env = head;
 	update_pwd_oldpwd(env, pwd, oldpwd);
+	free(pwd);
 	return (head);
 }

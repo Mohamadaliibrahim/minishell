@@ -1,6 +1,5 @@
 #include "../../inc/minishell.h"
 
-/* Function to find an existing node with the given type */
 t_env_cpy	*find_env_node(t_env_cpy *head, char *type)
 {
 	t_env_cpy	*tmp;
@@ -29,7 +28,6 @@ void	update_env_node(t_env_cpy *node, char *env, bool equal)
 }
 
 
-/* Function to create a new node */
 t_env_cpy	*create_env_node(char *type, char *env, bool equal)
 {
 	t_env_cpy	*new_node;
@@ -38,13 +36,21 @@ t_env_cpy	*create_env_node(char *type, char *env, bool equal)
 	if (!new_node)
 		return (NULL);
 	new_node->type = type;
-	new_node->env = equal ? ft_strdup(env ? env : "") : NULL;
+	if (equal)
+	{
+		if (env)
+			new_node->env = ft_strdup(env);
+		else
+			new_node->env = ft_strdup("");
+	}
+	else
+		new_node->env = NULL;
 	new_node->equal = equal;
 	new_node->next = NULL;
 	return (new_node);
 }
 
-/* Function to add a node to the end of the list */
+
 void	add_env_node(t_env_cpy **head, t_env_cpy *new_node)
 {
 	t_env_cpy	*tmp;
@@ -60,7 +66,6 @@ void	add_env_node(t_env_cpy **head, t_env_cpy *new_node)
 	}
 }
 
-/* Main function to add or update environment variable */
 t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal)
 {
 	t_env_cpy	*node;
@@ -69,7 +74,7 @@ t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal)
 	if (node)
 	{
 		update_env_node(node, env, equal);
-		free(type); // 'type' is no longer needed
+		free(type);
 		return (node);
 	}
 	else
