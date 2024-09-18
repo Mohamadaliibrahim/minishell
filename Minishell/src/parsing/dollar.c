@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:24:44 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/18 11:48:04 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/18 12:40:21 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@ char	*get_env_value(char *var_name, t_env_cpy *env_list)
 	while (current)
 	{
 		if (ft_strcmp(current->type, var_name) == 0)
-			return (current->env); // Return the environment value
+			return (current->env);
 		current = current->next;
 	}
-	return (NULL); // Return NULL if the variable is not found
+	return (NULL);
 }
 
 // Expand environment variable
