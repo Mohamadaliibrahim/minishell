@@ -80,13 +80,10 @@ static void	do_comand(t_token *token, char **env)
 
 void	ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy)
 {
-	if ((ft_strcmp(token->tokens, "ls") == 0)
-		|| (ft_strcmp(token->tokens, "clear") == 0))
-		do_comand(token, env);
-	else if ((ft_strcmp(token->tokens, "echo") == 0))
+	if ((ft_strcmp(token->tokens, "echo") == 0))
 		check_echo(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "pwd") == 0))
-		ft_pwd(token);
+		ft_pwd();
 	else if ((ft_strcmp(token->tokens, "env") == 0))
 		ft_env(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "export") == 0))
@@ -95,4 +92,15 @@ void	ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy)
 		ft_unset(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "cd") == 0))
 		ft_cd(token, env_cpy);
+	else if ((ft_strcmp(token->tokens, "exit") == 0))
+	{
+		printf("exit\n");
+		exit(1);
+	}
+	else
+		do_comand(token, env);
 }
+
+	// if ((ft_strcmp(token->tokens, "ls") == 0)
+	// 	|| (ft_strcmp(token->tokens, "clear") == 0))
+	// 	do_comand(token, env);

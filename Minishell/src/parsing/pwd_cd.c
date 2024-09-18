@@ -62,18 +62,13 @@ static char	*get_cd_path(t_token *token, t_env_cpy *env_cpy)
     return (path);
 }
 
-void	ft_pwd(t_token *token)
+void	ft_pwd(void)
 {
     char	*pwd;
 
-    if (token->next != NULL)
-        printf("Error: too many arguments\n");
-    else
-    {
-        pwd = getcwd(NULL, 0);
-        printf("%s\n", pwd);
-        free(pwd);
-    }
+    pwd = getcwd(NULL, 0);
+    printf("%s\n", pwd);
+    free(pwd);
 }
 
 void	update_env_var(t_env_cpy *env_cpy, char *key, char *value)

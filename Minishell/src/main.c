@@ -36,4 +36,3 @@ int	main(int ac, char **av, char **env)
 	rl_free_line_state();
 	return (0);
 }
-	 

@@ -29,7 +29,8 @@ int	check_type(char *token)
 	}
 	if ((ft_strcmp(token, "cd") == 0)
 		|| (ft_strcmp(token, "export") == 0)
-		|| (ft_strcmp(token, "unset") == 0))
+		|| (ft_strcmp(token, "unset") == 0)
+		|| (ft_strcmp(token, "exit") == 0))
 		return (CMND);
 	cmd_path = find_in_path(token);
 	if (cmd_path != NULL)
@@ -80,7 +81,6 @@ static int	check_for_quotations(char *input)
 	if (single_quote_open || double_quote_open)
 		return (0);
 	return (1);
-
 }
 
 void	check(char *input, char **env, t_env_cpy *env_cpy)

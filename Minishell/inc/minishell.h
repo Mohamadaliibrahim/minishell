@@ -86,7 +86,7 @@ void		update_pwd_oldpwd(t_env_cpy *env, char *new_pwd, char *old_pwd);
 /*env*/
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 /*pwd_cd */
-void		ft_pwd(t_token *token);
+void		ft_pwd(void);
 void		ft_cd(t_token *token, t_env_cpy *env_cpy);
 /*utils*/
 char		*ft_strndup(const char *s, size_t n);
