@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_tools.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/17 23:44:15 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/18 11:41:32 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,20 @@ void	process_token(char **input, t_token **token_list)
 				return ;
 			}
 		}
+		else if (ft_strncmp(*input, "$''", 3) == 0)  // Check for $'' pattern
+		{
+			*input += 3;  // Skip past $''
+			while (**input)  // Handle the remaining part as a literal
+			{
+				token = append_char(token, **input);
+				(*input)++;
+			}
+		}
 		else if (ft_strncmp(*input, "$\"", 2) == 0)
+			handle_quote(input, &token);
+		else if (ft_strncmp(*input, "$\'", 2) == 0)
+			handle_quote(input, &token);
+		else if (ft_strncmp(*input, "$\'", 2) == 0)
 			handle_quote(input, &token);
 		else
 			handle_unquoted(input, &token);

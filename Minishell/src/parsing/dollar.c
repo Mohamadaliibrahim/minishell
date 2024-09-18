@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dollar.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:24:44 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/17 23:56:27 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/18 11:48:04 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,10 @@ char	*expand_token_if_variable(char *token, t_env_cpy *env_list)
 	result = ft_strdup("");
 	while (token[i])
 	{
+		if (token[i] == '$' && token[i + 1] == '\0')
+			printf("$");
+		if (token[i] == '"' && token[i + 1] == '$')
+			printf("$");
 		if (token[i] == '$' && token[i + 1] == '$')
 			result = handle_double_dollar(result), i += 2;
 		else if (token[i] == '$' && token[i + 1] == '"')
