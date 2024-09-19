@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/19 11:33:34 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/19 18:36:10 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,8 @@ char		*return_type(char *env);
 char		*return_path(char *env);
 bool		check_for_equal(char *env);
 char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
-char	*append_char(char *result, char c);
-void    setup_signal_handlers(void);
+char		*append_char(char *result, char c);
+void		setup_signal_handlers(void);
+void		ft_free_2darray(char **tokens);
 
 #endif
