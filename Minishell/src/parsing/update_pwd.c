@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/16 09:45:50 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/16 09:46:38 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/19 12:28:54 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,7 @@ char	*find_and_set_oldpwd(t_env_cpy *env, char *pwd)
 			if (check_oldpwd(env->env, pwd))
 				return (ft_strdup(env->env));
 			else
-			{
-				free(pwd);
 				return (NULL);
-			}
 		}
 		env = env->next;
 	}
