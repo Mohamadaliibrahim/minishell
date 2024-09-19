@@ -30,7 +30,11 @@ int	check_type(char *token)
 	if ((ft_strcmp(token, "cd") == 0)
 		|| (ft_strcmp(token, "export") == 0)
 		|| (ft_strcmp(token, "unset") == 0)
-		|| (ft_strcmp(token, "exit") == 0))
+		|| (ft_strcmp(token, "exit") == 0)
+		|| (ft_strcmp(token, "env") == 0)
+		|| (ft_strcmp(token, "echo") == 0)
+		|| (ft_strcmp(token, "unset") == 0)
+		|| (ft_strcmp(token, "pwd") == 0))
 		return (CMND);
 	cmd_path = find_in_path(token);
 	if (cmd_path != NULL)
@@ -90,10 +94,7 @@ void	check(char *input, char **env, t_env_cpy *env_cpy)
 	token = NULL;
 	tokenize_input(input, &token);
 	if (!check_for_quotations(input))
-	{
 		printf("Syntax error\n");
-		free(token);
-	}
 	else
 	{
 		if (token)
@@ -103,6 +104,7 @@ void	check(char *input, char **env, t_env_cpy *env_cpy)
 			else if (token->token_type == UNKNOWN)
 				printf("%s : Command not found\n", token->tokens);
 		}
-		free_token_list(token);
 	}
+	if (token)
+		free_token_list(token);
 }

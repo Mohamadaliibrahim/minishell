@@ -12,6 +12,23 @@
 
 #include "../inc/minishell.h"
 
+t_env_cpy	*history(void)
+{
+	char	**dest;
+	char	*pwd;
+
+	dest = malloc(sizeof(char *) * 4);
+	if (!dest)
+		return (NULL);
+	pwd = getcwd(NULL, 0);
+	dest[0] = ft_strjoin("PWD=", pwd);
+	dest[1] = "SHELVL=1";
+	dest[2] = "_=/usr/bin/env";
+	dest[3] = NULL;
+	free(pwd);
+	return (cpy_env(dest));
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char		*input;
@@ -19,7 +36,10 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
-	env_cpy = cpy_env(env);
+	if (env[0] == NULL)
+		env_cpy = history();
+	else
+		env_cpy = cpy_env(env);
 	while (1)
 	{
 		setup_signal_handlers();
