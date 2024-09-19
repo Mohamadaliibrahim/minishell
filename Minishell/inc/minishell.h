@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/19 18:36:10 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/19 19:36:10 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,14 +65,14 @@ t_env_cpy	*cpy_env(char **env);
 t_env_cpy	*update_env(t_env_cpy *env);
 /*tokenize_check*/
 int			check_type(char *token);
-void		check(char *input, char **env, t_env_cpy *env_cpy);
+void		check(char *input, t_env_cpy *env_cpy);
 /*tokenize_tools*/
 void		process_token(char **input, t_token **token_list);
 char		*return_type(char *env);
 char		*return_path(char *env);
 /*cmd*/
 char		*find_in_path(char *cmd);
-void		ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy);
+void		ft_cmd(t_token *token, t_env_cpy *env_cpy);
 /*echo*/
 void		check_echo(t_token *token, t_env_cpy *env_list);
 /*unset*/
@@ -101,5 +101,6 @@ char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
 char		*append_char(char *result, char c);
 void		setup_signal_handlers(void);
 void		ft_free_2darray(char **tokens);
+char		**list_to_2d(t_env_cpy *env);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/18 11:19:57 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/19 19:35:27 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static int	check_for_quotations(char *input)
 	return (1);
 }
 
-void	check(char *input, char **env, t_env_cpy *env_cpy)
+void	check(char *input, t_env_cpy *env_cpy)
 {
 	t_token		*token;
 
@@ -100,7 +100,7 @@ void	check(char *input, char **env, t_env_cpy *env_cpy)
 		if (token)
 		{
 			if (token->token_type == CMND)
-				ft_cmd(token, env, env_cpy);
+				ft_cmd(token, env_cpy);
 			else if (token->token_type == UNKNOWN)
 				printf("%s : Command not found\n", token->tokens);
 		}

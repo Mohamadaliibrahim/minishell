@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/17 23:46:11 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/19 19:37:46 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,15 @@ char	*find_in_path(char *cmd)
 	return (NULL);
 }
 
-static void	do_comand(t_token *token, char **env)
+static void	do_comand(t_token *token, t_env_cpy *env_cpy)
 {
 	int		pid;
 	int		status;
 	char	*av[2];
 	char	*cmd_path;
+	char	**env;
 
+	env = list_to_2d(env_cpy);
 	(void)cmd_path;
 	av[0] = token->tokens;
 	av[1] = NULL;
@@ -78,7 +80,7 @@ static void	do_comand(t_token *token, char **env)
 	free(cmd_path);
 }
 
-void	ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy)
+void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 {
 	if ((ft_strcmp(token->tokens, "echo") == 0))
 		check_echo(token, env_cpy);
@@ -98,9 +100,5 @@ void	ft_cmd(t_token *token, char **env, t_env_cpy *env_cpy)
 		exit(1);
 	}
 	else
-		do_comand(token, env);
+		do_comand(token, env_cpy);
 }
-
-	// if ((ft_strcmp(token->tokens, "ls") == 0)
-	// 	|| (ft_strcmp(token->tokens, "clear") == 0))
-	// 	do_comand(token, env);

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/19 18:44:58 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/19 19:36:25 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,42 @@ char	**define_env(char **env)
 	return (dest);
 }
 
+char	**list_to_2d(t_env_cpy *env)
+{
+	t_env_cpy	*head;
+	char		**dest;
+	char		*combine;
+	int			i;
+
+	head = env;
+	while (env)
+	{
+		i++;
+		env = env->next;
+	}
+	dest = malloc(sizeof(char *) * (i + 1));
+	if (!dest)
+		return (NULL);
+	i = 0;
+	env = head;
+	while (env)
+	{
+		if (env->equal)
+			combine = ft_strjoin(env->type, "=");
+		else
+			combine = ft_strjoin(env->type, "");
+		dest[i] = ft_strjoin(combine, env->env);
+		free(combine);
+		i++;
+		env = env->next;
+	}
+	dest[i] = NULL;
+	return (dest);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char		*input;
-	char		**env_2d;
 	t_env_cpy	*env_cpy;
 
 	(void)ac;
@@ -70,7 +102,6 @@ int	main(int ac, char **av, char **env)
 		env_cpy = history();
 	else
 		env_cpy = cpy_env(env);
-	env_2d = define_env(env);
 	while (1)
 	{
 		setup_signal_handlers();
@@ -82,10 +113,9 @@ int	main(int ac, char **av, char **env)
 		}
 		if (*input)
 			add_history(input);
-		check(input, env_2d, env_cpy);
+		check(input, env_cpy);
 		free(input);
 	}
-	ft_free_2darray(env_2d);
 	free_env_list(env_cpy);
 	clear_history();
 	rl_clear_history();
