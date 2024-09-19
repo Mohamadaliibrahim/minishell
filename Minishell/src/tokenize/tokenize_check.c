@@ -6,13 +6,13 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/19 19:35:27 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/19 21:42:39 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-int	check_type(char *token)
+int	check_type(char *token, t_env_cpy *env)
 {
 	char	*cmd_path;
 
@@ -20,9 +20,7 @@ int	check_type(char *token)
 		|| ft_strncmp(token, "./", 2) == 0
 		|| ft_strncmp(token, "../", 3) == 0)
 	{
-		if (access(token, X_OK) == 0
-			|| (ft_strcmp(token, "cd") == 0)
-			|| (ft_strcmp(token, "export") == 0))
+		if (access(token, X_OK) == 0)
 			return (CMND);
 		else
 			return (UNKNOWN);
@@ -36,7 +34,7 @@ int	check_type(char *token)
 		|| (ft_strcmp(token, "unset") == 0)
 		|| (ft_strcmp(token, "pwd") == 0))
 		return (CMND);
-	cmd_path = find_in_path(token);
+	cmd_path = find_in_path(token, env);
 	if (cmd_path != NULL)
 	{
 		free(cmd_path);
@@ -92,7 +90,7 @@ void	check(char *input, t_env_cpy *env_cpy)
 	t_token		*token;
 
 	token = NULL;
-	tokenize_input(input, &token);
+	tokenize_input(input, &token, env_cpy);
 	if (!check_for_quotations(input))
 		printf("Syntax error\n");
 	else

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/19 19:36:10 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/19 21:42:48 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,20 +58,20 @@ typedef struct s_env_cpy
 }					t_env_cpy;
 
 /*tokenize*/
-void		add_token(t_token **head, char *input);
+void	add_token(t_token **head, char *input, t_env_cpy *env);
 char		*extract_quoted_token(char **input, char quote_type);
-void		tokenize_input(char *input, t_token **token_list);
+void		tokenize_input(char *input, t_token **token_list, t_env_cpy *env);
 t_env_cpy	*cpy_env(char **env);
 t_env_cpy	*update_env(t_env_cpy *env);
 /*tokenize_check*/
-int			check_type(char *token);
+int			check_type(char *token, t_env_cpy *env);
 void		check(char *input, t_env_cpy *env_cpy);
 /*tokenize_tools*/
-void		process_token(char **input, t_token **token_list);
+void process_token(char **input, t_token **token_list, t_env_cpy *env);
 char		*return_type(char *env);
 char		*return_path(char *env);
 /*cmd*/
-char		*find_in_path(char *cmd);
+char		*find_in_path(char *cmd, t_env_cpy *env);
 void		ft_cmd(t_token *token, t_env_cpy *env_cpy);
 /*echo*/
 void		check_echo(t_token *token, t_env_cpy *env_list);
@@ -102,5 +102,6 @@ char		*append_char(char *result, char c);
 void		setup_signal_handlers(void);
 void		ft_free_2darray(char **tokens);
 char		**list_to_2d(t_env_cpy *env);
+char		*get_old_path(t_env_cpy *env_cpy, char *msg);
 
 #endif

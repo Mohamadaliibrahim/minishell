@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/19 19:36:25 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/19 21:53:36 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ char	**list_to_2d(t_env_cpy *env)
 	char		*combine;
 	int			i;
 
+	i = 0;
 	head = env;
 	while (env)
 	{
@@ -82,14 +83,29 @@ char	**list_to_2d(t_env_cpy *env)
 			combine = ft_strjoin(env->type, "=");
 		else
 			combine = ft_strjoin(env->type, "");
+		if (!combine)
+		{
+			while (i > 0)
+				free(dest[--i]);
+			free(dest);
+			return (NULL);
+		}
 		dest[i] = ft_strjoin(combine, env->env);
 		free(combine);
+		if (!dest[i])
+		{
+			while (i > 0)
+				free(dest[--i]);
+			free(dest);
+			return (NULL);
+		}
 		i++;
 		env = env->next;
 	}
 	dest[i] = NULL;
 	return (dest);
 }
+
 
 int	main(int ac, char **av, char **env)
 {

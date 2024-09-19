@@ -26,7 +26,8 @@ void	update_env_node(t_env_cpy *node, char *env, bool equal)
 		node->equal = true;
 	}
 }
-
+/*
+*/
 
 t_env_cpy	*create_env_node(char *type, char *env, bool equal)
 {

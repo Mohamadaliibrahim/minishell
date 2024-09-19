@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_tools.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/19 11:20:03 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/19 21:41:51 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ static void handle_dollar_invalid(char **input, char **token)
     }
 }
 
-void process_token(char **input, t_token **token_list)
+void process_token(char **input, t_token **token_list, t_env_cpy *env)
 {
     char *token;
 
@@ -162,6 +162,6 @@ void process_token(char **input, t_token **token_list)
         else
             handle_unquoted(input, &token);
     }
-    add_token(token_list, token);
+    add_token(token_list, token, env);
     free(token);
 }

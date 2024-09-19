@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmachlou <mmachlou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/14 16:57:15 by mmachlou         ###   ########.fr       */
+/*   Updated: 2024/09/19 21:42:23 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-static t_token	*new_token(char *input)
+static t_token	*new_token(char *input, t_env_cpy *env)
 {
 	t_token	*new_node;
 
@@ -21,17 +21,17 @@ static t_token	*new_token(char *input)
 		return (NULL);
 	new_node->tokens = ft_strdup(input);
 	new_node->next = NULL;
-	new_node->token_type = check_type(input);
+	new_node->token_type = check_type(input, env);
 	new_node->previous = NULL;
 	return (new_node);
 }
 
-void	add_token(t_token **head, char *input)
+void	add_token(t_token **head, char *input, t_env_cpy *env)
 {
 	t_token	*new_node;
 	t_token	*tmp;
 
-	new_node = new_token(input);
+	new_node = new_token(input, env);
 	if (!new_node)
 		return ;
 	if (!*head)
@@ -65,13 +65,13 @@ char	*extract_quoted_token(char **input, char quote_type)
 	return (NULL);
 }
 
-void	tokenize_input(char *input, t_token **token_list)
+void	tokenize_input(char *input, t_token **token_list, t_env_cpy *env)
 {
 	while (*input)
 	{
 		while (*input == ' ')
 			input++;
 		if (*input)
-			process_token(&input, token_list);
+			process_token(&input, token_list, env);
 	}
 }

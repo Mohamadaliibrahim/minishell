@@ -6,20 +6,20 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/19 19:37:46 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/19 21:46:32 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-char	*find_in_path(char *cmd)
+char	*find_in_path(char *cmd, t_env_cpy *env)
 {
 	char	*path_env;
 	char	**paths;
 	char	*full_path;
 	int		i;
 
-	path_env = getenv("PATH");
+	path_env = get_old_path(env, "PATH");
 	if (!path_env)
 		return (NULL);
 	paths = ft_split(path_env, ':');
@@ -52,6 +52,7 @@ static void	do_comand(t_token *token, t_env_cpy *env_cpy)
 	char	*av[2];
 	char	*cmd_path;
 	char	**env;
+	int		i;
 
 	env = list_to_2d(env_cpy);
 	(void)cmd_path;
@@ -62,23 +63,37 @@ static void	do_comand(t_token *token, t_env_cpy *env_cpy)
 		|| ft_strncmp(token->tokens, "../", 3) == 0)
 		cmd_path = ft_strdup(token->tokens);
 	else
-		cmd_path = find_in_path(token->tokens);
+		cmd_path = find_in_path(token->tokens, env_cpy); 
 	if (!cmd_path)
 	{
-		printf("Error");
+		perror("Command not found");
+		// Free the env array and its contents
+		for (i = 0; env[i]; i++)
+			free(env[i]);
+		free(env);
 		return ;
 	}
 	pid = fork();
 	if (pid == 0)
 	{
 		if (execve(cmd_path, av, env) == -1)
-			perror("Error");
+			perror("Execution error");
+		// Free the env array and its contents before exiting the child process
+		for (i = 0; env[i]; i++)
+			free(env[i]);
+		free(env);
+		free(cmd_path);
 		exit(EXIT_FAILURE);
 	}
 	else if (pid)
 		waitpid(pid, &status, 0);
 	free(cmd_path);
+	// Free the env array and its contents in the parent process
+	for (i = 0; env[i]; i++)
+		free(env[i]);
+	free(env);
 }
+
 
 void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 {
@@ -97,7 +112,7 @@ void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 	else if ((ft_strcmp(token->tokens, "exit") == 0))
 	{
 		printf("exit\n");
-		exit(1);
+		exit(0);
 	}
 	else
 		do_comand(token, env_cpy);
