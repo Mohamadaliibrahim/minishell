@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/19 10:23:43 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/19 11:20:03 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void	handle_dollar_inside_quotes(char **input, char **token)
 static void handle_dollar_invalid(char **input, char **token)
 {
     (*input)++;
-    if (**input >= '0' && **input <= '9')
+    if ((**input >= '0' && **input <= '9'))
     {
         (*input)++;
     }
@@ -139,7 +139,12 @@ void process_token(char **input, t_token **token_list)
         else if (**input == '\\' )
             handle_backslash(input, &token);  
         else if (**input == '$' && *(*input + 1) >= '0' && *(*input + 1) <= '9')  // Handle $ followed by numbers
-            handle_dollar_invalid(input, &token);  // Skip invalid variables like $9 and append the rest
+            handle_dollar_invalid(input, &token);
+        else if (**input == '$' && *(*input + 1) == '=')  // Handle $ followed by numbers
+        {
+            printf("$");
+            handle_dollar_invalid(input, &token);
+        }
         else if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) != '\0') // Handle "$HO"ME case
             handle_dollar_inside_quotes(input, &token);
         else if (**input == '\'' || **input == '"')

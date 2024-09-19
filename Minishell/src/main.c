@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/17 16:34:03 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/19 11:32:55 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	main(int ac, char **av, char **env)
 	env_cpy = cpy_env(env);
 	while (1)
 	{
+		setup_signal_handlers();
 		input = readline("\033[0;36m$>\033[0m ");
 		if (input == NULL)
 			break ;
