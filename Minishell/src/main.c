@@ -6,11 +6,13 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/20 12:34:45 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/20 16:12:34 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
+
+// volatile sig_atomic_t g_shell_status = 0;
 
 t_env_cpy	*history(void)
 {
@@ -116,6 +118,7 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
+	setup_signal_handlers();
 	if (env[0] == NULL)
 		env_cpy = history();
 	else
@@ -123,7 +126,6 @@ int	main(int ac, char **av, char **env)
 	env_cpy = add_shell(env_cpy);
 	while (1)
 	{
-		setup_signal_handlers();
 		input = readline("\033[0;36m$>\033[0m ");
 		if (input == NULL)
 		{

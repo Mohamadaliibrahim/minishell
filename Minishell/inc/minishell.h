@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/20 12:08:25 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/20 16:08:52 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,9 @@ typedef struct s_env_cpy
 	struct s_env_cpy	*next;
 	struct s_env_cpy	*previous;
 }					t_env_cpy;
+
+/*Global valriable*/
+// extern	volatile	sig_atomic_t g_shell_status;
 
 /*tokenize*/
 void		add_token(t_token **head, char *input, t_env_cpy *env);
