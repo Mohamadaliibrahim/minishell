@@ -92,10 +92,33 @@ bool	check_for_equal(char *env)
 	return (false);
 }
 
+// t_env_cpy	*new_node_it(t_env_cpy *env)
+// {
+// 	t_env_cpy	*new_node;
+
+// 	new_node = malloc(sizeof(t_env_cpy));
+// 	if (!new_node)
+// 	{
+// 		perror("Memory allocation error");
+// 		exit(EXIT_FAILURE);
+// 	}
+// 	new_node->type = ft_strdup("SHLVL");
+//     new_node->env = ft_strdup("1");
+//     new_node->equal = true;
+//     new_node->next = head;
+//     new_node->previous = NULL;
+// 	if (env)
+// 		env->previous = NULL;
+// 	return (new_node);
+// }
+
 t_env_cpy	*add_shell(t_env_cpy *env_cpy)
 {
-	int			x;
+	t_env_cpy	*head;
+	int				x;
 
+	x = 0;
+	head = env_cpy;
 	while (env_cpy)
 	{
 		if (ft_strcmp(env_cpy->type, "SHLVL") == 0)
@@ -114,11 +137,27 @@ t_env_cpy	*add_shell(t_env_cpy *env_cpy)
 				perror("MEmory allocation error");
 				exit(EXIT_FAILURE);
 			}
-			return (env_cpy);
+			return (head);
 		}
 		env_cpy = env_cpy->next;
 	}
-	return (env_cpy);
+		t_env_cpy	*new_node;
+
+	new_node = malloc(sizeof(t_env_cpy));
+	if (!new_node)
+	{
+		perror("Memory allocation error");
+		exit(EXIT_FAILURE);
+	}
+	new_node->type = ft_strdup("SHLVL");
+    new_node->env = ft_strdup("1");
+    new_node->equal = true;
+    new_node->next = head;
+    new_node->previous = NULL;
+	if (head)
+		head->previous = NULL;
+	return (new_node);
+	return (new_node);
 }
 
 t_env_cpy	*cpy_env_helper(char *env)
@@ -166,47 +205,3 @@ t_env_cpy	*cpy_env(char **env)
 	}
 	return (head);
 }
-
-
-// t_env_cpy *add_shell(t_env_cpy *env_cpy)
-// {
-//     int     shlvl;
-//     char    *new_shlvl;
-//     t_env_cpy *head = env_cpy;
-
-//     while (env_cpy)
-//     {
-//         if (ft_strcmp(env_cpy->type, "SHLVL") == 0)
-//         {
-//             // Convert SHLVL to integer
-//             shlvl = ft_atoi(env_cpy->env);
-
-//             // Handle cases where SHLVL is negative or too large
-//             if (shlvl < 0)
-//                 shlvl = 0;
-//             else if (shlvl >= 999)
-//                 shlvl = 999;
-//             else
-//                 shlvl++;
-
-//             // Convert back to string
-//             new_shlvl = ft_itoa(shlvl);
-//             if (!new_shlvl)
-//             {
-//                 perror("Memory allocation error");
-//                 exit(EXIT_FAILURE);
-//             }
-
-//             // Free the old SHLVL value and update it with the new one
-//             free(env_cpy->env);
-//             env_cpy->env = new_shlvl;
-//             return head;
-//         }
-//         env_cpy = env_cpy->next;
-//     }
-
-//     // If SHLVL does not exist, create it and set to 1
-//     a_env(&head, ft_strdup("SHLVL"), ft_strdup("1"), true);
-
-//     return head;
-// }

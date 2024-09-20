@@ -99,8 +99,6 @@ void	check(char *input, t_env_cpy *env_cpy)
 		{
 			if (token->token_type == CMND)
 				ft_cmd(token, env_cpy);
-			else if (ft_strcmp(token->tokens, "./minishell") == 0)
-				env_cpy = add_shell(env_cpy);
 			else if (token->token_type == UNKNOWN)
 				printf("%s : Command not found\n", token->tokens);
 		}

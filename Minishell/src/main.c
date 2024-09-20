@@ -22,7 +22,7 @@ t_env_cpy	*history(void)
 		return (NULL);
 	pwd = getcwd(NULL, 0);
 	dest[0] = ft_strjoin("PWD=", pwd);
-	dest[1] = ft_strdup("SHELVL=1");
+	dest[1] = ft_strdup("SHLVL=1");
 	dest[2] = ft_strdup("_=/usr/bin/env");
 	dest[3] = NULL;
 	free(pwd);
@@ -120,6 +120,7 @@ int	main(int ac, char **av, char **env)
 		env_cpy = history();
 	else
 		env_cpy = cpy_env(env);
+	env_cpy = add_shell(env_cpy);
 	while (1)
 	{
 		setup_signal_handlers();
