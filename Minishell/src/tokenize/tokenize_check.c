@@ -99,6 +99,8 @@ void	check(char *input, t_env_cpy *env_cpy)
 		{
 			if (token->token_type == CMND)
 				ft_cmd(token, env_cpy);
+			if (token->token_type == REDIRECT_OUT)
+				ft_redirection(token);
 			else if (token->token_type == UNKNOWN)
 				printf("%s : Command not found\n", token->tokens);
 		}

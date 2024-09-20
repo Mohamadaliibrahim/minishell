@@ -59,7 +59,7 @@ typedef struct s_env_cpy
 }					t_env_cpy;
 
 /*Global valriable*/
-// extern	volatile	sig_atomic_t g_shell_status;
+extern	volatile	sig_atomic_t g_shell_status;
 
 /*tokenize*/
 void		add_token(t_token **head, char *input, t_env_cpy *env);

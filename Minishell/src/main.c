@@ -12,7 +12,7 @@
 
 #include "../inc/minishell.h"
 
-// volatile sig_atomic_t g_shell_status = 0;
+volatile sig_atomic_t g_shell_status = 0;
 
 t_env_cpy	*history(void)
 {
@@ -109,7 +109,6 @@ char	**list_to_2d(t_env_cpy *env)
 	dest[i] = NULL;
 	return (dest);
 }
-
 
 int	main(int ac, char **av, char **env)
 {
