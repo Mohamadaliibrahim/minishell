@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:03:44 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/17 12:47:46 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/20 12:08:03 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,35 @@ bool	check_for_equal(char *env)
 	return (false);
 }
 
+t_env_cpy	*add_shell(t_env_cpy *env_cpy)
+{
+	int			x;
+
+	while (env_cpy)
+	{
+		if (ft_strcmp(env_cpy->type, "SHLVL") == 0)
+		{
+			x = ft_atoi(env_cpy->env);
+			if (x <= 0)
+				x = 1;
+			else
+				x++;
+			if (x > INT_MAX)
+				x = INT_MAX;
+			free(env_cpy->env);
+			env_cpy->env = ft_itoa((int)x);
+			if (!env_cpy->env)
+			{
+				perror("MEmory allocation error");
+				exit(EXIT_FAILURE);
+			}
+			return (env_cpy);
+		}
+		env_cpy = env_cpy->next;
+	}
+	return (env_cpy);
+}
+
 t_env_cpy	*cpy_env_helper(char *env)
 {
 	t_env_cpy	*cpy;
@@ -137,3 +166,47 @@ t_env_cpy	*cpy_env(char **env)
 	}
 	return (head);
 }
+
+
+// t_env_cpy *add_shell(t_env_cpy *env_cpy)
+// {
+//     int     shlvl;
+//     char    *new_shlvl;
+//     t_env_cpy *head = env_cpy;
+
+//     while (env_cpy)
+//     {
+//         if (ft_strcmp(env_cpy->type, "SHLVL") == 0)
+//         {
+//             // Convert SHLVL to integer
+//             shlvl = ft_atoi(env_cpy->env);
+
+//             // Handle cases where SHLVL is negative or too large
+//             if (shlvl < 0)
+//                 shlvl = 0;
+//             else if (shlvl >= 999)
+//                 shlvl = 999;
+//             else
+//                 shlvl++;
+
+//             // Convert back to string
+//             new_shlvl = ft_itoa(shlvl);
+//             if (!new_shlvl)
+//             {
+//                 perror("Memory allocation error");
+//                 exit(EXIT_FAILURE);
+//             }
+
+//             // Free the old SHLVL value and update it with the new one
+//             free(env_cpy->env);
+//             env_cpy->env = new_shlvl;
+//             return head;
+//         }
+//         env_cpy = env_cpy->next;
+//     }
+
+//     // If SHLVL does not exist, create it and set to 1
+//     a_env(&head, ft_strdup("SHLVL"), ft_strdup("1"), true);
+
+//     return head;
+// }

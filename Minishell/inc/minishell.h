@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/19 21:42:48 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/20 12:08:25 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <limits.h>
 
 typedef enum e_token_type
 {
@@ -58,7 +59,7 @@ typedef struct s_env_cpy
 }					t_env_cpy;
 
 /*tokenize*/
-void	add_token(t_token **head, char *input, t_env_cpy *env);
+void		add_token(t_token **head, char *input, t_env_cpy *env);
 char		*extract_quoted_token(char **input, char quote_type);
 void		tokenize_input(char *input, t_token **token_list, t_env_cpy *env);
 t_env_cpy	*cpy_env(char **env);
@@ -67,7 +68,7 @@ t_env_cpy	*update_env(t_env_cpy *env);
 int			check_type(char *token, t_env_cpy *env);
 void		check(char *input, t_env_cpy *env_cpy);
 /*tokenize_tools*/
-void process_token(char **input, t_token **token_list, t_env_cpy *env);
+void		process_token(char **input, t_token **token_list, t_env_cpy *env);
 char		*return_type(char *env);
 char		*return_path(char *env);
 /*cmd*/
@@ -103,5 +104,7 @@ void		setup_signal_handlers(void);
 void		ft_free_2darray(char **tokens);
 char		**list_to_2d(t_env_cpy *env);
 char		*get_old_path(t_env_cpy *env_cpy, char *msg);
+t_env_cpy	*cpy_env_helper(char *env);
+t_env_cpy	*add_shell(t_env_cpy *env_cpy);
 
 #endif

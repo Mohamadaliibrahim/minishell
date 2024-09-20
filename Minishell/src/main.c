@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/19 21:53:36 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/20 12:34:45 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ t_env_cpy	*history(void)
 		return (NULL);
 	pwd = getcwd(NULL, 0);
 	dest[0] = ft_strjoin("PWD=", pwd);
-	dest[1] = "SHELVL=1";
-	dest[2] = "_=/usr/bin/env";
+	dest[1] = ft_strdup("SHELVL=1");
+	dest[2] = ft_strdup("_=/usr/bin/env");
 	dest[3] = NULL;
 	free(pwd);
 	return (cpy_env(dest));
@@ -39,7 +39,7 @@ char	**define_env(char **env)
 	env_count = 0;
 	while (env[env_count])
 		env_count++;
-	dest = malloc((env_count + 2) * sizeof(char *));
+	dest = malloc((env_count + 3) * sizeof(char *));
 	if (!dest)
 		return (NULL);
 	while (env[i])
@@ -54,6 +54,8 @@ char	**define_env(char **env)
 		}
 		i++;
 	}
+	dest[i++] = ft_strdup("SHLVL=1");
+	dest[i++] = ft_strdup("_=/usr/bin/env");
 	dest[i] = NULL;
 	return (dest);
 }

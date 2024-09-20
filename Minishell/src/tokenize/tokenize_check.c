@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/19 21:42:39 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/20 12:10:42 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,8 @@ void	check(char *input, t_env_cpy *env_cpy)
 		{
 			if (token->token_type == CMND)
 				ft_cmd(token, env_cpy);
+			else if (ft_strcmp(token->tokens, "./minishell") == 0)
+				env_cpy = add_shell(env_cpy);
 			else if (token->token_type == UNKNOWN)
 				printf("%s : Command not found\n", token->tokens);
 		}
