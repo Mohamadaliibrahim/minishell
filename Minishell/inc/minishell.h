@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/20 16:08:52 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 17:22:43 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <stdbool.h>
+# include <ctype.h>
 # include <stdio.h>
 # include <signal.h>
 # include <stdlib.h>

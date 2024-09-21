@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/20 12:10:42 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 17:08:24 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,21 +88,36 @@ static int	check_for_quotations(char *input)
 void	check(char *input, t_env_cpy *env_cpy)
 {
 	t_token		*token;
+	int			i;
+	t_token		*helo;
 
 	token = NULL;
+	(void)i;
+	i = 0;
 	tokenize_input(input, &token, env_cpy);
 	if (!check_for_quotations(input))
 		printf("Syntax error\n");
 	else
 	{
+		helo = token;
+		i = 0;
+		while (helo)
+		{
+			printf("token[%d]:%s\n", i, helo->tokens);
+			helo = helo->next;
+			i++;
+		}
 		if (token)
 		{
 			if (token->token_type == CMND)
 				ft_cmd(token, env_cpy);
-			if (token->token_type == REDIRECT_OUT)
-				ft_redirection(token);
+			// if (token->token_type == REDIRECT_OUT)
+			// 	ft_redirection(token);
 			else if (token->token_type == UNKNOWN)
-				printf("%s : Command not found\n", token->tokens);
+			{
+				fprintf(stderr, "%s: Command not found\n", token->tokens);
+				env_cpy->last_exit_status = 127;
+			}
 		}
 	}
 	if (token)

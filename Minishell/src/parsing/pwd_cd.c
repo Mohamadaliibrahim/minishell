@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/19 20:53:03 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 17:23:20 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 	if (token->next && token->next->next)
 	{
 		ft_putstr_fd("cd: too many arguments\n", 2);
+		env_cpy->last_exit_status = 1;
 		return ;
 	}
 	path = get_cd_path(token, env_cpy);
@@ -104,6 +105,7 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 	if (chdir(path) == -1)
 	{
 		perror("cd");
+		env_cpy->last_exit_status = 1;
 		free(old_pwd);
 		return ;
 	}

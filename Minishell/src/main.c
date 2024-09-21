@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/20 16:12:34 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 13:16:19 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,13 @@ char	**list_to_2d(t_env_cpy *env)
 	dest[i] = NULL;
 	return (dest);
 }
+
+// t_token	**fake_globale(void)
+// {
+// 	static t_token	*helo;
+
+// 	return (&helo)
+// }
 
 int	main(int ac, char **av, char **env)
 {

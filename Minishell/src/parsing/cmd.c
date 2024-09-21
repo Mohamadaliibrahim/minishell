@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/19 21:46:32 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 17:22:53 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,62 +58,125 @@ static void	do_comand(t_token *token, t_env_cpy *env_cpy)
 	(void)cmd_path;
 	av[0] = token->tokens;
 	av[1] = NULL;
+
+	// Determine the command path
 	if (ft_strncmp(token->tokens, "/", 1) == 0
 		|| ft_strncmp(token->tokens, "./", 2) == 0
 		|| ft_strncmp(token->tokens, "../", 3) == 0)
 		cmd_path = ft_strdup(token->tokens);
 	else
 		cmd_path = find_in_path(token->tokens, env_cpy); 
+	
 	if (!cmd_path)
 	{
-		perror("Command not found");
+		perror(token->tokens);
+		env_cpy->last_exit_status = 127;  // Set exit status to 127 for command not found
 		// Free the env array and its contents
-		for (i = 0; env[i]; i++)
+		i = 0;
+		while (env[i])
+		{
 			free(env[i]);
+			i++;
+		}
 		free(env);
-		return ;
+		return;
 	}
+
+	// Fork the process to execute the command
 	pid = fork();
 	if (pid == 0)
 	{
 		if (execve(cmd_path, av, env) == -1)
+		{
 			perror("Execution error");
-		// Free the env array and its contents before exiting the child process
-		for (i = 0; env[i]; i++)
-			free(env[i]);
-		free(env);
-		free(cmd_path);
-		exit(EXIT_FAILURE);
+			// Free the env array and its contents before exiting the child process
+			i = 0;
+			while (env[i])
+			{
+				free(env[i]);
+				i++;
+			}
+			free(env);
+			free(cmd_path);
+			exit(EXIT_FAILURE);
+		}
 	}
 	else if (pid)
+	{
 		waitpid(pid, &status, 0);
+		// Update last_exit_status based on the execution result
+		if (WIFEXITED(status))
+			env_cpy->last_exit_status = status >> 8;  // Update with the child's exit status
+
+		if (env_cpy->last_exit_status == 0)  // Reset to 0 if the command was successful
+			env_cpy->last_exit_status = 0;
+	}
+
 	free(cmd_path);
 	// Free the env array and its contents in the parent process
-	for (i = 0; env[i]; i++)
+	i = 0;
+	while (env[i])
+	{
 		free(env[i]);
+		i++;
+	}
 	free(env);
 }
 
 
+t_env_cpy	*ft_exit(t_token *token, t_env_cpy *env)
+{
+	int	a;
+
+	a = ft_atoi(token->next->tokens);
+	if (token->next && (a) != 0)
+		env->last_exit_status = a;
+	else if (token->next)
+		env->last_exit_status = 2;
+	else
+		env->last_exit_status = 0;
+	exit(env->last_exit_status);
+	return (env);
+}
+
 void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 {
 	if ((ft_strcmp(token->tokens, "echo") == 0))
+	{
 		check_echo(token, env_cpy);
+		env_cpy->last_exit_status = 0;
+	}
 	else if ((ft_strcmp(token->tokens, "pwd") == 0))
+	{
 		ft_pwd();
+		env_cpy->last_exit_status = 0;
+	}
 	else if ((ft_strcmp(token->tokens, "env") == 0))
+	{
 		ft_env(token, env_cpy);
+		env_cpy->last_exit_status = 0;
+	}
 	else if ((ft_strcmp(token->tokens, "export") == 0))
+	{
 		ft_export(token, env_cpy);
+		env_cpy->last_exit_status = 0;
+	}
 	else if ((ft_strcmp(token->tokens, "unset") == 0))
+	{
 		ft_unset(token, env_cpy);
+		env_cpy->last_exit_status = 0;
+	}
 	else if ((ft_strcmp(token->tokens, "cd") == 0))
+	{
 		ft_cd(token, env_cpy);
+		env_cpy->last_exit_status = 0;
+	}
 	else if ((ft_strcmp(token->tokens, "exit") == 0))
 	{
 		printf("exit\n");
-		exit(0);
+		ft_exit(token, env_cpy);
 	}
 	else
 		do_comand(token, env_cpy);
 }
+

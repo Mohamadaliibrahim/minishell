@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/19 21:41:51 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 12:48:06 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,23 @@ static void handle_dollar_invalid(char **input, char **token)
     }
 }
 
+void handle_dollar_question(char **input, char **token, int last_exit_status)
+{
+    char *status_str;
+
+    // Convert last_exit_status to a string
+    status_str = ft_itoa(last_exit_status);
+
+    // Append the status string to the current token
+    *token = ft_strjoin_free(*token, status_str);
+
+    // Move the input pointer past the "$?"
+    *input += 2;
+
+    free(status_str);
+}
+
+
 void process_token(char **input, t_token **token_list, t_env_cpy *env)
 {
     char *token;
@@ -155,7 +172,16 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env)
                 return;
             }
         }
-        else if (ft_strncmp(*input, "$\"", 2) == 0)
+        while (**input && **input != ' ')
+        {
+           if (ft_strncmp(*input, "$?", 2) == 0) {
+               handle_dollar_question(input, &token, env->last_exit_status);  // Handle $?
+           }
+           else {
+               handle_unquoted(input, &token);  // Handle other characters
+           }
+        }
+        if (ft_strncmp(*input, "$\"", 2) == 0)
             handle_quote(input, &token);
         else if (ft_strncmp(*input, "$\'", 2) == 0)
             handle_quote(input, &token);
