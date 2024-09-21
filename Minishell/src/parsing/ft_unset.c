@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/21 17:23:26 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 17:58:28 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,10 @@ void	ft_unset(t_token *token, t_env_cpy *env_cpy)
 	char	*type;
 
 	if (!token->next)
+	{
+		env_cpy->last_exit_status = 0;
 		return ;
+	}
 	token = token->next;
 	while (token)
 	{
@@ -56,4 +59,5 @@ void	ft_unset(t_token *token, t_env_cpy *env_cpy)
 		}
 		token = token->next;
 	}
+	env_cpy->last_exit_status = 0;
 }

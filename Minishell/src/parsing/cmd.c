@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/21 17:22:53 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 19:59:45 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,81 +47,89 @@ char	*find_in_path(char *cmd, t_env_cpy *env)
 
 static void	do_comand(t_token *token, t_env_cpy *env_cpy)
 {
-	int		pid;
-	int		status;
-	char	*av[2];
-	char	*cmd_path;
-	char	**env;
-	int		i;
+    int		pid;
+    int		status;
+    char	*av[2];
+    char	*cmd_path;
+    char	**env;
+    void    (*prev_sigint_handler)(int);
 
-	env = list_to_2d(env_cpy);
-	(void)cmd_path;
-	av[0] = token->tokens;
-	av[1] = NULL;
+    env = list_to_2d(env_cpy);
+    av[0] = token->tokens;
+    av[1] = NULL;
 
-	// Determine the command path
-	if (ft_strncmp(token->tokens, "/", 1) == 0
-		|| ft_strncmp(token->tokens, "./", 2) == 0
-		|| ft_strncmp(token->tokens, "../", 3) == 0)
-		cmd_path = ft_strdup(token->tokens);
-	else
-		cmd_path = find_in_path(token->tokens, env_cpy); 
-	
-	if (!cmd_path)
-	{
-		perror(token->tokens);
-		env_cpy->last_exit_status = 127;  // Set exit status to 127 for command not found
-		// Free the env array and its contents
-		i = 0;
-		while (env[i])
-		{
-			free(env[i]);
-			i++;
-		}
-		free(env);
-		return;
-	}
+    // Determine the command path
+    if (ft_strncmp(token->tokens, "/", 1) == 0
+        || ft_strncmp(token->tokens, "./", 2) == 0
+        || ft_strncmp(token->tokens, "../", 3) == 0)
+        cmd_path = ft_strdup(token->tokens);
+    else
+        cmd_path = find_in_path(token->tokens, env_cpy); 
+    
+    if (!cmd_path)
+    {
+        fprintf(stderr, "%s: command not found\n", token->tokens);
+        env_cpy->last_exit_status = 127;  // Command not found
+        ft_free_2darray(env);
+        return;
+    }
 
-	// Fork the process to execute the command
-	pid = fork();
-	if (pid == 0)
-	{
-		if (execve(cmd_path, av, env) == -1)
-		{
-			perror("Execution error");
-			// Free the env array and its contents before exiting the child process
-			i = 0;
-			while (env[i])
-			{
-				free(env[i]);
-				i++;
-			}
-			free(env);
-			free(cmd_path);
-			exit(EXIT_FAILURE);
-		}
-	}
-	else if (pid)
-	{
-		waitpid(pid, &status, 0);
-		// Update last_exit_status based on the execution result
-		if (WIFEXITED(status))
-			env_cpy->last_exit_status = status >> 8;  // Update with the child's exit status
+    // Fork the process to execute the command
+    pid = fork();
+    if (pid == 0)
+    {
+        // In child process
 
-		if (env_cpy->last_exit_status == 0)  // Reset to 0 if the command was successful
-			env_cpy->last_exit_status = 0;
-	}
+        // Reset signal handlers to default in the child process
+        signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
 
-	free(cmd_path);
-	// Free the env array and its contents in the parent process
-	i = 0;
-	while (env[i])
-	{
-		free(env[i]);
-		i++;
-	}
-	free(env);
+        if (execve(cmd_path, av, env) == -1)
+        {
+            perror("Execution error");
+            ft_free_2darray(env);
+            free(cmd_path);
+            exit(EXIT_FAILURE);
+        }
+    }
+    else if (pid > 0)
+    {
+        // In parent process
+
+        // Ignore SIGINT in the parent process while the child is running
+        prev_sigint_handler = signal(SIGINT, SIG_IGN);
+
+        // Wait for the child process to finish
+        waitpid(pid, &status, 0);
+
+        // Restore the original SIGINT handler
+        signal(SIGINT, prev_sigint_handler);
+
+        // Handle exit status
+        if (WIFEXITED(status))
+            env_cpy->last_exit_status = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+        {
+            int sig = WTERMSIG(status);
+            env_cpy->last_exit_status = 128 + sig;
+
+            // Optionally print a message for certain signals
+            if (sig == SIGINT)
+                write(1, "\n", 1);
+            else if (sig == SIGQUIT)
+                write(1, "Quit: 3\n", 8);
+        }
+    }
+    else
+    {
+        perror("fork");
+        env_cpy->last_exit_status = 1;
+    }
+
+    free(cmd_path);
+    ft_free_2darray(env);
 }
+
 
 
 t_env_cpy	*ft_exit(t_token *token, t_env_cpy *env)
@@ -142,35 +150,20 @@ t_env_cpy	*ft_exit(t_token *token, t_env_cpy *env)
 void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 {
 	if ((ft_strcmp(token->tokens, "echo") == 0))
-	{
 		check_echo(token, env_cpy);
-		env_cpy->last_exit_status = 0;
-	}
 	else if ((ft_strcmp(token->tokens, "pwd") == 0))
 	{
-		ft_pwd();
 		env_cpy->last_exit_status = 0;
+		ft_pwd();
 	}
 	else if ((ft_strcmp(token->tokens, "env") == 0))
-	{
 		ft_env(token, env_cpy);
-		env_cpy->last_exit_status = 0;
-	}
 	else if ((ft_strcmp(token->tokens, "export") == 0))
-	{
 		ft_export(token, env_cpy);
-		env_cpy->last_exit_status = 0;
-	}
 	else if ((ft_strcmp(token->tokens, "unset") == 0))
-	{
 		ft_unset(token, env_cpy);
-		env_cpy->last_exit_status = 0;
-	}
 	else if ((ft_strcmp(token->tokens, "cd") == 0))
-	{
 		ft_cd(token, env_cpy);
-		env_cpy->last_exit_status = 0;
-	}
 	else if ((ft_strcmp(token->tokens, "exit") == 0))
 	{
 		printf("exit\n");

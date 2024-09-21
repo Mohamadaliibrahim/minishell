@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/21 17:22:43 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 19:51:59 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ typedef struct s_env_cpy
 }					t_env_cpy;
 
 /*Global valriable*/
-extern	volatile	sig_atomic_t g_shell_status;
+extern volatile sig_atomic_t g_last_signal;
 
 /*tokenize*/
 void		add_token(t_token **head, char *input, t_env_cpy *env);
@@ -110,5 +110,7 @@ char		**list_to_2d(t_env_cpy *env);
 char		*get_old_path(t_env_cpy *env_cpy, char *msg);
 t_env_cpy	*cpy_env_helper(char *env);
 t_env_cpy	*add_shell(t_env_cpy *env_cpy);
+
+void		handle_sigint(int sig);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/21 17:23:43 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 17:58:17 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,14 @@ int	check_ex(char *str)
 
 void	ft_export(t_token *token, t_env_cpy *env_cpy)
 {
+	int	flag;
+
+	flag = 0;
 	if (!token->next)
+	{
+		env_cpy->last_exit_status = 0;
 		print_sorted(env_cpy);
+	}
 	else
 	{
 		token = token->next;
@@ -92,6 +98,7 @@ void	ft_export(t_token *token, t_env_cpy *env_cpy)
 					env_cpy = fill_token(env_cpy, token->tokens);
 				else
 				{
+					flag = 1;
 					printf("bash: export: `%s': not a valid identifier\n",
 						token->tokens);
 					env_cpy->last_exit_status = 127;
@@ -100,4 +107,6 @@ void	ft_export(t_token *token, t_env_cpy *env_cpy)
 			token = token->next;
 		}
 	}
+	if (flag == 0)
+		env_cpy->last_exit_status = 0;
 }

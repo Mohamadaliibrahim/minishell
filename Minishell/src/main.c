@@ -6,13 +6,11 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/21 13:16:19 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/21 19:44:44 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
-
-volatile sig_atomic_t g_shell_status = 0;
 
 t_env_cpy	*history(void)
 {
@@ -140,6 +138,11 @@ int	main(int ac, char **av, char **env)
 		}
 		if (*input)
 			add_history(input);
+		if (g_last_signal != 0)
+		{
+			env_cpy->last_exit_status = 128 + g_last_signal;
+			g_last_signal = 0;
+		}
 		check(input, env_cpy);
 		free(input);
 	}
