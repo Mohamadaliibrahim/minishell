@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/22 13:03:49 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/22 22:36:24 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,18 +56,22 @@ typedef struct s_env_cpy
 	char				*type;
 	bool				equal;
 	int					last_exit_status;
+	int					last_fd;
 	struct s_env_cpy	*next;
 	struct s_env_cpy	*previous;
 }					t_env_cpy;
 
 /*Global valriable*/
-extern volatile sig_atomic_t g_last_signal;
+extern volatile	sig_atomic_t g_last_signal;
 
 /*execution*/
 void		do_comand(t_token *token, t_env_cpy *env_cpy);
-
+/*redirection*/
+void		check_redirections(t_token *token, t_env_cpy *env);
+void		ft_redirection(t_token *token, t_env_cpy *env);
+int			search_for_redirection(t_token *token1);
 /*tokenize*/
-void	add_token(t_token **head, char *input, t_env_cpy *env, char qoute);
+void		add_token(t_token **head, char *input, t_env_cpy *env, char qoute);
 char		*extract_quoted_token(char **input, char quote_type);
 void		tokenize_input(char *input, t_token **token_list, t_env_cpy *env, int *flag);
 t_env_cpy	*cpy_env(char **env);
@@ -76,7 +80,7 @@ t_env_cpy	*update_env(t_env_cpy *env);
 int			check_type(char *token, t_env_cpy *env);
 void		check(char *input, t_env_cpy *env_cpy);
 /*tokenize_tools*/
-void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
+void		process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
 char		*return_type(char *env);
 char		*return_path(char *env);
 /*cmd*/

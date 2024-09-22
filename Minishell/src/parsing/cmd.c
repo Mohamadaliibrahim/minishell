@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/22 10:53:07 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/22 22:20:50 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,13 @@ t_env_cpy	*ft_exit(t_token *token, t_env_cpy *env)
 
 void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 {
-	if ((ft_strcmp(token->tokens, "echo") == 0))
+	if (token == NULL || token->tokens == NULL)
+	{
+		fprintf(stderr, "Error: Invalid token\n");
+		env_cpy->last_exit_status = 1;
+		return ;
+	}
+	else if ((ft_strcmp(token->tokens, "echo") == 0))
 		check_echo(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "pwd") == 0))
 	{
