@@ -6,13 +6,13 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/19 21:42:23 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/22 13:01:06 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-static t_token	*new_token(char *input, t_env_cpy *env)
+static t_token	*new_token(char *input, t_env_cpy *env, char qoute_type)
 {
 	t_token	*new_node;
 
@@ -22,16 +22,17 @@ static t_token	*new_token(char *input, t_env_cpy *env)
 	new_node->tokens = ft_strdup(input);
 	new_node->next = NULL;
 	new_node->token_type = check_type(input, env);
+	new_node->qoute_type = qoute_type;
 	new_node->previous = NULL;
 	return (new_node);
 }
 
-void	add_token(t_token **head, char *input, t_env_cpy *env)
+void	add_token(t_token **head, char *input, t_env_cpy *env, char qoute)
 {
 	t_token	*new_node;
 	t_token	*tmp;
 
-	new_node = new_token(input, env);
+	new_node = new_token(input, env, qoute);
 	if (!new_node)
 		return ;
 	if (!*head)
@@ -65,13 +66,16 @@ char	*extract_quoted_token(char **input, char quote_type)
 	return (NULL);
 }
 
-void	tokenize_input(char *input, t_token **token_list, t_env_cpy *env)
+void	tokenize_input(char *input, t_token **token_list, t_env_cpy *env,
+		int *flag)
 {
 	while (*input)
 	{
 		while (*input == ' ')
 			input++;
 		if (*input)
-			process_token(&input, token_list, env);
+			process_token(&input, token_list, env, flag);
+		if (*flag)
+			break ;
 	}
 }

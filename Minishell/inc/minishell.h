@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/21 19:51:59 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/22 13:03:49 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct s_token
 {
 	char			*tokens;
 	int				token_type;
+	char			qoute_type;
 	struct s_token	*next;
 	struct s_token	*previous;
 }					t_token;
@@ -62,17 +63,20 @@ typedef struct s_env_cpy
 /*Global valriable*/
 extern volatile sig_atomic_t g_last_signal;
 
+/*execution*/
+void		do_comand(t_token *token, t_env_cpy *env_cpy);
+
 /*tokenize*/
-void		add_token(t_token **head, char *input, t_env_cpy *env);
+void	add_token(t_token **head, char *input, t_env_cpy *env, char qoute);
 char		*extract_quoted_token(char **input, char quote_type);
-void		tokenize_input(char *input, t_token **token_list, t_env_cpy *env);
+void		tokenize_input(char *input, t_token **token_list, t_env_cpy *env, int *flag);
 t_env_cpy	*cpy_env(char **env);
 t_env_cpy	*update_env(t_env_cpy *env);
 /*tokenize_check*/
 int			check_type(char *token, t_env_cpy *env);
 void		check(char *input, t_env_cpy *env_cpy);
 /*tokenize_tools*/
-void		process_token(char **input, t_token **token_list, t_env_cpy *env);
+void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
 char		*return_type(char *env);
 char		*return_path(char *env);
 /*cmd*/

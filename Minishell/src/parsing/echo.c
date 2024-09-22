@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:35 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/21 17:52:51 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/22 13:08:09 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	check_echo(t_token *token, t_env_cpy *env_list)
 {
 	bool	n;
 	int		first;
-	char	*expanded_token;
+	char	*output;
 
 	if (!token->next)
 	{
@@ -55,13 +55,21 @@ void	check_echo(t_token *token, t_env_cpy *env_list)
 	{
 		if (!first)
 			printf(" ");
-		expanded_token = expand_token_if_variable(token->tokens, env_list);
-		printf("%s", expanded_token);
+		if (token->qoute_type == '\'')
+		{
+			output = ft_strdup(token->tokens);
+		}
+		else // Other cases: expand variables
+		{
+			output = expand_token_if_variable(token->tokens, env_list);
+		}
+		printf("%s", output);
 		first = 0;
-		free(expanded_token);
+		free(output);
 		token = token->next;
 	}
 	if (!n)
 		printf("\n");
 	env_list->last_exit_status = 0;
 }
+
