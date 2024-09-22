@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_tools.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/22 13:05:24 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/22 14:52:47 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,28 +216,14 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
                 return;
             }
         }
-        else if (**input == '\\' && *(*input + 1) == '$')
-        {
-            // Handle backslash followed by dollar sign
-            handle_backslash(input, &token);  
-        }
         else if (**input == '\\')
-        {
-            // Handle backslash
             handle_backslash(input, &token);  
-        }
         else if (**input == '$' && *(*input + 1) >= '0' && *(*input + 1) <= '9')  // Handle $ followed by numbers
-        {
             handle_dollar_invalid(input, &token);
-        }
         else if (**input == '$' && *(*input + 1) == '=')  // Handle $ followed by '='
-        {
             handle_dollar_invalid(input, &token);
-        }
         else if (**input == '$' && *(*input + 1) == '?')  // Handle $?
-        {
             handle_dollar_question(input, &token, env->last_exit_status);
-        }
         else if (**input == '"' || **input == '\'')
         {
             if (!handle_quote(input, &token, &quote_type))
@@ -246,11 +232,12 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
                 return;
             }
         }
+        else if (ft_strncmp(*input, "$\"", 2) == 0)
+            handle_quote(input, &token, &quote_type);
+        else if (ft_strncmp(*input, "$\'", 2) == 0)
+            handle_quote(input, &token, &quote_type);
         else
-        {
-            // Handle unquoted characters
             handle_unquoted(input, &token);
-        }
     }
     if (ft_strlen(token) > 0 && *error_flag == 0)
     {

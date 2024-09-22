@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:24:44 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/18 12:40:21 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/22 14:55:09 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,12 +109,8 @@ char	*expand_token_if_variable(char *token, t_env_cpy *env_list)
 	{
 		if (token[i] == '$' && token[i + 1] == '\0')
 			printf("$");
-		if (token[i] == '"' && token[i + 1] == '$')
-			printf("$");
-		if (token[i] == '$' && token[i + 1] == '$')
+		else if (token[i] == '$' && token[i + 1] == '$')
 			result = handle_double_dollar(result), i += 2;
-		else if (token[i] == '$' && token[i + 1] == '"')
-			result = handle_double_quote(token, result, &i);
 		else if (token[i] == '$')
 			result = expand_variable(token, &i, env_list, result);
 		else
