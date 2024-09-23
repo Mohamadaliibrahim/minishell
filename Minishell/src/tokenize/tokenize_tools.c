@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/23 12:12:37 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/23 13:09:48 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,8 @@ static void handle_backslash(char **input, char **token)
 {
     while (**input && **input != ' ')  // Append characters following the literal $ (e.g., HOME)
     {
-        if (**input == '\\')
-            (*input)++;
-        else if (**input != '\\')
-        {
-            *token = append_char(*token, **input);
-            (*input)++;
-        }
+        *token = append_char(*token, **input);
+        (*input)++;
     }
 }
 

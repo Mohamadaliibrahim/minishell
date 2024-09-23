@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:24:44 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/23 12:12:17 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/23 13:09:36 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,16 @@ char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
     // Check if the first character after $ is not alphanumeric or '_'
     if (!ft_isalnum(var_name[0]) && var_name[0] != '_')
     {
-        // Handle cases like $=HOME by treating the whole thing as a literal string
         temp = ft_strjoin(result, "$");
-        temp = ft_strjoin(temp, var_name);
-        free(result);
-
-        // Move index past the entire sequence
+        if (temp)
+        {
+            char *temp2 = ft_strjoin(temp, var_name);
+            free(temp);
+            free(result);
+            result = temp2;
+        }
         *i += 1 + ft_strlen(var_name);
-        return temp;
+        return result;
     }
 
     // Handle cases where the variable starts with a digit, such as $9HOME
@@ -73,32 +75,39 @@ char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
         while (var_name[var_len] && (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_'))
             var_len++;
 
-        temp = ft_strjoin(result, ft_substr(var_name, 0, var_len));
-        free(result);
+        char *substr = ft_substr(var_name, 0, var_len);
+        if (substr)
+        {
+            temp = ft_strjoin(result, substr);
+            free(substr);
+            free(result);
+            result = temp;
+        }
         *i += var_len;
-        return temp;
+        return result;
     }
+
     // Normal expansion process for other variables
     var_len = 0;
     while (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_')
-	{
+    {
         var_len++;
-	}
+    }
 
-	if (ft_strncmp(var_name, "UID", var_len) == 0 && var_len == 3)
-	{
-		result = ft_strjoin(result, "1000");
-		(*i) += var_len + 1;
-		return (result);
-	}
+    if (ft_strncmp(var_name, "UID", var_len) == 0 && var_len == 3)
+    {
+        result = ft_strjoin(result, "1000");
+        (*i) += var_len + 1;
+        return result;
+    }
+
     char *substr = ft_substr(var_name, 0, var_len);
     env_value = get_env_value(substr, env_list);
     free(substr);
 
-    // Ensure env_value is valid and properly terminated
     if (!env_value)
     {
-        env_value = ft_strdup("");  // Create an empty string to handle cases where the env variable is not found
+        env_value = ft_strdup("");  // Handle cases where the env variable is not found
     }
     else
     {
@@ -107,11 +116,12 @@ char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
 
     temp = ft_strjoin(result, env_value);
     free(result);
-    free(env_value);  // Free the duplicated string
+    free(env_value);
 
-    *i += var_len + 1;  // Move index past the variable name
+    *i += var_len + 1;
     return temp;
 }
+
 
 
 // Handle $$ expansion (PID)
