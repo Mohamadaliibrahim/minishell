@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/22 22:21:18 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/23 15:23:25 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,6 @@ static int	check_for_quotations(char *input)
 	double_quote_open = 0;
 	while (input[i])
 	{
-		if (input[i] == '\\' && !single_quote_open)
-			i += 2;
 		if (input[i] == '"' && !single_quote_open)
 			double_quote_open = !double_quote_open;
 		else if (input[i] == '\'' && !double_quote_open)
@@ -103,7 +101,6 @@ void	check(char *input, t_env_cpy *env_cpy)
 	i = 0;
 	while (current)
 	{
-		printf("token[%d]:%s\n", i, current->tokens);
 		current = current->next;
 		i++;
 	}

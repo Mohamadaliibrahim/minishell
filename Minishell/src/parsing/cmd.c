@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/23 15:43:36 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/22 22:20:50 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,23 +46,10 @@ char	*find_in_path(char *cmd, t_env_cpy *env)
 }
 
 
-void	cleanup(t_token *token, t_env_cpy *env_cpy)
-{
-    // Free the token list
-    free_token_list(token);
-    
-    // Free the environment list
-    free_env_list(env_cpy);
-    
-    // Free readline history
-    clear_history();
-    rl_clear_history();
-    rl_free_line_state();
-}
 
 
 
-void	ft_exit(t_token *token, t_env_cpy *env)
+t_env_cpy	*ft_exit(t_token *token, t_env_cpy *env)
 {
 	int	a;
 
@@ -73,8 +60,8 @@ void	ft_exit(t_token *token, t_env_cpy *env)
 		env->last_exit_status = 2;
 	else
 		env->last_exit_status = 0;
-	cleanup(token, env);
 	exit(env->last_exit_status);
+	return (env);
 }
 
 void	ft_cmd(t_token *token, t_env_cpy *env_cpy)

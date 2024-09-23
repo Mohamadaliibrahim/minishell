@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:03:44 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/23 15:37:12 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/22 22:37:23 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,6 @@ t_env_cpy	*add_shell(t_env_cpy *env_cpy)
 {
 	t_env_cpy	*head;
 	int				x;
-	t_env_cpy	*new_node;
 
 	x = 0;
 	head = env_cpy;
@@ -135,50 +134,31 @@ t_env_cpy	*add_shell(t_env_cpy *env_cpy)
 			env_cpy->env = ft_itoa((int)x);
 			if (!env_cpy->env)
 			{
-				perror("Memory allocation error");
+				perror("MEmory allocation error");
 				exit(EXIT_FAILURE);
 			}
 			return (head);
 		}
 		env_cpy = env_cpy->next;
 	}
-	
-	// Create a new SHLVL node if not found
+		t_env_cpy	*new_node;
+
 	new_node = malloc(sizeof(t_env_cpy));
 	if (!new_node)
 	{
 		perror("Memory allocation error");
 		exit(EXIT_FAILURE);
 	}
-	
 	new_node->type = ft_strdup("SHLVL");
-	if (!new_node->type)
-	{
-		perror("Memory allocation error");
-		free(new_node);
-		exit(EXIT_FAILURE);
-	}
-	
-	new_node->env = ft_strdup("1");
-	if (!new_node->env)
-	{
-		perror("Memory allocation error");
-		free(new_node->type);
-		free(new_node);
-		exit(EXIT_FAILURE);
-	}
-	
-	new_node->equal = true;
-	new_node->next = head;
-	new_node->previous = NULL;
-	
+    new_node->env = ft_strdup("1");
+    new_node->equal = true;
+    new_node->next = head;
+    new_node->previous = NULL;
 	if (head)
-		head->previous = new_node;
-	
+		head->previous = NULL;
+	return (new_node);
 	return (new_node);
 }
-
-
 
 t_env_cpy	*cpy_env_helper(char *env)
 {
@@ -187,22 +167,8 @@ t_env_cpy	*cpy_env_helper(char *env)
 	cpy = malloc(sizeof(t_env_cpy));
 	if (!cpy)
 		return (NULL);
-	
 	cpy->env = return_path(env);
-	if (!cpy->env)
-	{
-		free(cpy);
-		return (NULL);
-	}
-	
 	cpy->type = return_type(env);
-	if (!cpy->type)
-	{
-		free(cpy->env);
-		free(cpy);
-		return (NULL);
-	}
-	
 	cpy->equal = check_for_equal(env);
 	cpy->next = NULL;
 	cpy->previous = NULL;
@@ -224,10 +190,7 @@ t_env_cpy	*cpy_env(char **env)
 	{
 		new_node = cpy_env_helper(env[i]);
 		if (!new_node)
-		{
-			free_env_list(head);
 			return (NULL);
-		}
 		if (!head)
 		{
 			head = new_node;

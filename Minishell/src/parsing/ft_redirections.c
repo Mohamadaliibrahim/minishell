@@ -136,8 +136,7 @@ void	ft_infile(t_token *token, t_env_cpy *env)
 	file_name = get_filename(token);
 	if (!file_name)
 	{
-		fprintf(stderr,
-			"Syntax error: redirection operator without a filename\n");
+		perror("filename");
 		env->last_exit_status = 2;
 		return ;
 	}
@@ -176,7 +175,7 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		env->last_exit_status = 1;
 		return ;
 	}
-	while (token && env->last_exit_status == 0)
+	while (token)
 	{
 		if (token->token_type == REDIRECT_OUT)
 			ft_trunck(token, env);
@@ -211,8 +210,7 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		}
 		close(env->last_output_fd);
 	}
-	if (env->last_exit_status == 0)
-		ft_cmd(head, env);
+	ft_cmd(head, env);
 	if (dup2(stdout_backup, STDOUT_FILENO) == -1)
 	{
 		perror("dup2");

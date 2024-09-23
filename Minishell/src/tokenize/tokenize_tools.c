@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/23 13:09:48 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/23 16:03:36 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,47 @@ void handle_dollar_question(char **input, char **token, int last_exit_status)
     free(status_str);
 }
 
+void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
+{
+    char *delimiter;
+    char *line;
+    int heredoc_fd;
+    char *heredoc_file = "/tmp/minishell_heredoc.tmp";
+
+    // Extract the delimiter following the `<<` operator
+    while (**input && **input == ' ')
+        (*input)++;
+    delimiter = ft_strndup(*input, ft_strlen(*input));
+
+    // Open a temporary file to store heredoc content
+    heredoc_fd = open(heredoc_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+    if (heredoc_fd < 0)
+    {
+        perror("minishell: heredoc");
+        *error_flag = 1;
+        free(delimiter);
+        return;
+    }
+
+    // Read lines from the user until the delimiter is encountered
+    while (1)
+    {
+        line = readline("> ");
+        if (!line || ft_strcmp(line, delimiter) == 0)
+            break;
+        write(heredoc_fd, line, ft_strlen(line));
+        write(heredoc_fd, "\n", 1);
+        free(line);
+    }
+    close(heredoc_fd);
+    free(line);
+    free(delimiter);
+
+    // Replace the heredoc token with the temporary file name
+    add_token(token_list, ft_strdup(heredoc_file), env, 0);
+}
+
+
 void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
     char *redirection_token = NULL;
@@ -139,6 +180,12 @@ void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int 
             *error_flag = 1;  // Set error flag
             return;
         }
+        else if (count == 2 && current_char == '<')
+        {
+            // Handle heredoc `<<`
+            handle_heredoc(input, token_list, env, error_flag);
+            return;
+        }
         else if (count == 1)
         {
             // Single-character redirection operator
@@ -157,6 +204,7 @@ void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int 
         }
     }
 }
+
 
 void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
