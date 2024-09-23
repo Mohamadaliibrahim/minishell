@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/23 16:03:36 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/23 18:41:07 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,10 @@ void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *err
     // Extract the delimiter following the `<<` operator
     while (**input && **input == ' ')
         (*input)++;
+    
     delimiter = ft_strndup(*input, ft_strlen(*input));
+    while (**input && **input != ' ' && **input != '<' && **input != '>')
+        (*input)++;
 
     // Open a temporary file to store heredoc content
     heredoc_fd = open(heredoc_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
@@ -152,10 +155,9 @@ void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *err
     free(line);
     free(delimiter);
 
-    // Replace the heredoc token with the temporary file name
-    add_token(token_list, ft_strdup(heredoc_file), env, 0);
+    // Add the temporary file name as a token to be used by commands like `cat`
+    add_token(token_list, ft_strdup(heredoc_file), env, HEREDOC);
 }
-
 
 void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
@@ -204,7 +206,6 @@ void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int 
         }
     }
 }
-
 
 void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
