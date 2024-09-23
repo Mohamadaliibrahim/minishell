@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/21 19:44:44 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/23 15:42:35 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ int	main(int ac, char **av, char **env)
 		if (input == NULL)
 		{
 			printf("exit\n");
+			cleanup(NULL, env_cpy);
 			exit(0);
 		}
 		if (*input)

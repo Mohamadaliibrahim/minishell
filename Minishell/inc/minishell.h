@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/23 10:57:04 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/23 15:42:51 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ char		**list_to_2d(t_env_cpy *env);
 char		*get_old_path(t_env_cpy *env_cpy, char *msg);
 t_env_cpy	*cpy_env_helper(char *env);
 t_env_cpy	*add_shell(t_env_cpy *env_cpy);
-
+void		cleanup(t_token *token, t_env_cpy *env_cpy);
 void		handle_sigint(int sig);
 
 #endif
