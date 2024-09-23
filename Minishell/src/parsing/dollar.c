@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:24:44 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/22 14:55:09 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/23 12:12:17 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,34 +41,78 @@ char	*get_env_value(char *var_name, t_env_cpy *env_list)
 }
 
 // Expand environment variable
-char	*expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
+char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
 {
-	char	*var_name;
-	int		var_len;
-	char	*env_value;
-	char	*temp;
-	char	*substr;
+    char *var_name;
+    int var_len;
+    char *env_value;
+    char *temp;
 
-	var_name = token + (*i) + 1;
-	var_len = 0;
-	while (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_')
-		var_len++;
+    var_name = token + (*i) + 1;
+
+    // Check if the first character after $ is not alphanumeric or '_'
+    if (!ft_isalnum(var_name[0]) && var_name[0] != '_')
+    {
+        // Handle cases like $=HOME by treating the whole thing as a literal string
+        temp = ft_strjoin(result, "$");
+        temp = ft_strjoin(temp, var_name);
+        free(result);
+
+        // Move index past the entire sequence
+        *i += 1 + ft_strlen(var_name);
+        return temp;
+    }
+
+    // Handle cases where the variable starts with a digit, such as $9HOME
+    if (ft_isdigit(var_name[0]))
+    {
+        var_name += 1;
+        *i += 2; // Skip $ and the digit
+
+        var_len = 0;
+        while (var_name[var_len] && (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_'))
+            var_len++;
+
+        temp = ft_strjoin(result, ft_substr(var_name, 0, var_len));
+        free(result);
+        *i += var_len;
+        return temp;
+    }
+    // Normal expansion process for other variables
+    var_len = 0;
+    while (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_')
+	{
+        var_len++;
+	}
+
 	if (ft_strncmp(var_name, "UID", var_len) == 0 && var_len == 3)
 	{
 		result = ft_strjoin(result, "1000");
 		(*i) += var_len + 1;
 		return (result);
 	}
-	substr = ft_substr(var_name, 0, var_len);
-	env_value = get_env_value(substr, env_list);
-	free(substr);
-	if (!env_value)
-		env_value = "";
-	temp = ft_strjoin(result, env_value);
-	free(result);
-	*i += var_len + 1;
-	return (temp);
+    char *substr = ft_substr(var_name, 0, var_len);
+    env_value = get_env_value(substr, env_list);
+    free(substr);
+
+    // Ensure env_value is valid and properly terminated
+    if (!env_value)
+    {
+        env_value = ft_strdup("");  // Create an empty string to handle cases where the env variable is not found
+    }
+    else
+    {
+        env_value = ft_strdup(env_value);  // Create a copy to avoid modifying the original string
+    }
+
+    temp = ft_strjoin(result, env_value);
+    free(result);
+    free(env_value);  // Free the duplicated string
+
+    *i += var_len + 1;  // Move index past the variable name
+    return temp;
 }
+
 
 // Handle $$ expansion (PID)
 char	*handle_double_dollar(char *result)
@@ -83,19 +127,6 @@ char	*handle_double_dollar(char *result)
 	return (temp);
 }
 
-// Handle $"VARIABLE" expansion
-char	*handle_double_quote(char *token, char *result, int *i)
-{
-	(*i) += 2;
-	while (token[*i] && token[*i] != '"')
-	{
-		result = append_char(result, token[*i]);
-		(*i)++;
-	}
-	if (token[*i] == '"')
-		(*i)++;
-	return (result);
-}
 
 // Main function to expand tokens
 char	*expand_token_if_variable(char *token, t_env_cpy *env_list)
@@ -107,9 +138,7 @@ char	*expand_token_if_variable(char *token, t_env_cpy *env_list)
 	result = ft_strdup("");
 	while (token[i])
 	{
-		if (token[i] == '$' && token[i + 1] == '\0')
-			printf("$");
-		else if (token[i] == '$' && token[i + 1] == '$')
+		if (token[i] == '$' && token[i + 1] == '$')
 			result = handle_double_dollar(result), i += 2;
 		else if (token[i] == '$')
 			result = expand_variable(token, &i, env_list, result);

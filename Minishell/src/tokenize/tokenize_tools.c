@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/22 14:52:47 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/23 12:12:37 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,20 +71,15 @@ static void	handle_unquoted(char **input, char **token)
 
 static void handle_backslash(char **input, char **token)
 {
-    (*input)++;  // Skip the backslash
-    if (**input == '$')  // If it's a literal dollar sign, treat it as part of the token
+    while (**input && **input != ' ')  // Append characters following the literal $ (e.g., HOME)
     {
-        (*input)++;  // Move past the dollar sign
-        while (**input && **input != ' ')  // Append characters following the literal $ (e.g., HOME)
+        if (**input == '\\')
+            (*input)++;
+        else if (**input != '\\')
         {
             *token = append_char(*token, **input);
             (*input)++;
         }
-    }
-    else if (**input)  // Handle other escaped characters
-    {
-        *token = append_char(*token, **input);  // Append the escaped character
-        (*input)++;
     }
 }
 
@@ -114,32 +109,13 @@ void	handle_dollar_inside_quotes(char **input, char **token)
 		(*input)++;
 	}
 }
-static void handle_dollar_invalid(char **input, char **token)
-{
-    (*input)++;
-    if ((**input >= '0' && **input <= '9'))
-    {
-        (*input)++;
-    }
-    while (**input && **input != ' ')
-    {
-        
-        *token = append_char(*token, **input);
-        (*input)++;
-    }
-}
 
 void handle_dollar_question(char **input, char **token, int last_exit_status)
 {
     char *status_str;
 
-    // Convert last_exit_status to a string
     status_str = ft_itoa(last_exit_status);
-
-    // Append the status string to the current token
     *token = ft_strjoin_free(*token, status_str);
-
-    // Move the input pointer past the "$?"
     *input += 2;
 
     free(status_str);
@@ -218,15 +194,13 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
         }
         else if (**input == '\\')
             handle_backslash(input, &token);  
-        else if (**input == '$' && *(*input + 1) >= '0' && *(*input + 1) <= '9')  // Handle $ followed by numbers
-            handle_dollar_invalid(input, &token);
-        else if (**input == '$' && *(*input + 1) == '=')  // Handle $ followed by '='
-            handle_dollar_invalid(input, &token);
         else if (**input == '$' && *(*input + 1) == '?')  // Handle $?
             handle_dollar_question(input, &token, env->last_exit_status);
         else if (**input == '"' || **input == '\'')
         {
-            if (!handle_quote(input, &token, &quote_type))
+            if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) != '\0')
+                handle_dollar_inside_quotes(input, &token);
+            else if (!handle_quote(input, &token, &quote_type))
             {
                 free(token);
                 return;
