@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/22 22:36:24 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/23 10:57:04 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ typedef struct s_env_cpy
 	char				*type;
 	bool				equal;
 	int					last_exit_status;
-	int					last_fd;
+	int					last_output_fd;
+	int					last_input_fd;
 	struct s_env_cpy	*next;
 	struct s_env_cpy	*previous;
 }					t_env_cpy;

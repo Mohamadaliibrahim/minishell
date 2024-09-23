@@ -17,6 +17,26 @@ int	search_for_redirection(t_token *token1)
 	return (0);
 }
 
+char	*get_filename(t_token *token)
+{
+	while (token)
+	{
+		if ((token->token_type == APPEND || token->token_type == REDIRECT_OUT
+				|| token->token_type == REDIRECT_IN))
+		{
+			if (token->next == NULL)
+			{
+				fprintf(stderr,
+					"Syntax error:redirection operator without a filename\n");
+				return (NULL);
+			}
+			return (token->next->tokens);
+		}
+		token = token->next;
+	}
+	return (NULL);
+}
+
 void	remove_redirection_tokens(t_token **head)
 {
 	t_token	*current;
@@ -33,7 +53,6 @@ void	remove_redirection_tokens(t_token **head)
 		{
 			to_delete = current;
 			next_token = current->next;
-			// Remove the redirection token
 			if (next_token == NULL)
 			{
 				fprintf(stderr,
@@ -44,8 +63,6 @@ void	remove_redirection_tokens(t_token **head)
 				prev->next = next_token->next;
 			else
 				*head = next_token->next;
-
-			// Free the tokens
 			free(to_delete->tokens);
 			free(to_delete);
 			if (next_token)
@@ -63,57 +80,6 @@ void	remove_redirection_tokens(t_token **head)
 	}
 }
 
-char	**tokens_to_args(t_token *token)
-{
-	int		count;
-	t_token	*current;
-	char	**args;
-	int		i;
-
-	count = 0;
-	current = token;
-	i = -1;
-	while (current)
-	{
-		if (current->token_type == REDIRECT_OUT || current->token_type == APPEND
-			|| current->token_type == REDIRECT_IN)
-			break ;
-		count++;
-		current = current->next;
-	}
-	args = malloc(sizeof(char *) * (count + 1));
-	if (!args)
-		return (NULL);
-	current = token;
-	while (++i < count)
-	{
-		args[i] = strdup(current->tokens);
-		current = current->next;
-	}
-	args[count] = NULL;
-	return (args);
-}
-
-char	*get_filename(t_token *token)
-{
-	while (token)
-	{
-		if ((token->token_type == APPEND || token->token_type == REDIRECT_OUT
-				|| token->token_type == REDIRECT_IN) && token->next)
-		{
-			if (token->next == NULL)
-			{
-				fprintf(stderr,
-					"Syntax error:redirection operator without a filename\n");
-				return (NULL);
-			}
-			return (token->next->tokens);
-		}
-		token = token->next;
-	}
-	return (NULL);
-}
-
 void	ft_trunck(t_token *token, t_env_cpy *env)
 {
 	int		fd;
@@ -129,25 +95,13 @@ void	ft_trunck(t_token *token, t_env_cpy *env)
 	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		perror("file");
-		env->last_exit_status = 1;
-		return ;
-	}
-	if (dup2(fd, STDOUT_FILENO) == -1)
-	{
-		perror("dup2");
-		close(fd);
-		env->last_exit_status = 1;
-		return ;
-	}
-	close(fd);
-	env->last_fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (env->last_fd == -1)
-	{
 		perror("open");
 		env->last_exit_status = 1;
 		return ;
 	}
+	if (env->last_output_fd != -1)
+		close(env->last_output_fd);
+	env->last_output_fd = fd;
 }
 
 void	ft_append(t_token *token, t_env_cpy *env)
@@ -169,30 +123,44 @@ void	ft_append(t_token *token, t_env_cpy *env)
 		env->last_exit_status = 1;
 		return ;
 	}
-	if (dup2(fd, STDOUT_FILENO) == -1)
+	if (env->last_output_fd != -1)
+		close(env->last_output_fd);
+	env->last_output_fd = fd;
+}
+
+void	ft_infile(t_token *token, t_env_cpy *env)
+{
+	int		fd;
+	char	*file_name;
+
+	file_name = get_filename(token);
+	if (!file_name)
 	{
-		perror("dup2");
-		close(fd);
-		env->last_exit_status = 1;
+		perror("filename");
+		env->last_exit_status = 2;
 		return ;
 	}
-	close(fd);
-	env->last_fd = open(file_name, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (env->last_fd == -1)
+	fd = open(file_name, O_RDONLY);
+	if (fd == -1)
 	{
 		perror("open");
 		env->last_exit_status = 1;
 		return ;
 	}
+	if (env->last_input_fd != -1)
+		close(env->last_input_fd);
+	env->last_input_fd = fd;
 }
 
 void	ft_redirection(t_token *token, t_env_cpy *env)
 {
 	t_token	*head;
 	int		stdout_backup;
+	int		stdin_backup;
 
 	head = token;
-	env->last_fd = -1;
+	env->last_output_fd = -1;
+	env->last_input_fd = -1;
 	stdout_backup = dup(STDOUT_FILENO);
 	if (stdout_backup == -1)
 	{
@@ -200,27 +168,47 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		env->last_exit_status = 1;
 		return ;
 	}
+	stdin_backup = dup(STDIN_FILENO);
+	if (stdin_backup == -1)
+	{
+		perror("dup");
+		env->last_exit_status = 1;
+		return ;
+	}
 	while (token)
 	{
-		if (token->tokens && token->token_type == REDIRECT_OUT)
+		if (token->token_type == REDIRECT_OUT)
 			ft_trunck(token, env);
-		else if ((token->tokens && token->token_type == APPEND))
+		else if ((token->token_type == APPEND))
 			ft_append(token, env);
-		// else if (ft_strcmp(token->tokens, "<") == 0)
-		// 	ft_inputfile(token, env);
+		else if (token->token_type == REDIRECT_IN)
+			ft_infile(token, env);
 		token = token->next;
 	}
 	remove_redirection_tokens(&head);
-	if (env->last_fd != -1)
+	if (env->last_input_fd != -1)
 	{
-		if (dup2(env->last_fd, STDOUT_FILENO) == -1)
+		if (dup2(env->last_input_fd, STDIN_FILENO) == -1)
 		{
 			perror("dup2");
 			close(stdout_backup);
+			close(stdin_backup);
 			env->last_exit_status = 1;
 			return ;
 		}
-		close(env->last_fd);
+		close(env->last_input_fd);
+	}
+	if (env->last_output_fd != -1)
+	{
+		if (dup2(env->last_output_fd, STDOUT_FILENO) == -1)
+		{
+			perror("dup2");
+			close(stdout_backup);
+			close(stdin_backup);
+			env->last_exit_status = 1;
+			return ;
+		}
+		close(env->last_output_fd);
 	}
 	ft_cmd(head, env);
 	if (dup2(stdout_backup, STDOUT_FILENO) == -1)
@@ -229,6 +217,12 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		env->last_exit_status = 1;
 	}
 	close(stdout_backup);
+	if (dup2(stdin_backup, STDIN_FILENO) == -1)
+	{
+		perror("dup2");
+		env->last_exit_status = 1;
+	}
+	close(stdin_backup);
 }
 
 void	check_redirections(t_token *token, t_env_cpy *env)
