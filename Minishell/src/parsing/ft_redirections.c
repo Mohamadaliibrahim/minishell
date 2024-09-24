@@ -25,11 +25,7 @@ char	*get_filename(t_token *token)
 				|| token->token_type == REDIRECT_IN))
 		{
 			if (token->next == NULL)
-			{
-				fprintf(stderr,
-					"Syntax error:redirection operator without a filename\n");
 				return (NULL);
-			}
 			return (token->next->tokens);
 		}
 		token = token->next;
@@ -54,11 +50,7 @@ void	remove_redirection_tokens(t_token **head)
 			to_delete = current;
 			next_token = current->next;
 			if (next_token == NULL)
-			{
-				fprintf(stderr,
-					"Syntax error: redirection operator without a filename\n");
 				return ;
-			}
 			if (prev)
 				prev->next = next_token->next;
 			else
@@ -162,14 +154,14 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 	env->last_output_fd = -1;
 	env->last_input_fd = -1;
 	stdout_backup = dup(STDOUT_FILENO);
-	if (stdout_backup == -1)
+	if (stdout_backup == -1 && env->last_exit_status == 0)
 	{
 		perror("dup");
 		env->last_exit_status = 1;
 		return ;
 	}
 	stdin_backup = dup(STDIN_FILENO);
-	if (stdin_backup == -1)
+	if (stdin_backup == -1 && env->last_exit_status == 0)
 	{
 		perror("dup");
 		env->last_exit_status = 1;
@@ -186,9 +178,18 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		token = token->next;
 	}
 	remove_redirection_tokens(&head);
+	if (env->last_exit_status != 0)
+	{
+		dup2(stdout_backup, STDOUT_FILENO);
+		close(stdout_backup);
+		dup2(stdin_backup, STDIN_FILENO);
+		close(stdin_backup);
+		return ;
+	}
 	if (env->last_input_fd != -1)
 	{
-		if (dup2(env->last_input_fd, STDIN_FILENO) == -1)
+		if ((dup2(env->last_input_fd, STDIN_FILENO) == -1)
+			&& env->last_exit_status == 0)
 		{
 			perror("dup2");
 			close(stdout_backup);
@@ -200,7 +201,8 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 	}
 	if (env->last_output_fd != -1)
 	{
-		if (dup2(env->last_output_fd, STDOUT_FILENO) == -1)
+		if ((dup2(env->last_output_fd, STDOUT_FILENO) == -1)
+			&& env->last_exit_status == 0)
 		{
 			perror("dup2");
 			close(stdout_backup);
@@ -210,7 +212,8 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		}
 		close(env->last_output_fd);
 	}
-	ft_cmd(head, env);
+	if (env->last_exit_status == 0)
+		ft_cmd(head, env);
 	if (dup2(stdout_backup, STDOUT_FILENO) == -1)
 	{
 		perror("dup2");

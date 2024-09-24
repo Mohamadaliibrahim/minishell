@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/24 11:50:06 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/24 13:20:35 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,6 @@ void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
 /*Redirections */
 void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
-void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
+void	handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
 
 #endif
