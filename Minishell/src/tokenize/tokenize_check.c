@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/24 14:39:59 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/24 15:18:34 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void	check(char *input, t_env_cpy *env_cpy)
 	i = 0;
 	while (current)
 	{
-		printf("toke[%d]:%s\n", i, current->tokens);
+		//printf("token[%d]: %s\n", i, current->tokens);
 		current = current->next;
 		i++;
 	}

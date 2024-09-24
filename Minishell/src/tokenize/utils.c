@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/24 15:56:07 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/24 11:50:12 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,15 +81,15 @@ void	free_single_env_list(t_env_cpy *head)
 	free(tmp);
 }
 
-char	*ft_strjoin_free(char *s1, char *s2)
+char *ft_strjoin_free(char *s1, char *s2)
 {
-	char	*new_str;
+    char *new_str;
 
-	if (!s1 || !s2)
-		return (NULL);
-	new_str = ft_strjoin(s1, s2);
-	if (!new_str)
-		return (NULL);
-	free(s1);
-	return (new_str);
+    if (!s1 || !s2)
+        return NULL;
+    new_str = ft_strjoin(s1, s2);
+    if (!new_str)
+        return NULL;
+    free(s1);
+    return new_str;
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_redirections.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/24 15:57:49 by mustafa-mac       #+#    #+#             */
+/*   Updated: 2024/09/24 16:00:39 by mustafa-mac      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../inc/minishell.h"
 
 int	search_for_redirection(t_token *token1)
@@ -151,45 +163,51 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 	int		stdin_backup;
 
 	head = token;
-	env->last_output_fd = -1;
-	env->last_input_fd = -1;
+	env->last_output_fd = -1;  // Ensure initialization
+	env->last_input_fd = -1;   // Ensure initialization
+	env->last_exit_status = 0; // Initialize the exit status
+
 	stdout_backup = dup(STDOUT_FILENO);
-	if (stdout_backup == -1 && env->last_exit_status == 0)
+	if (stdout_backup == -1)
 	{
 		perror("dup");
 		env->last_exit_status = 1;
 		return ;
 	}
 	stdin_backup = dup(STDIN_FILENO);
-	if (stdin_backup == -1 && env->last_exit_status == 0)
+	if (stdin_backup == -1)
 	{
 		perror("dup");
+		close(stdout_backup);  // Clean up before returning
 		env->last_exit_status = 1;
 		return ;
 	}
+	
 	while (token)
 	{
 		if (token->token_type == REDIRECT_OUT)
 			ft_trunck(token, env);
-		else if ((token->token_type == APPEND))
+		else if (token->token_type == APPEND)
 			ft_append(token, env);
 		else if (token->token_type == REDIRECT_IN)
 			ft_infile(token, env);
 		token = token->next;
 	}
 	remove_redirection_tokens(&head);
-	// if (env->last_exit_status != 0)
-	// {
-	// 	dup2(stdout_backup, STDOUT_FILENO);
-	// 	close(stdout_backup);
-	// 	dup2(stdin_backup, STDIN_FILENO);
-	// 	close(stdin_backup);
-	// 	return ;
-	// }
+	
+	// Check and restore the standard file descriptors based on the last operation status
+	if (env->last_exit_status != 0)
+	{
+		dup2(stdout_backup, STDOUT_FILENO);
+		close(stdout_backup);
+		dup2(stdin_backup, STDIN_FILENO);
+		close(stdin_backup);
+		return ;
+	}
+	
 	if (env->last_input_fd != -1)
 	{
-		if ((dup2(env->last_input_fd, STDIN_FILENO) == -1)
-			&& env->last_exit_status == 0)
+		if (dup2(env->last_input_fd, STDIN_FILENO) == -1)
 		{
 			perror("dup2");
 			close(stdout_backup);
@@ -199,10 +217,10 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		}
 		close(env->last_input_fd);
 	}
+	
 	if (env->last_output_fd != -1)
 	{
-		if ((dup2(env->last_output_fd, STDOUT_FILENO) == -1)
-			&& env->last_exit_status == 0)
+		if (dup2(env->last_output_fd, STDOUT_FILENO) == -1)
 		{
 			perror("dup2");
 			close(stdout_backup);
@@ -212,14 +230,17 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		}
 		close(env->last_output_fd);
 	}
+	
 	if (env->last_exit_status == 0)
 		ft_cmd(head, env);
+	
 	if (dup2(stdout_backup, STDOUT_FILENO) == -1)
 	{
 		perror("dup2");
 		env->last_exit_status = 1;
 	}
 	close(stdout_backup);
+	
 	if (dup2(stdin_backup, STDIN_FILENO) == -1)
 	{
 		perror("dup2");
