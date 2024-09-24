@@ -6,12 +6,12 @@ NAME = minishell
 SRC = src/main.c src/tokenize/tokenize.c src/tokenize/tokenize_check.c \
       src/tokenize/tokenize_tools.c src/tokenize/utils.c \
       src/parsing/cmd.c src/build_ins/echo.c src/build_ins/pwd_cd.c \
-	  src/parsing/dollar.c src/tokenize/env_tokenizeing.c\
-	  src/build_ins/ft_env.c src/build_ins/ft_export.c\
-	  src/build_ins/sort_export.c src/build_ins/update_pwd.c\
-	  src/build_ins/ft_export_update.c src/build_ins/ft_unset.c\
-	  src/parsing/signals.c src/execution/exec.c\
-	  src/parsing/ft_redirections.c
+      src/parsing/dollar.c src/tokenize/env_tokenizeing.c\
+      src/build_ins/ft_env.c src/build_ins/ft_export.c\
+      src/build_ins/sort_export.c src/build_ins/update_pwd.c\
+      src/build_ins/ft_export_update.c src/build_ins/ft_unset.c\
+      src/parsing/signals.c src/execution/exec.c\
+      src/parsing/ft_redirections.c src/tokenize/redirections.c
 
 OBJS = $(SRC:.c=.o)
 
@@ -20,21 +20,29 @@ LIBFT = libft/libft.a
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
-		$(CC) $(CFLAGS) $(OBJS) -Llibft -lft -lreadline -o $(NAME)
+	@echo "\033[0;32mBuilding $(NAME)...\033[0m"
+	@$(CC) $(CFLAGS) $(OBJS) -Llibft -lft -lreadline -o $(NAME)
+	@echo "\033[0;32m$(NAME) built successfully!\033[0m"
 
 $(LIBFT):
-		@make -C libft
+	@echo "\033[0;32mBuilding libft...\033[0m"
+	@$(MAKE) -C libft > /dev/null
+	@echo "\033[0;32mLibft built successfully!\033[0m"
 
 %.o: %.c
-		$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@ > /dev/null
 
 clean:
-		rm -f $(OBJS)
-		@make -C libft clean
+	@echo "\033[0;32mCleaning up object files...\033[0m"
+	@rm -f $(OBJS)
+	@$(MAKE) -C libft clean > /dev/null
+	@echo "\033[0;32mObject files removed.\033[0m"
 
 fclean: clean
-		rm -f $(NAME)
-		@make -C libft fclean
+	@echo "\033[0;32mRemoving minishell and libft...\033[0m"
+	@rm -f $(NAME)
+	@$(MAKE) -C libft fclean > /dev/null
+	@echo "\033[0;32m$(NAME) and libft removed.\033[0m"
 
 re: fclean all
 

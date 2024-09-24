@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/21 19:44:44 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/24 11:52:18 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ int	main(int ac, char **av, char **env)
 	env_cpy = add_shell(env_cpy);
 	while (1)
 	{
-		input = readline("\033[0;36m$>\033[0m ");
+		input = readline("\033[0;32m$>\033[0m ");
 		if (input == NULL)
 		{
 			printf("exit\n");

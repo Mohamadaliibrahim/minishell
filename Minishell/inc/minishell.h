@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/23 10:57:04 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/24 11:50:06 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ char		*return_type(char *env);
 char		*return_path(char *env);
 /*cmd*/
 char		*find_in_path(char *cmd, t_env_cpy *env);
+char		*get_old_path(t_env_cpy *env_cpy, char *msg);
 void		ft_cmd(t_token *token, t_env_cpy *env_cpy);
 /*echo*/
 void		check_echo(t_token *token, t_env_cpy *env_list);
@@ -108,18 +109,23 @@ char		*ft_strndup(const char *s, size_t n);
 void		ft_free_2darray(char **tokens);
 void		free_token_list(t_token *head);
 void		free_env_list(t_env_cpy *head);
+char 		*ft_strjoin_free(char *s1, char *s2);
+void		ft_free_2darray(char **tokens);
+/*Env && Export*/
 char		*return_type(char *env);
 char		*return_path(char *env);
-bool		check_for_equal(char *env);
-char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
-char		*append_char(char *result, char c);
-void		setup_signal_handlers(void);
-void		ft_free_2darray(char **tokens);
-char		**list_to_2d(t_env_cpy *env);
-char		*get_old_path(t_env_cpy *env_cpy, char *msg);
-t_env_cpy	*cpy_env_helper(char *env);
 t_env_cpy	*add_shell(t_env_cpy *env_cpy);
-
+bool		check_for_equal(char *env);
+char		**list_to_2d(t_env_cpy *env);
+t_env_cpy	*cpy_env_helper(char *env);
+/*DOllar $*/
+char		*append_char(char *result, char c);
+char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
+/*Signals*/
+void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
+/*Redirections */
+void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
+void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
 
 #endif

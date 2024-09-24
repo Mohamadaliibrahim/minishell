@@ -6,24 +6,11 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/23 18:41:07 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/24 11:11:25 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
-
-char *ft_strjoin_free(char *s1, char *s2)
-{
-    char *new_str;
-
-    if (!s1 || !s2)
-        return NULL;
-    new_str = ft_strjoin(s1, s2);
-    if (!new_str)
-        return NULL;
-    free(s1);
-    return new_str;
-}
 
 static int	handle_quote(char **input, char **token, char *quote_type)
 {
@@ -46,7 +33,6 @@ static int	handle_quote(char **input, char **token, char *quote_type)
 		return (0);
 }
 
-
 static void	handle_unquoted(char **input, char **token)
 {
     char    *start;
@@ -68,17 +54,7 @@ static void	handle_unquoted(char **input, char **token)
     free(tmp);
 }
 
-
-static void handle_backslash(char **input, char **token)
-{
-    while (**input && **input != ' ')  // Append characters following the literal $ (e.g., HOME)
-    {
-        *token = append_char(*token, **input);
-        (*input)++;
-    }
-}
-
-void	handle_dollar_inside_quotes(char **input, char **token)
+static void	handle_dollar_inside_quotes(char **input, char **token)
 {
 	char	*var_name;
 	char	*var_value;
@@ -105,105 +81,23 @@ void	handle_dollar_inside_quotes(char **input, char **token)
 	}
 }
 
-void handle_dollar_question(char **input, char **token, int last_exit_status)
+void handle_special_cases(char **input, char **token, int last_exit_status)
 {
-    char *status_str;
-
-    status_str = ft_itoa(last_exit_status);
-    *token = ft_strjoin_free(*token, status_str);
-    *input += 2;
-
-    free(status_str);
-}
-
-void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
-{
-    char *delimiter;
-    char *line;
-    int heredoc_fd;
-    char *heredoc_file = "/tmp/minishell_heredoc.tmp";
-
-    // Extract the delimiter following the `<<` operator
-    while (**input && **input == ' ')
-        (*input)++;
-    
-    delimiter = ft_strndup(*input, ft_strlen(*input));
-    while (**input && **input != ' ' && **input != '<' && **input != '>')
-        (*input)++;
-
-    // Open a temporary file to store heredoc content
-    heredoc_fd = open(heredoc_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-    if (heredoc_fd < 0)
+    if (**input == '\\')
     {
-        perror("minishell: heredoc");
-        *error_flag = 1;
-        free(delimiter);
-        return;
-    }
-
-    // Read lines from the user until the delimiter is encountered
-    while (1)
-    {
-        line = readline("> ");
-        if (!line || ft_strcmp(line, delimiter) == 0)
-            break;
-        write(heredoc_fd, line, ft_strlen(line));
-        write(heredoc_fd, "\n", 1);
-        free(line);
-    }
-    close(heredoc_fd);
-    free(line);
-    free(delimiter);
-
-    // Add the temporary file name as a token to be used by commands like `cat`
-    add_token(token_list, ft_strdup(heredoc_file), env, HEREDOC);
-}
-
-void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
-{
-    char *redirection_token = NULL;
-
-    if (**input == '<' || **input == '>')
-    {
-        char current_char = **input;
-        int count = 0;
-
-        // Count consecutive redirection characters
-        while (**input == current_char)
+        if (**input)
         {
-            count++;
+            *token = append_char(*token, **input);
             (*input)++;
         }
-
-        if (count > 2)
-        {
-            // Invalid redirection operator (more than two)
-            fprintf(stderr, "minishell: syntax error near unexpected token `%.*s'\n", count, *input - count);
-            *error_flag = 1;  // Set error flag
-            return;
-        }
-        else if (count == 2 && current_char == '<')
-        {
-            // Handle heredoc `<<`
-            handle_heredoc(input, token_list, env, error_flag);
-            return;
-        }
-        else if (count == 1)
-        {
-            // Single-character redirection operator
-            redirection_token = ft_strndup(*input - 1, 1);
-        }
-        else if (count == 2)
-        {
-            // Double-character redirection operator
-            redirection_token = ft_strndup(*input - 2, 2);
-        }
-
-        if (redirection_token)
-        {
-            add_token(token_list, redirection_token, env, 0);
-            free(redirection_token);
-        }
+    }
+    else if (**input == '$' && *(*input + 1) == '?')
+    {
+        // Handle $?: Replace with last exit status
+        char *status_str = ft_itoa(last_exit_status);
+        *token = ft_strjoin_free(*token, status_str);
+        *input += 2;  // Skip over the `$?`
+        free(status_str);
     }
 }
 
@@ -236,10 +130,8 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
                 return;
             }
         }
-        else if (**input == '\\')
-            handle_backslash(input, &token);  
-        else if (**input == '$' && *(*input + 1) == '?')  // Handle $?
-            handle_dollar_question(input, &token, env->last_exit_status);
+        else if (**input == '\\' || (**input == '$' && *(*input + 1) == '?'))
+            handle_special_cases(input, &token, env->last_exit_status);
         else if (**input == '"' || **input == '\'')
         {
             if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) != '\0')
