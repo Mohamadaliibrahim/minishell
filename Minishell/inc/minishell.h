@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/24 13:20:35 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/24 16:12:16 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,14 +102,14 @@ void		update_pwd_oldpwd(t_env_cpy *env, char *new_pwd, char *old_pwd);
 /*env*/
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 /*pwd_cd */
-void		ft_pwd(void);
+void		ft_pwd(t_env_cpy *env);
 void		ft_cd(t_token *token, t_env_cpy *env_cpy);
 /*utils*/
 char		*ft_strndup(const char *s, size_t n);
 void		ft_free_2darray(char **tokens);
 void		free_token_list(t_token *head);
 void		free_env_list(t_env_cpy *head);
-char 		*ft_strjoin_free(char *s1, char *s2);
+char		*ft_strjoin_free(char *s1, char *s2);
 void		ft_free_2darray(char **tokens);
 /*Env && Export*/
 char		*return_type(char *env);
@@ -125,7 +125,7 @@ char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
 void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
 /*Redirections */
-void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
-void	handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
+void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
+void	handle_heredoc(char **input, t_token **token_list, t_env_cpy *env,int *error_flag);
 
 #endif

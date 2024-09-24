@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/21 17:23:20 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/24 17:52:15 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,27 @@ static char	*get_cd_path(t_token *token, t_env_cpy *env_cpy)
 		path = token->next->tokens;
 	return (path);
 }
+char	*get_pwd(t_env_cpy *tmp)
+{
+	t_env_cpy	*env;
 
-void	ft_pwd(void)
+	env = tmp;
+	while (env)
+	{
+		if (ft_strcmp(env->type, "PWD") == 0)
+			return (env->env);
+		env = env->next;
+	}
+	return (NULL);
+}
+
+void	ft_pwd(t_env_cpy *env)
 {
 	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
+	if (!pwd)
+		pwd = get_pwd(env);
 	printf("%s\n", pwd);
 	free(pwd);
 }

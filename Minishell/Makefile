@@ -11,7 +11,7 @@ SRC = src/main.c src/tokenize/tokenize.c src/tokenize/tokenize_check.c \
       src/build_ins/sort_export.c src/build_ins/update_pwd.c\
       src/build_ins/ft_export_update.c src/build_ins/ft_unset.c\
       src/parsing/signals.c src/execution/exec.c\
-      src/parsing/ft_redirections.c src/tokenize/redirections.c
+      src/parsing/ft_redirections.c src/tokenize/redirections.c\
 
 OBJS = $(SRC:.c=.o)
 

@@ -178,14 +178,14 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		token = token->next;
 	}
 	remove_redirection_tokens(&head);
-	if (env->last_exit_status != 0)
-	{
-		dup2(stdout_backup, STDOUT_FILENO);
-		close(stdout_backup);
-		dup2(stdin_backup, STDIN_FILENO);
-		close(stdin_backup);
-		return ;
-	}
+	// if (env->last_exit_status != 0)
+	// {
+	// 	dup2(stdout_backup, STDOUT_FILENO);
+	// 	close(stdout_backup);
+	// 	dup2(stdin_backup, STDIN_FILENO);
+	// 	close(stdin_backup);
+	// 	return ;
+	// }
 	if (env->last_input_fd != -1)
 	{
 		if ((dup2(env->last_input_fd, STDIN_FILENO) == -1)
