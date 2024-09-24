@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/22 22:20:50 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:00:05 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 	else if ((ft_strcmp(token->tokens, "pwd") == 0))
 	{
 		env_cpy->last_exit_status = 0;
-		ft_pwd();
+		ft_pwd(env_cpy);
 	}
 	else if ((ft_strcmp(token->tokens, "env") == 0))
 		ft_env(token, env_cpy);

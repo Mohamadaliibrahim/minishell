@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/24 15:41:20 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/24 20:59:42 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ typedef struct s_env_cpy
 {
 	char				*env;
 	char				*type;
-	char 				*heredoc_file;
+	char				*heredoc_file;
 	bool				equal;
 	int					last_exit_status;
 	int					last_output_fd;
@@ -103,7 +103,7 @@ void		update_pwd_oldpwd(t_env_cpy *env, char *new_pwd, char *old_pwd);
 /*env*/
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 /*pwd_cd */
-void		ft_pwd(void);
+void		ft_pwd(t_env_cpy *env);
 void		ft_cd(t_token *token, t_env_cpy *env_cpy);
 /*utils*/
 char		*ft_strndup(const char *s, size_t n);
