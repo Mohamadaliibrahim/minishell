@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/24 11:12:26 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/24 12:51:44 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,15 @@ void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *err
     int heredoc_fd;
     char *heredoc_file = "/tmp/minishell_heredoc.tmp";
 
+    // Skip spaces after '<<'
     while (**input && **input == ' ')
         (*input)++;
-    delimiter = ft_strndup(*input, ft_strlen(*input));
-    while (**input && **input != ' ' && **input != '<' && **input != '>')
-        (*input)++;
+    
+    // Extract delimiter until the next space or redirection symbol
+    delimiter = ft_strndup(*input, strcspn(*input, " <>"));
+    *input += ft_strlen(delimiter);
+
+    // Open the temporary file to write heredoc content
     heredoc_fd = open(heredoc_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if (heredoc_fd < 0)
     {
@@ -32,21 +36,28 @@ void handle_heredoc(char **input, t_token **token_list, t_env_cpy *env, int *err
         free(delimiter);
         return;
     }
+
+    // Read lines until the delimiter is encountered
     while (1)
     {
         line = readline("> ");
         if (!line || ft_strcmp(line, delimiter) == 0)
+        {
+            free(line);
             break;
+        }
         write(heredoc_fd, line, ft_strlen(line));
         write(heredoc_fd, "\n", 1);
         free(line);
     }
+
+    // Close the file and free resources
     close(heredoc_fd);
-    free(line);
     free(delimiter);
+    
+    // Add the heredoc file path as a token
     add_token(token_list, ft_strdup(heredoc_file), env, HEREDOC);
 }
-
 
 void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
@@ -65,7 +76,7 @@ void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int 
         if (count > 2)
         {
             fprintf(stderr, "minishell: syntax error near unexpected token `%.*s'\n", count, *input - count);
-            *error_flag = 1;  // Set error flag
+            *error_flag = 1;
             return;
         }
         else if (count == 2 && current_char == '<')
