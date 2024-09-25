@@ -6,81 +6,58 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/24 15:52:14 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/25 11:16:14 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-void handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
+static void parse_heredoc_delimiter(char **input, char **delimiter, int *error_flag)
 {
-    char *delimiter;
-    char *line;
-    int heredoc_fd;
-    char *heredoc_file = "/tmp/minishell_heredoc.tmp";
     char quote_char = '\0';
+    size_t delimiter_length = 0;
 
-    // Skip spaces after '<<'
     while (**input && **input == ' ')
         (*input)++;
-
-    // Handle quoted delimiters
     if (**input == '"' || **input == '\'')
     {
         quote_char = **input;
         (*input)++;
     }
-
-    // Extract delimiter until the next space, redirection symbol, or matching quote
-    size_t delimiter_length = 0;
     while ((*input)[delimiter_length])
     {
-        if (quote_char != '\0')
-        {
-            if ((*input)[delimiter_length] == quote_char)
-                break;
-        }
-        else
-        {
-            if (strchr(" <>", (*input)[delimiter_length]) != NULL)
-                break;
-        }
+        if (quote_char != '\0' && (*input)[delimiter_length] == quote_char)
+            break;
+        else if (quote_char == '\0' && strchr(" <>", (*input)[delimiter_length]) != NULL)
+            break;
         delimiter_length++;
     }
-
     if (delimiter_length == 0)
     {
         fprintf(stderr, "minishell: syntax error near unexpected token `newline'\n");
         *error_flag = 1;
         return;
     }
+    *delimiter = ft_strndup(*input, delimiter_length);
+    *input += (quote_char != '\0') ? delimiter_length + 1 : delimiter_length;
+}
 
-    // Extract the delimiter from the input
-    delimiter = ft_strndup(*input, delimiter_length);
-    if (quote_char != '\0')
-    {
-        (*input) += delimiter_length + 1; // Skip past the delimiter and the closing quote
-    }
-    else
-    {
-        (*input) += delimiter_length;
-    }
+static int handle_heredoc_file(char *heredoc_file, char *delimiter)
+{
+    int heredoc_fd = open(heredoc_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+    char *line;
 
-    // Open the temporary file to write heredoc content
-    heredoc_fd = open(heredoc_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if (heredoc_fd < 0)
     {
         perror("minishell: heredoc");
-        *error_flag = 1;
-        free(delimiter);
-        return;
+        return (-1);
     }
-
-    // Read lines until the delimiter is encountered
     while (1)
     {
         line = readline("> ");
-        if (!line || ft_strcmp(line, delimiter) == 0)
+        if (!line)
+            break;
+        if (ft_strcmp(line, delimiter) == 0)
         {
             free(line);
             break;
@@ -89,10 +66,27 @@ void handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
         write(heredoc_fd, "\n", 1);
         free(line);
     }
-    // Close the file and free resources
     close(heredoc_fd);
+    return (heredoc_fd);
+}
+
+void handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
+{
+    char *delimiter;
+    int heredoc_fd;
+    char *heredoc_file = "/tmp/minishell_heredoc.tmp";
+
+    parse_heredoc_delimiter(input, &delimiter, error_flag);
+    if (*error_flag)
+        return;
+    heredoc_fd = handle_heredoc_file(heredoc_file, delimiter);
+    if (heredoc_fd < 0)
+    {
+        free(delimiter);
+        *error_flag = 1;
+        return;
+    }
     free(delimiter);
-    // Set the heredoc file in the environment to use during execution
     env->heredoc_file = ft_strdup(heredoc_file);
 }
 
