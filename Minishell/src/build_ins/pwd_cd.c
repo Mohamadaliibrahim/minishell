@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/26 00:52:09 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/26 00:57:48 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,14 +198,14 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 			if (temp)
 			{
 				update_env_var(env_cpy, "PWD", temp);
-				printf("%s\n", temp);
+				// Removed the printf statement to prevent printing the path
 				free(temp);
 			}
 			else
 			{
 				// If memory allocation fails, retain old PWD
 				update_env_var(env_cpy, "PWD", old_pwd);
-				printf("%s\n", old_pwd);
+				// Optionally, you can print an error message here
 			}
 		}
 		else
@@ -241,13 +241,14 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 			if (temp)
 			{
 				update_env_var(env_cpy, "PWD", temp);
-				printf("%s\n", temp);
+				// Removed the printf statement to prevent printing the path
 				free(temp);
 			}
 			else
 			{
 				// If memory allocation fails, retain old PWD
 				update_env_var(env_cpy, "PWD", old_pwd);
+				// Optionally, you can print an error message here
 			}
 		}
 		else
