@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/25 10:21:33 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/26 00:16:26 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 # include <sys/wait.h>
 # include <unistd.h>
 # include <limits.h>
+# include <sys/stat.h>
+
 
 typedef enum e_token_type
 {
@@ -107,6 +109,7 @@ void		ft_env(t_token *token, t_env_cpy *env_cpy);
 /*pwd_cd */
 void		ft_pwd(t_env_cpy *env);
 void		ft_cd(t_token *token, t_env_cpy *env_cpy);
+void		update_env_var(t_env_cpy *env_cpy, char *key, char *value);
 /*utils*/
 char		*ft_strndup(const char *s, size_t n);
 void		ft_free_2darray(char **tokens);

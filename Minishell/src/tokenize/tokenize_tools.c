@@ -3,14 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_tools.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/24 15:35:35 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/25 20:24:58 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
+
+static void	handle_dollar_inside_quotes(char **input, char **token)
+{
+	char	*var_name;
+	char	*var_value;
+
+	(*input)++;
+	(*input)++;
+	var_name = ft_strdup("");
+	while (**input && **input != '"')
+	{
+		var_name = append_char(var_name, **input);
+		(*input)++;
+	}
+	(*input)++;
+	var_value = getenv(var_name);
+	free(var_name);
+	if (var_value)
+		*token = ft_strjoin_free(*token, var_value);
+	while (**input && **input != ' ')
+	{
+        if (**input == '"')
+            (*input)++;
+		*token = append_char(*token, **input);
+		(*input)++;
+	}
+}
 
 static int	handle_quote(char **input, char **token, char *quote_type)
 {
@@ -52,33 +79,6 @@ static void	handle_unquoted(char **input, char **token)
     *token = ft_strjoin(*token, tmp);
     free(old_token);
     free(tmp);
-}
-
-static void	handle_dollar_inside_quotes(char **input, char **token)
-{
-	char	*var_name;
-	char	*var_value;
-
-	(*input)++;
-	(*input)++;
-	var_name = ft_strdup("");
-	while (**input && **input != '"')
-	{
-		var_name = append_char(var_name, **input);
-		(*input)++;
-	}
-	(*input)++;
-	var_value = getenv(var_name);
-	free(var_name);
-	if (var_value)
-		*token = ft_strjoin_free(*token, var_value);
-	while (**input && **input != ' ')
-	{
-        if (**input == '"')
-            (*input)++;
-		*token = append_char(*token, **input);
-		(*input)++;
-	}
 }
 
 void handle_special_cases(char **input, char **token, int last_exit_status)

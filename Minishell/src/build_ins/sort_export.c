@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   sort_export.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 20:40:37 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/15 20:40:41 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/25 23:27:12 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
+
+
 
 t_env_cpy	*find_smallest(t_env_cpy *head, t_env_cpy *exclude)
 {
