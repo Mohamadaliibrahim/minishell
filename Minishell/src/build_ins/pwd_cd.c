@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/26 12:21:52 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/26 13:39:23 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ void	ft_pwd(t_env_cpy *env)
 			printf("%s\n", env_pwd);
 		else
 			perror("pwd");
+		free(env_pwd);
 	}
 }
 
