@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/25 20:24:32 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/26 13:30:34 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void	check(char *input, t_env_cpy *env_cpy)
 	i = 0;
 	while (current)
 	{
-		printf("token[%d]: %s\n", i, current->tokens);
+		// printf("token[%d]: %s\n", i, current->tokens);
 		current = current->next;
 		i++;
 	}

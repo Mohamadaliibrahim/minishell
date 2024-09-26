@@ -6,79 +6,31 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 10:49:47 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/26 13:04:41 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/26 13:33:58 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
-#include <sys/stat.h> // For stat
-#include <unistd.h>   // For execve, fork, etc.
-#include <fcntl.h>    // For open
-#include <stdlib.h>   // For malloc, free
-#include <string.h>   // For strerror
-
-void launch_new_minishell(t_env_cpy *env_cpy)
-{
-    char *new_shell[] = {"./minishell", NULL};
-    int pid = fork();
-
-    if (pid == 0)
-    {
-        // Child process: launch the new minishell
-        // Reset signal handlers
-        signal(SIGINT, SIG_DFL);
-        signal(SIGQUIT, SIG_DFL);
-
-        // Execute the new minishell
-        if (execve(new_shell[0], new_shell, list_to_2d(env_cpy)) == -1)
-        {
-            perror("minishell: Failed to launch a new minishell");
-            exit(EXIT_FAILURE);
-        }
-    }
-    else if (pid > 0)
-    {
-        // Parent process: wait for the child to finish
-        int status;
-        waitpid(pid, &status, 0);
-
-        // Handle the exit status of the child process
-        if (WIFEXITED(status))
-            env_cpy->last_exit_status = WEXITSTATUS(status);
-        else if (WIFSIGNALED(status))
-            env_cpy->last_exit_status = 128 + WTERMSIG(status);
-    }
-    else
-    {
-        // Fork failed
-        perror("minishell: Fork failed");
-        env_cpy->last_exit_status = 1;
-    }
-}
 
 void	do_comand(t_token *token, t_env_cpy *env_cpy)
 {
 	int		pid;
 	int		status;
-	char	*cmd_path = NULL;
-	char	**env = NULL;
-	char	**av = NULL;
-	int		i = 0;
-	void	(*prev_sigint_handler)(int) = NULL;
+	char	*cmd_path;
+	char	**env;
+	char	**av;
+	int		i;
+	void	(*prev_sigint_handler)(int);
 	t_token	*current;
-	int		token_count = 0;
+	int		token_count;
 	int		sig;
 	int		infile_fd = -1;  // File descriptor for heredoc, if used
 
-	if (ft_strcmp(token->tokens, "./minishell") == 0)
-	{
-		launch_new_minishell(env_cpy);
-		return;
-	}
 	env = list_to_2d(env_cpy);
 
-
+	env_cpy->heredoc_file = 0;
 	// Count the number of tokens to allocate space for the argument array
+	token_count = 0;
 	current = token;
 	while (current)
 	{
@@ -91,13 +43,9 @@ void	do_comand(t_token *token, t_env_cpy *env_cpy)
 	if (!av)
 		return ; // Handle memory allocation failure
 
-	// Initialize all elements of av to NULL
-	for (i = 0; i <= token_count; i++)
-		av[i] = NULL;
-
 	// Populate the arguments array
 	current = token;
-	i = 0; // Reset i to start populating from the beginning
+	i = 0;
 	while (current)
 	{
 		av[i] = ft_strdup(current->tokens);
@@ -107,7 +55,6 @@ void	do_comand(t_token *token, t_env_cpy *env_cpy)
 			while (i > 0)
 				free(av[--i]);
 			free(av);
-			ft_free_2darray(env);
 			return ;
 		}
 		current = current->next;
