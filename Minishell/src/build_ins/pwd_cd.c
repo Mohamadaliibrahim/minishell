@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/26 00:57:48 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/26 12:21:52 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,18 +59,15 @@ static char	*get_cd_path(t_token *token, t_env_cpy *env_cpy)
 			ft_putstr_fd("cd: OLDPWD not set\n", 2);
 			return (NULL);
 		}
-		// Removed the printf statement here to prevent printing the path before chdir
+		// Removed the printf statement to prevent printing the path before chdir
 	}
 	else if (ft_strcmp(token->next->tokens, ".") == 0)
 	{
-		path = get_env_var(env_cpy, "PWD");
-		if (!path)
-		{
-			ft_putstr_fd("cd: PWD not set\n", 2);
-			return (NULL);
-		}
-		// Simply stay in the current directory
-		path = ft_strdup(path);
+		path = ".";
+	}
+	else if (ft_strcmp(token->next->tokens, "..") == 0)
+	{
+		path = "..";
 	}
 	else
 	{
@@ -193,12 +190,11 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 		// Check if the command was 'cd ..'
 		else if (token->next && ft_strcmp(token->next->tokens, "..") == 0)
 		{
-			// Append "/.." to PWD every time 'cd ..' fails
+			// Append "/.." to PWD silently
 			char *temp = ft_strjoin(old_pwd, "/..");
 			if (temp)
 			{
 				update_env_var(env_cpy, "PWD", temp);
-				// Removed the printf statement to prevent printing the path
 				free(temp);
 			}
 			else
@@ -207,6 +203,12 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 				update_env_var(env_cpy, "PWD", old_pwd);
 				// Optionally, you can print an error message here
 			}
+		}
+		// Check if the command was 'cd .'
+		else if (token->next && ft_strcmp(token->next->tokens, ".") == 0)
+		{
+			// Do not modify PWD, simply return after error
+			// Alternatively, handle any specific behavior for 'cd .'
 		}
 		else
 		{
@@ -217,10 +219,13 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 		return;
 	}
 
-	// Get the new working directory
+	// Get the new working directory after successful chdir
 	new_pwd = getcwd(NULL, 0);
 	if (new_pwd)
 	{
+		// Update OLDPWD
+		update_env_var(env_cpy, "OLDPWD", old_pwd);
+
 		// Update PWD with the new path
 		update_env_var(env_cpy, "PWD", new_pwd);
 		free(new_pwd);
@@ -234,14 +239,14 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 	else
 	{
 		// If getcwd fails after successful chdir, likely due to deleted parent
-		// Handle similar to failed 'cd ..'
+		// Handle similar to failed 'cd ..' silently
 		if (token->next && ft_strcmp(token->next->tokens, "..") == 0)
 		{
 			char *temp = ft_strjoin(old_pwd, "/..");
 			if (temp)
 			{
 				update_env_var(env_cpy, "PWD", temp);
-				// Removed the printf statement to prevent printing the path
+				printf("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");
 				free(temp);
 			}
 			else

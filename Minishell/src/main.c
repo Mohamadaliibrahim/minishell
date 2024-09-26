@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/25 23:02:45 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/26 11:09:42 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ int	main(int ac, char **av, char **env)
 		if (input == NULL)
 		{
 			printf("exit\n");
-			exit(0);
+			break ;
 		}
 		if (*input)
 			add_history(input);

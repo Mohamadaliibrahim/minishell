@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/26 00:16:26 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/26 12:54:56 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 # include <unistd.h>
 # include <limits.h>
 # include <sys/stat.h>
+# include <errno.h>
 
 
 typedef enum e_token_type
