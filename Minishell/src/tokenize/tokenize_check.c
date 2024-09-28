@@ -6,11 +6,27 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/26 15:15:47 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/28 14:25:04 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
+
+int	containe_pipe(t_token *token1)
+{
+	t_token	*token;
+
+	token = token1;
+	while (token)
+	{
+		if (token->token_type == PIPE)
+		{
+			return (1);
+		}
+		token = token->next;
+	}
+	return (0);
+}
 
 int	check_type(char *token, t_env_cpy *env)
 {
@@ -107,14 +123,17 @@ void	check(char *input, t_env_cpy *env_cpy)
 	}
 	if (token)
 	{
-		if (search_for_redirection(token))
-			check_redirections(token, env_cpy);
-		else if (token->token_type == CMND)
-			ft_cmd(token, env_cpy);
-		else if (token->token_type == UNKNOWN)
-		{
-			fprintf(stderr, "%s: Command not found\n", token->tokens);
-			env_cpy->last_exit_status = 127;
+		if (containe_pipe(token)) {
+			pipe_commands(token, env_cpy);  // Execute piped commands
+		} else {
+			if (search_for_redirection(token)) {
+				check_redirections(token, env_cpy);
+			} else if (token->token_type == CMND) {
+				ft_cmd(token, env_cpy);
+			} else if (token->token_type == UNKNOWN) {
+				fprintf(stderr, "%s: Command not found\n", token->tokens);
+				env_cpy->last_exit_status = 127;
+			}
 		}
 	}
 	free_token_list(token);

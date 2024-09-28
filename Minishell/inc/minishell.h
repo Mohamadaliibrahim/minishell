@@ -6,14 +6,12 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/26 15:03:14 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/28 14:26:39 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
-
-#define HEREDOC_FLAG 0x100
 
 # include "../libft/libft.h"
 # include <fcntl.h>
@@ -135,10 +133,10 @@ void		handle_sigint(int sig);
 void 	handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
 void	handle_heredoc(char **input, t_env_cpy *env, int *error_flag);
 
-char **allocate_arguments(t_token *token);
-char *get_command_path(char **av, t_env_cpy *env_cpy);
-void execute_command(char *cmd_path, char **av, char **env, t_env_cpy *env_cpy);
-void pipe_commands(t_token *token, t_env_cpy *env_cpy);
-
+char 	**allocate_arguments(t_token *token);
+char 	*get_command_path(char **av, t_env_cpy *env_cpy);
+void 	execute_command(char *cmd_path, char **av, char **env, t_env_cpy *env_cpy);
+void 	pipe_commands(t_token *token, t_env_cpy *env_cpy);
+int		containe_pipe(t_token *token1);
 
 #endif
