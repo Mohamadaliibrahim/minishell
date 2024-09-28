@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/28 14:26:39 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/28 18:46:41 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void		ft_env(t_token *token, t_env_cpy *env_cpy);
 /*pwd_cd */
 void		ft_pwd(t_env_cpy *env);
 void		ft_cd(t_token *token, t_env_cpy *env_cpy);
-void		update_env_var(t_env_cpy *env_cpy, char *key, char *value);
+t_env_cpy	*update_env_var(t_env_cpy *env_cpy, char *key, char *value);
 /*utils*/
 char		*ft_strndup(const char *s, size_t n);
 void		ft_free_2darray(char **tokens);

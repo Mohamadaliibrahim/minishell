@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/26 11:09:42 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/28 16:11:18 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ int	main(int ac, char **av, char **env)
 	env_cpy = add_shell(env_cpy);
 	while (1)
 	{
-		input = readline("\033[0;32mMinishell >\033[0m ");
+		input = readline("\033[0;32mHELL >\033[0m ");
 		if (input == NULL)
 		{
 			printf("exit\n");

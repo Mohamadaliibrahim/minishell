@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 20:40:37 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/26 12:14:34 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/28 18:47:51 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,16 @@
 // 	return (NULL);
 // }
 
-// char	*get_old_path(t_env_cpy *env_cpy, char *msg)
-// {
-// 	while (env_cpy)
-// 	{
-// 		if (ft_strcmp(env_cpy->type, msg) == 0)
-// 			return (env_cpy->env);
-// 		env_cpy = env_cpy->next;
-// 	}
-// 	return (NULL);
-// }
+char	*get_old_path(t_env_cpy *env_cpy, char *msg)
+{
+	while (env_cpy)
+	{
+		if (ft_strcmp(env_cpy->type, msg) == 0)
+			return (env_cpy->env);
+		env_cpy = env_cpy->next;
+	}
+	return (NULL);
+}
 
 t_env_cpy	*find_smallest(t_env_cpy *head, t_env_cpy *exclude)
 {
