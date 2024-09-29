@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/26 15:14:14 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/09/28 22:47:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 	else if ((ft_strcmp(token->tokens, "export") == 0))
 		ft_export(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "unset") == 0))
-		ft_unset(token, env_cpy);
+		ft_unset(token, &env_cpy);
 	else if ((ft_strcmp(token->tokens, "cd") == 0))
 		ft_cd(token, env_cpy);
 	else if ((ft_strcmp(token->tokens, "exit") == 0))

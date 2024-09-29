@@ -6,18 +6,18 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/21 17:58:28 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/29 18:14:49 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-void	remove_env(char *type, t_env_cpy *env_cpy)
+void	remove_env(char *type, t_env_cpy **env_cpy)
 {
 	t_env_cpy	*prev;
 	t_env_cpy	*current;
 
-	current = env_cpy;
+	current = *env_cpy;
 	prev = NULL;
 	while (current)
 	{
@@ -26,7 +26,7 @@ void	remove_env(char *type, t_env_cpy *env_cpy)
 			if (prev)
 				prev->next = current->next;
 			else
-				env_cpy = current->next;
+				*env_cpy = current->next;
 			if (current->next)
 				current->next->previous = prev;
 			free(current->env);
@@ -39,13 +39,14 @@ void	remove_env(char *type, t_env_cpy *env_cpy)
 	}
 }
 
-void	ft_unset(t_token *token, t_env_cpy *env_cpy)
+void	ft_unset(t_token *token, t_env_cpy **env_cpy)
 {
 	char	*type;
 
 	if (!token->next)
 	{
-		env_cpy->last_exit_status = 0;
+		if (*env_cpy)
+			(*env_cpy)->last_exit_status = 0;
 		return ;
 	}
 	token = token->next;
@@ -59,5 +60,6 @@ void	ft_unset(t_token *token, t_env_cpy *env_cpy)
 		}
 		token = token->next;
 	}
-	env_cpy->last_exit_status = 0;
+	if (*env_cpy)
+		(*env_cpy)->last_exit_status = 0;
 }

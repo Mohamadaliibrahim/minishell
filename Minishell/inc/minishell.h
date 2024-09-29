@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/28 18:46:41 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/29 16:37:01 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,8 @@ void		ft_cmd(t_token *token, t_env_cpy *env_cpy);
 /*echo*/
 void		check_echo(t_token *token, t_env_cpy *env_list);
 /*unset*/
-void		ft_unset(t_token *token, t_env_cpy *env_cpy);
+void		ft_unset(t_token *token, t_env_cpy **env_cpy);
+void		remove_env(char *type, t_env_cpy **env_cpy);
 void		free_single_env_list(t_env_cpy *head);
 /*export*/
 void		ft_export(t_token *token, t_env_cpy *env_cpy);
@@ -114,9 +115,10 @@ char		*ft_strndup(const char *s, size_t n);
 void		ft_free_2darray(char **tokens);
 void		free_token_list(t_token *head);
 void		free_env_list(t_env_cpy *head);
-char 		*ft_strjoin_free(char *s1, char *s2);
+char		*ft_strjoin_free(char *s1, char *s2);
 void		ft_free_2darray(char **tokens);
 /*Env && Export*/
+t_env_cpy	*fill_token(t_env_cpy *env_cpy, char *str);
 char		*return_type(char *env);
 char		*return_path(char *env);
 t_env_cpy	*add_shell(t_env_cpy *env_cpy);
