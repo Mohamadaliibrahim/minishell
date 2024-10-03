@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/29 18:52:01 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/03 12:15:33 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,19 +54,22 @@ char	*get_pwd(t_env_cpy *env_cpy)
 
 char	*get_oldpwd(t_env_cpy *env_cpy)
 {
-	char *oldpwd = get_env_msg(env_cpy, "OLDPWD");
+	char	*oldpwd;
+
+	oldpwd = get_env_msg(env_cpy, "OLDPWD");
 	if (oldpwd)
-		return oldpwd;
+		return (oldpwd);
 	if (internal_oldpwd)
-		return ft_strdup(internal_oldpwd);
-	return NULL;
+		return (ft_strdup(internal_oldpwd));
+	return (NULL);
 }
 
 // hay el function btrj3lk el path lal token
-static char	*get_cd_path(t_token *token, t_env_cpy *env_cpy)
+static char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
 {
 	char	*path;
 
+	*should_free = 0;
 	if (token->next == NULL || ft_strcmp(token->next->tokens, "~") == 0)
 	{
 		path = get_env_msg(env_cpy, "HOME");
@@ -76,6 +79,7 @@ static char	*get_cd_path(t_token *token, t_env_cpy *env_cpy)
 			env_cpy->last_exit_status = 1;
 			return (NULL);
 		}
+		*should_free = 1;
 	}
 	else if (ft_strcmp(token->next->tokens, "-") == 0)
 	{
@@ -86,6 +90,7 @@ static char	*get_cd_path(t_token *token, t_env_cpy *env_cpy)
 			env_cpy->last_exit_status = 1;
 			return (NULL);
 		}
+		*should_free = 1;
 	}
 	else if (ft_strcmp(token->next->tokens, ".") == 0)
 	{
@@ -137,17 +142,20 @@ void	ft_pwd(t_env_cpy *env)
 {
 	char	*pwd;
 	char	*env_pwd;
+	char	*hello;
 
 	pwd = getcwd(NULL, 0);
 	if (pwd)
 	{
 		printf("%s\n", pwd);
 		update_env_var(env, "PWD", pwd);
-		if (!get_env_msg(env, "PWD"))
+		hello = get_env_msg(env, "PWD");
+		if (!hello)
 		{
 			free(internal_pwd);
 			internal_pwd = ft_strdup(pwd);
 		}
+		free(hello);
 		free(pwd);
 	}
 	else
@@ -197,22 +205,29 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 	char	*new_pwd;
 	char	*pwd_env;
 	char	*oldpwd_env;
+	char	*hello;
+	int		should_free;
 
 	update_env(env_cpy);
 	// Get PWD and OLDPWD from env_cpy
 	pwd_env = get_env_msg(env_cpy, "PWD");
 	oldpwd_env = get_env_msg(env_cpy, "OLDPWD");
-
+	hello = NULL;
 	if (token->next && token->next->next)
 	{
 		ft_putstr_fd("cd: too many arguments\n", 2);
 		env_cpy->last_exit_status = 1;
+		free(pwd_env);
+		free(oldpwd_env);
 		return ;
 	}
-	path = get_cd_path(token, env_cpy);
+	path = get_cd_path(token, env_cpy, &should_free);
 	if (!path)
+	{
+		free(pwd_env);
+		free(oldpwd_env);
 		return ;
-
+	}
 	old_pwd = getcwd(NULL, 0);
 	if (!old_pwd)
 	{
@@ -224,6 +239,7 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 			env_cpy->last_exit_status = 1;
 			free(pwd_env);
 			free(oldpwd_env);
+			free(path);
 			return ;
 		}
 	}
@@ -234,6 +250,8 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 		free(old_pwd);
 		free(pwd_env);
 		free(oldpwd_env);
+		if (should_free)
+			free(path);
 		return ;
 	}
 	new_pwd = getcwd(NULL, 0);
@@ -264,15 +282,18 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 			else
 			{
 				internal_oldpwd = ft_strdup(old_pwd);
-			
 				remove_env("OLDPWD", &env_cpy);
 				if (flag == 0)
 				{
 					fill_token(env_cpy, "OLDPWD");
 					flag++;
 				}
-				else if(flag > 0)
-					fill_token(env_cpy, ft_strjoin("OLDPWD=", internal_oldpwd));
+				else if (flag > 0)
+				{
+					hello = ft_strjoin("OLDPWD=", internal_oldpwd);
+					fill_token(env_cpy, hello);
+					free(hello);
+				}
 			}
 		}
 		free(new_pwd);
@@ -291,13 +312,19 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 		{
 			if (internal_oldpwd)
 				free(internal_oldpwd);
-			internal_oldpwd = pwd_env ? ft_strdup(pwd_env) : ft_strdup(old_pwd);
+			internal_oldpwd = pwd_env;
+			if (internal_oldpwd)
+				ft_strdup(pwd_env);
+			else
+				ft_strdup(old_pwd);
 		}
 	}
 	// printf("\n%s\n", old_pwd);
 	// printf("\n%s\n", pwd_env);
 	// printf("\n%s\n", oldpwd_env);
 	free(old_pwd);
+	if (should_free)
+		free(path);
 	free(pwd_env);
 	free(oldpwd_env);
 }
