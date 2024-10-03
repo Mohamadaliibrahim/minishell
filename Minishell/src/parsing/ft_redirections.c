@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_redirections.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 15:57:49 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/24 16:00:39 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/03 17:58:48 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,5 +251,25 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 
 void	check_redirections(t_token *token, t_env_cpy *env)
 {
+	if ( token->next
+		&& ((token->next->token_type == REDIRECT_IN)
+		|| (token->next->token_type == REDIRECT_OUT)
+		|| (token->next->token_type == APPEND)
+		|| (token->next->token_type == HEREDOC)))
+	{
+		perror(token->next->tokens);
+		env->last_exit_status = 2;
+		return ;
+	}
+	// if ( token->previous
+	// 	&& ((token->previous->token_type == REDIRECT_IN)
+	// 	|| (token->previous->token_type == REDIRECT_OUT)
+	// 	|| (token->previous->token_type == APPEND)
+	// 	|| (token->previous->token_type == HEREDOC)))
+	// {
+	// 	perror(token->tokens);
+	// 	env->last_exit_status = 2;
+	// 	return ;
+	// }
 	ft_redirection(token, env);
 }
