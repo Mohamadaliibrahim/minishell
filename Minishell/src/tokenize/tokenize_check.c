@@ -3,29 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/03 15:15:59 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/04 10:01:25 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-int	containe_pipe(t_token *token1)
+int search_for_pipe(t_token *token_list)
 {
-	t_token	*token;
+    t_token *current;
 
-	token = token1;
-	while (token)
-	{
-		if (token->token_type == PIPE)
-		{
-			return (1);
-		}
-		token = token->next;
-	}
-	return (0);
+    current = token_list;
+    while (current)
+    {
+        if (current->token_type == PIPE)
+            return (1);
+        current = current->next;
+    }
+    return (0);
 }
 
 int	check_type(char *token, t_env_cpy *env)
@@ -123,17 +121,15 @@ void	check(char *input, t_env_cpy *env_cpy)
 	}
 	if (token)
 	{
-		if (containe_pipe(token)) {
-			pipe_commands(token, env_cpy);  // Execute piped commands
-		} else {
-			if (search_for_redirection(token)) {
-				check_redirections(token, env_cpy);
-			} else if (token->token_type == CMND) {
-				ft_cmd(token, env_cpy);
-			} else if (token->token_type == UNKNOWN) {
-				fprintf(stderr, "%s: Command not found\n", token->tokens);
-				env_cpy->last_exit_status = 127;
-			}
+		if (search_for_pipe(token))
+			execute_pipeline(token, env_cpy);  // Execute piped commands
+		else if (search_for_redirection(token)) {
+			check_redirections(token, env_cpy);
+		} else if (token->token_type == CMND) {
+			ft_cmd(token, env_cpy);
+		} else if (token->token_type == UNKNOWN) {
+			fprintf(stderr, "%s: Command not found\n", token->tokens);
+			env_cpy->last_exit_status = 127;
 		}
 	}
 	if (token)

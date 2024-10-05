@@ -6,97 +6,201 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 14:14:50 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/28 14:23:12 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/05 14:03:02 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-char *get_command_path_simple(char *command, t_env_cpy *env_cpy) {
-    char *path_env = getenv("PATH");
-    (void)env_cpy;  // Unused parameter
-    if (!path_env) {
-        return NULL;  // No PATH environment variable set
+t_command **parse_commands(t_token *token_list, int *num_commands, t_env_cpy *env_cpy)
+{
+    t_command   **commands;
+    t_token     *current;
+    t_token     *cmd_tokens;
+    int         count;
+    int         i;
+
+    // Count the number of commands
+    count = 1;
+    current = token_list;
+    while (current)
+    {
+        if (current->token_type == PIPE)
+            count++;
+        current = current->next;
     }
 
-    char *path = ft_strdup(path_env);
-    if (!path) {
-        return NULL;  // Memory allocation failed
-    }
+    *num_commands = count;
+    commands = malloc(sizeof(t_command *) * (count + 1)); // +1 for NULL termination
+    if (!commands)
+        return (NULL);
 
-    char *token = strtok(path, ":");
-    while (token != NULL) {
-        char *cmd_path = ft_strjoin(token, "/");
-        char *full_path = ft_strjoin(cmd_path, command);
-        free(cmd_path);
+    // Split tokens into commands
+    current = token_list;
+    i = 0;
+    while (i < count)
+    {
+        cmd_tokens = NULL;
+        commands[i] = malloc(sizeof(t_command));
+        if (!commands[i])
+            return (NULL); // Handle allocation failure
+        commands[i]->infile = NULL;
+        commands[i]->outfile = NULL;
+        commands[i]->append = 0;
 
-        // Check if the command exists and is executable
-        if (access(full_path, X_OK) == 0) {
-            free(path);  // Free the duplicated PATH string
-            return full_path;  // Return the full path to the command
+        while (current && current->token_type != PIPE)
+        {
+            if (current->token_type == REDIRECT_IN)  // Input redirection <
+            {
+                current = current->next;
+                if (current && current->tokens)
+                    commands[i]->infile = ft_strdup(current->tokens);  // Store input file
+            }
+            else if (current->token_type == REDIRECT_OUT)  // Output redirection >
+            {
+                current = current->next;
+                if (current && current->tokens)
+                    commands[i]->outfile = ft_strdup(current->tokens);  // Store output file
+                commands[i]->append = 0;
+            }
+            else if (current->token_type == APPEND)  // Append redirection >>
+            {
+                current = current->next;
+                if (current && current->tokens)
+                    commands[i]->outfile = ft_strdup(current->tokens);  // Store output file
+                commands[i]->append = 1;
+            }
+            else
+            {
+                // Add other tokens as part of the command
+                add_token(&cmd_tokens, current->tokens, env_cpy, current->qoute_type);
+            }
+            current = current->next;
         }
 
-        free(full_path);  // Command not found in this directory, try the next
-        token = strtok(NULL, ":");
-    }
+        commands[i]->token_list = cmd_tokens;
+        commands[i]->argv = allocate_arguments(cmd_tokens);
 
-    free(path);
-    return NULL;  // Command not found in any PATH directories
+        if (current && current->token_type == PIPE)  // Move past PIPE
+            current = current->next;
+
+        i++;
+    }
+    commands[i] = NULL;  // Null-terminate the array
+    return commands;
 }
 
+void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
+{
+    int         num_commands;
+    t_command   **commands;
+    int         num_pipes;
+    int         **pipes;
+    pid_t       *pids;
+    int         i;
+    int         infile_fd;
+    int         outfile_fd;
 
-void pipe_commands(t_token *token, t_env_cpy *env_cpy) {
-    int pipefd[2];
-    int fd_in = 0;  // Input file descriptor for the next command
-    pid_t pid;
+    // Parse commands
+    commands = parse_commands(token_list, &num_commands, env_cpy);
+    if (!commands)
+        return; // Handle parsing error
 
-    t_token *current = token;
+    num_pipes = num_commands - 1;
+    pipes = create_pipes(num_pipes);
+    if (!pipes)
+        return; // Handle pipe creation error
 
-    while (current) {
-        if (pipe(pipefd) == -1) {
-            perror("pipe");
-            exit(EXIT_FAILURE);
+    pids = malloc(sizeof(pid_t) * num_commands);
+    if (!pids)
+        return; // Handle allocation failure
+
+    for (i = 0; i < num_commands; i++)
+    {
+        pids[i] = fork();
+        if (pids[i] == -1)
+        {
+            perror("fork");
+            env_cpy->last_exit_status = 1;
+            break;
         }
 
-        if ((pid = fork()) == -1) {
-            perror("fork");
-            exit(EXIT_FAILURE);
-        } else if (pid == 0) {
-            // Child process
-            if (fd_in != 0) {
-                dup2(fd_in, STDIN_FILENO);  // Redirect input from previous command
+        if (pids[i] == 0)  // In child process
+        {
+            // Handle input redirection
+            if (commands[i]->infile)
+            {
+                infile_fd = open(commands[i]->infile, O_RDONLY);
+                if (infile_fd < 0)
+                {
+                    perror(commands[i]->infile);
+                    exit(EXIT_FAILURE);
+                }
+                dup2(infile_fd, STDIN_FILENO);
+                close(infile_fd);
             }
-            if (current->next && current->next->token_type == PIPE) {
-                dup2(pipefd[1], STDOUT_FILENO);  // Redirect output to next command
+            // Handle output redirection
+            if (commands[i]->outfile)
+            {
+                if (commands[i]->append)
+                    outfile_fd = open(commands[i]->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+                else
+                    outfile_fd = open(commands[i]->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+                if (outfile_fd < 0)
+                {
+                    perror(commands[i]->outfile);
+                    exit(EXIT_FAILURE);
+                }
+                dup2(outfile_fd, STDOUT_FILENO);
+                close(outfile_fd);
             }
 
-            close(pipefd[0]);  // Close unused read end of the pipe
-            close(pipefd[1]);  // Close unused write end of the pipe
-
-            // Prepare command and arguments manually
-            char *command = current->tokens;
-            char *cmd_path = get_command_path_simple(command, env_cpy);  // Assuming you have a simpler function
-
-            // Prepare arguments manually (simplified example)
-            char *av[] = {cmd_path, NULL};  // You would need to expand this to handle arguments correctly
-            char **env = list_to_2d(env_cpy);
-
-            execve(cmd_path, av, env);  // Execute the command
-            perror("execve failed");
-            exit(EXIT_FAILURE);
-        } else {
-            // Parent process
-            waitpid(pid, NULL, 0);  // Wait for child process to finish
-            close(pipefd[1]);  // Close the write end of the pipe
-            fd_in = pipefd[0];  // Keep the read end of the pipe for the next command
-            current = current->next;  // Move to the next token
-
-            // Skip over the pipe token
-            if (current && current->token_type == PIPE) {
-                current = current->next;
+            // Handle pipes
+            if (i > 0)  // Connect stdin to the previous pipe for every command except the first
+            {
+                dup2(pipes[i - 1][0], STDIN_FILENO);
             }
+
+            if (i < num_commands - 1)  // Connect stdout to the next pipe for every command except the last
+            {
+                dup2(pipes[i][1], STDOUT_FILENO);
+            }
+
+            // Close all pipe file descriptors
+            close_pipes(pipes, num_pipes);
+
+            // Execute the command
+            ft_cmd(commands[i]->token_list, env_cpy);
+
+            // If exec fails
+            exit(env_cpy->last_exit_status);
         }
     }
 
-    close(fd_in);  // Close the last input file descriptor
+    // Parent process closes all pipe file descriptors
+    close_pipes(pipes, num_pipes);
+
+    // Wait for all child processes to finish
+    for (i = 0; i < num_commands; i++)
+    {
+        int status;
+        waitpid(pids[i], &status, 0);
+        if (WIFEXITED(status))
+            env_cpy->last_exit_status = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+        {
+            int sig = WTERMSIG(status);
+            env_cpy->last_exit_status = 128 + sig;
+            if (sig == SIGINT)
+                write(1, "\n", 1);
+            else if (sig == SIGQUIT)
+                write(1, "Quit: 3\n", 8);
+        }
+    }
+
+    // Free allocated memory
+    free(pids);
+    free_commands(commands);
+    free_pipes(pipes, num_pipes);
 }

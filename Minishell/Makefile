@@ -3,16 +3,28 @@ CFLAGS = -Wall -Wextra -Werror -g -Iinc/ -Ilibft/
 
 NAME = minishell
 
-SRC = src/main.c src/tokenize/tokenize.c src/tokenize/tokenize_check.c \
-      src/tokenize/tokenize_tools.c src/tokenize/utils.c \
-      src/parsing/cmd.c src/build_ins/echo.c src/build_ins/pwd_cd.c \
-      src/parsing/dollar.c src/tokenize/env_tokenizeing.c\
-      src/build_ins/ft_env.c src/build_ins/ft_export.c\
-      src/build_ins/sort_export.c src/build_ins/update_pwd.c\
-      src/build_ins/ft_export_update.c src/build_ins/ft_unset.c\
-      src/parsing/signals.c src/execution/exec.c\
-      src/parsing/ft_redirections.c src/tokenize/redirections.c \
-	  src/execution/pipe.c
+SRC = src/main.c \
+      src/tokenize/tokenize.c \
+      src/tokenize/tokenize_check.c \
+      src/tokenize/tokenize_tools.c \
+      src/tokenize/utils.c \
+      src/parsing/cmd.c \
+      src/build_ins/echo.c \
+      src/build_ins/pwd_cd.c \
+      src/parsing/dollar.c \
+      src/tokenize/env_tokenizeing.c \
+      src/build_ins/ft_env.c \
+      src/build_ins/ft_export.c \
+      src/build_ins/sort_export.c \
+      src/build_ins/update_pwd.c \
+      src/build_ins/ft_export_update.c \
+      src/build_ins/ft_unset.c \
+      src/parsing/signals.c \
+      src/execution/exec.c \
+      src/parsing/ft_redirections.c \
+      src/tokenize/redirections.c \
+      src/execution/pipe.c \
+      src/execution/pipe_utils.c
 
 OBJS = $(SRC:.c=.o)
 
@@ -41,7 +53,7 @@ clean:
 	@echo "\033[0;32mObject files removed.\033[0m"
 
 fclean: clean
-	@echo "\033[0;32mRemoving minishell and libft...\033[0m"
+	@echo "\033[0;32mRemoving $(NAME) and libft...\033[0m"
 	@rm -f $(NAME)
 	@$(MAKE) -C libft fclean > /dev/null
 	@echo "\033[0;32m$(NAME) and libft removed.\033[0m"

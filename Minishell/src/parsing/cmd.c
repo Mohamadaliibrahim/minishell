@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/04 11:57:57 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/09/28 22:47:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ char	*find_in_path(char *cmd, t_env_cpy *env)
 	return (NULL);
 }
 
+
 void	ft_exit(t_token *token, t_env_cpy *env)
 {
 	int	exit_code;
@@ -52,25 +53,14 @@ void	ft_exit(t_token *token, t_env_cpy *env)
 	exit_code = 0;
 	if (token->next)
 	{
-		if (!ft_is_numeric(token->next->tokens))
-		{
-			fprintf(stderr, "exit: %s: numeric argument required\n",
-				token->next->tokens);
+		exit_code = ft_atoi(token->next->tokens);
+		if (exit_code == 0 && ft_strcmp(token->next->tokens, "0") != 0)
 			exit_code = 2;
-		}
-		else
-		{
-			exit_code = ft_atoi(token->next->tokens);
-			if (exit_code < 0)
-				exit_code = 256 + (exit_code % 256);
-			else
-				exit_code = exit_code % 256;
-		}
 	}
 	env->last_exit_status = exit_code;
-	printf("%d\n", exit_code);
 	exit(exit_code);
 }
+
 
 void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 {
@@ -103,3 +93,4 @@ void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
 	else
 		do_comand(token, env_cpy);
 }
+
