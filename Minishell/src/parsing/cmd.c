@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/28 22:47:02 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/05 14:27:35 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,23 @@ void	ft_exit(t_token *token, t_env_cpy *env)
 	exit_code = 0;
 	if (token->next)
 	{
-		exit_code = ft_atoi(token->next->tokens);
-		if (exit_code == 0 && ft_strcmp(token->next->tokens, "0") != 0)
+		if (!ft_is_numeric(token->next->tokens))
+		{
+			fprintf(stderr, "exit: %s: numeric argument required\n",
+				token->next->tokens);
 			exit_code = 2;
+		}
+		else
+		{
+			exit_code = ft_atoi(token->next->tokens);
+			if (exit_code < 0)
+				exit_code = 256 + (exit_code % 256);
+			else
+				exit_code = exit_code % 256;
+		}
 	}
 	env->last_exit_status = exit_code;
+	printf("%d\n", exit_code);
 	exit(exit_code);
 }
 

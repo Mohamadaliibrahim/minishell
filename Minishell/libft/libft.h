@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 17:12:49 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/09/25 15:45:14 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/04 11:57:26 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ int		ft_isascii(int c);
 int		ft_isdigit(int n);
 int		ft_isprint(int c);
 int		ft_tolower(int c);
+int		ft_is_numeric(const char *str);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 int		ft_atoi(const char *nptr);
 int		ft_memcmp(const void *s1, const void *s2, size_t n);
