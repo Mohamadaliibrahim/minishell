@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/04 10:01:25 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/06 14:46:25 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,52 +86,154 @@ static int	check_for_quotations(char *input)
 	return (1);
 }
 
-void	check(char *input, t_env_cpy *env_cpy)
+char *preprocess_input(char *input)
 {
-	t_token	*token;
-	t_token	*current;
-	int		i;
-	int		error_flag;
+    char *new_input;
+    int i = 0, j = 0;
+    int len = ft_strlen(input);
+    int new_len = len * 2; // Maximum possible length after adding spaces
+    new_input = malloc(new_len + 1); // +1 for null terminator
+    if (!new_input)
+        return NULL;
 
-	token = NULL;
-	error_flag = 0;
-	tokenize_input(input, &token, env_cpy, &error_flag);
-	if (error_flag)
-	{
-		if (token)
-			free_token_list(token);
-		env_cpy->last_exit_status = 2;
-		return ;
-	}
-	if (!token)
-		return ;
-	if (!check_for_quotations(input))
-	{
-		printf("Syntax error: unmatched quotes\n");
-		free_token_list(token);
-		return ;
-	}
-	current = token;
-	i = 0;
-	while (current)
-	{
-		// printf("token[%d]: %s\n", i, current->tokens);
-		current = current->next;
-		i++;
-	}
-	if (token)
-	{
-		if (search_for_pipe(token))
-			execute_pipeline(token, env_cpy);  // Execute piped commands
-		else if (search_for_redirection(token)) {
-			check_redirections(token, env_cpy);
-		} else if (token->token_type == CMND) {
-			ft_cmd(token, env_cpy);
-		} else if (token->token_type == UNKNOWN) {
-			fprintf(stderr, "%s: Command not found\n", token->tokens);
-			env_cpy->last_exit_status = 127;
-		}
-	}
-	if (token)
-		free_token_list(token);
+    while (input[i])
+    {
+        // Handle quoted strings
+        if (input[i] == '\'' || input[i] == '"')
+        {
+            char quote = input[i++];
+            new_input[j++] = quote; // Copy opening quote
+            while (input[i] && input[i] != quote)
+                new_input[j++] = input[i++];
+            if (input[i] == quote)
+                new_input[j++] = input[i++]; // Copy closing quote
+        }
+        // Check for operators outside quotes
+        else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
+        {
+            // Add space before the operator if necessary
+            if (i > 0 && input[i - 1] != ' ')
+                new_input[j++] = ' ';
+            
+            // Add the operator
+            new_input[j++] = input[i];
+
+            // Handle double-character operators (<<, >>)
+            if ((input[i] == '<' || input[i] == '>') && input[i + 1] == input[i])
+            {
+                i++;
+                new_input[j++] = input[i];
+            }
+
+            // Add space after the operator if necessary
+            if (input[i + 1] && input[i + 1] != ' ')
+                new_input[j++] = ' ';
+            i++;
+        }
+        else
+        {
+            // Copy other characters
+            new_input[j++] = input[i++];
+        }
+    }
+    new_input[j] = '\0';
+
+    return new_input;
+}
+
+int is_invalid_pipe_syntax(t_token *token_list)
+{
+    t_token *current = token_list;
+
+    // Check if the first token is a pipe
+    if (current->token_type == PIPE)
+        return 1;
+
+    // Traverse the token list and check for consecutive pipes
+    while (current->next)
+    {
+        if (current->token_type == PIPE && current->next->token_type == PIPE)
+            return 1;  // Consecutive pipes are invalid
+        current = current->next;
+    }
+
+    // Check if the last token is a pipe
+    if (current->token_type == PIPE)
+        return 1;
+
+    return 0;  // No invalid pipe usage found
+}
+
+
+void check(char *input, t_env_cpy *env_cpy)
+{
+    t_token *token = NULL;
+    int error_flag = 0;
+
+    // Preprocess input to add spaces around operators
+    char *preprocessed_input = preprocess_input(input);
+    if (!preprocessed_input)
+    {
+        fprintf(stderr, "Error: Memory allocation failed\n");
+        env_cpy->last_exit_status = 1;
+        return;
+    }
+
+    // Tokenize the preprocessed input
+    tokenize_input(preprocessed_input, &token, env_cpy, &error_flag);
+    free(preprocessed_input); // Free the preprocessed input after tokenization
+
+    if (error_flag)
+    {
+        if (token)
+            free_token_list(token);
+        env_cpy->last_exit_status = 2;
+        return;
+    }
+    if (!token)
+        return;
+
+    // Check for unmatched quotations (this function may need adjustment)
+    if (!check_for_quotations(input))
+    {
+        fprintf(stderr, "Syntax error: unmatched quotes\n");
+        free_token_list(token);
+        env_cpy->last_exit_status = 2;
+        return;
+    }
+    if (is_invalid_pipe_syntax(token))
+    {
+        fprintf(stderr, "bash: syntax error near unexpected token `|'\n");
+        free_token_list(token);
+        env_cpy->last_exit_status = 2;
+        return;
+    }
+    // Optionally, print tokens for debugging
+    /*
+    t_token *current = token;
+    int i = 0;
+    while (current)
+    {
+        printf("token[%d]: %s\n", i, current->tokens);
+        current = current->next;
+        i++;
+    }
+    */
+
+    if (token)
+    {
+        if (search_for_pipe(token))
+            execute_pipeline(token, env_cpy);  // Execute piped commands
+        else if (search_for_redirection(token))
+            check_redirections(token, env_cpy);
+        else if (token->token_type == CMND)
+            ft_cmd(token, env_cpy);
+        else if (token->token_type == UNKNOWN)
+        {
+            fprintf(stderr, "%s: Command not found\n", token->tokens);
+            env_cpy->last_exit_status = 127;
+        }
+    }
+    if (token)
+        free_token_list(token);
 }

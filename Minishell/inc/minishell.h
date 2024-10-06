@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/05 14:02:30 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/06 13:13:50 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ typedef struct s_env_cpy
 	struct s_env_cpy	*previous;
 }					t_env_cpy;
 
-/* Struct for Command */
 typedef struct s_command
 {
     char        **argv;      // Command arguments

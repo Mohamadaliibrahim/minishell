@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 14:14:50 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/05 14:03:02 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/06 13:56:06 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,18 +127,30 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
 
         if (pids[i] == 0)  // In child process
         {
+            // Handle pipes first
+            if (i > 0)  // For every command except the first, connect stdin to the previous pipe
+            {
+                dup2(pipes[i - 1][0], STDIN_FILENO);
+            }
+
+            if (i < num_commands - 1)  // For every command except the last, connect stdout to the next pipe
+            {
+                dup2(pipes[i][1], STDOUT_FILENO);
+            }
+
             // Handle input redirection
             if (commands[i]->infile)
             {
                 infile_fd = open(commands[i]->infile, O_RDONLY);
-                if (infile_fd < 0)
+                if (infile_fd < 0)  // If the file doesn't exist or can't be opened
                 {
-                    perror(commands[i]->infile);
-                    exit(EXIT_FAILURE);
+                    perror(commands[i]->infile);  // Print error message: "Test: No such file or directory"
+                    exit(1);  // Exit the child process with an error status
                 }
-                dup2(infile_fd, STDIN_FILENO);
+                dup2(infile_fd, STDIN_FILENO);  // Redirect stdin to the file
                 close(infile_fd);
             }
+
             // Handle output redirection
             if (commands[i]->outfile)
             {
@@ -149,25 +161,14 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
 
                 if (outfile_fd < 0)
                 {
-                    perror(commands[i]->outfile);
+                    perror(commands[i]->outfile);  // Print error message if output file can't be opened
                     exit(EXIT_FAILURE);
                 }
-                dup2(outfile_fd, STDOUT_FILENO);
+                dup2(outfile_fd, STDOUT_FILENO);  // Redirect stdout to the file
                 close(outfile_fd);
             }
 
-            // Handle pipes
-            if (i > 0)  // Connect stdin to the previous pipe for every command except the first
-            {
-                dup2(pipes[i - 1][0], STDIN_FILENO);
-            }
-
-            if (i < num_commands - 1)  // Connect stdout to the next pipe for every command except the last
-            {
-                dup2(pipes[i][1], STDOUT_FILENO);
-            }
-
-            // Close all pipe file descriptors
+            // Close all pipe file descriptors in child
             close_pipes(pipes, num_pipes);
 
             // Execute the command
