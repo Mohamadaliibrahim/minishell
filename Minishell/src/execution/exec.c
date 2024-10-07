@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 10:49:47 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/03 11:56:40 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/07 13:33:48 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ void do_comand(t_token *token, t_env_cpy *env_cpy)
 	char	**av;
 
 	env = list_to_2d(env_cpy);
-	env_cpy->heredoc_file = 0;
+	//env_cpy->heredoc_file = 0;
 	av = allocate_arguments(token);
 	if (!av)
 	{

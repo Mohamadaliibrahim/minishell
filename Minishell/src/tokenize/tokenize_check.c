@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/06 14:46:25 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/07 13:34:01 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ void check(char *input, t_env_cpy *env_cpy)
     }
     if (is_invalid_pipe_syntax(token))
     {
-        fprintf(stderr, "bash: syntax error near unexpected token `|'\n");
+        fprintf(stderr, "Minishell: syntax error near unexpected token `|'\n");
         free_token_list(token);
         env_cpy->last_exit_status = 2;
         return;

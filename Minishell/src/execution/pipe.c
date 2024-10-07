@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 14:14:50 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/06 13:56:06 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/07 14:34:35 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,11 +109,18 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
     num_pipes = num_commands - 1;
     pipes = create_pipes(num_pipes);
     if (!pipes)
+    {
+        free_commands(commands);
         return; // Handle pipe creation error
+    }
 
     pids = malloc(sizeof(pid_t) * num_commands);
     if (!pids)
+    {
+        free_commands(commands);
+        free_pipes(pipes, num_pipes);
         return; // Handle allocation failure
+    }
 
     for (i = 0; i < num_commands; i++)
     {
@@ -127,32 +134,35 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
 
         if (pids[i] == 0)  // In child process
         {
-            // Handle pipes first
-            if (i > 0)  // For every command except the first, connect stdin to the previous pipe
-            {
-                dup2(pipes[i - 1][0], STDIN_FILENO);
-            }
-
-            if (i < num_commands - 1)  // For every command except the last, connect stdout to the next pipe
-            {
-                dup2(pipes[i][1], STDOUT_FILENO);
-            }
-
-            // Handle input redirection
+            // Handle input redirection if any
             if (commands[i]->infile)
             {
                 infile_fd = open(commands[i]->infile, O_RDONLY);
-                if (infile_fd < 0)  // If the file doesn't exist or can't be opened
+                if (infile_fd < 0)
                 {
-                    perror(commands[i]->infile);  // Print error message: "Test: No such file or directory"
-                    exit(1);  // Exit the child process with an error status
+                    perror(commands[i]->infile);
+                    exit(1);
                 }
-                dup2(infile_fd, STDIN_FILENO);  // Redirect stdin to the file
+                dup2(infile_fd, STDIN_FILENO);
                 close(infile_fd);
             }
 
-            // Handle output redirection
-            if (commands[i]->outfile)
+            // For stdin
+            if (!commands[i]->infile && i > 0)
+            {
+                // No input redirection, connect stdin to previous pipe
+                dup2(pipes[i - 1][0], STDIN_FILENO);
+            }
+
+            // For stdout
+            if (i < num_commands - 1)
+            {
+                // Not the last command: connect stdout to the next pipe
+                dup2(pipes[i][1], STDOUT_FILENO);
+            }
+
+            // **Apply output redirection for the first command**
+            if (i == 0 && commands[i]->outfile)
             {
                 if (commands[i]->append)
                     outfile_fd = open(commands[i]->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
@@ -161,11 +171,23 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
 
                 if (outfile_fd < 0)
                 {
-                    perror(commands[i]->outfile);  // Print error message if output file can't be opened
+                    perror(commands[i]->outfile);
                     exit(EXIT_FAILURE);
                 }
                 dup2(outfile_fd, STDOUT_FILENO);  // Redirect stdout to the file
+                // **Also duplicate stdout to the pipe**
+                if (i < num_commands - 1)
+                {
+                    dup2(outfile_fd, pipes[i][1]);
+                }
                 close(outfile_fd);
+            }
+
+            // **Ignore output redirections in subsequent commands**
+            if (i != 0 && commands[i]->outfile)
+            {
+                // Do not apply output redirection
+                // Optionally, you can print a warning or handle as per your requirements
             }
 
             // Close all pipe file descriptors in child
