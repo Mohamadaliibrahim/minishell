@@ -194,7 +194,7 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
             close_pipes(pipes, num_pipes);
 
             // Execute the command
-            ft_cmd(commands[i]->token_list, env_cpy);
+            ft_cmd(commands[i]->token_list, env_cpy, 0);
 
             // If exec fails
             exit(env_cpy->last_exit_status);

@@ -150,7 +150,6 @@ void do_comand(t_token *token, t_env_cpy *env_cpy)
 		ft_free_2darray(env);
 		return ; // Handle memory allocation failure
 	}
-
 	cmd_path = get_command_path(av, env_cpy);
 	if (!cmd_path)
 	{

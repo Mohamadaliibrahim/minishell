@@ -227,7 +227,7 @@ void check(char *input, t_env_cpy *env_cpy)
         else if (search_for_redirection(token))
             check_redirections(token, env_cpy);
         else if (token->token_type == CMND)
-            ft_cmd(token, env_cpy);
+            ft_cmd(token, env_cpy, 1);
         else if (token->token_type == UNKNOWN)
         {
             fprintf(stderr, "%s: Command not found\n", token->tokens);

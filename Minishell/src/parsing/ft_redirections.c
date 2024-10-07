@@ -225,7 +225,7 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 		close(env->last_output_fd);
 	}
 	if (env->last_exit_status == 0)
-		ft_cmd(head, env);
+		ft_cmd(head, env, 1);
 	if (dup2(stdout_backup, STDOUT_FILENO) == -1)
 	{
 		perror("dup2");

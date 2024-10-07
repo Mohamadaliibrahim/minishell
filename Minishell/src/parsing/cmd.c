@@ -46,63 +46,62 @@ char	*find_in_path(char *cmd, t_env_cpy *env)
 }
 
 
-void	ft_exit(t_token *token, t_env_cpy *env)
+void ft_exit(t_token *token, t_env_cpy *env)
 {
-	int	exit_code;
+    int exit_code = 0;
 
-	exit_code = 0;
-	if (token->next)
-	{
-		if (!ft_is_numeric(token->next->tokens))
-		{
-			fprintf(stderr, "exit: %s: numeric argument required\n",
-				token->next->tokens);
-			exit_code = 2;
-		}
-		else
-		{
-			exit_code = ft_atoi(token->next->tokens);
-			if (exit_code < 0)
-				exit_code = 256 + (exit_code % 256);
-			else
-				exit_code = exit_code % 256;
-		}
-	}
-	env->last_exit_status = exit_code;
-	printf("%d\n", exit_code);
-	exit(exit_code);
+    if (token->next)
+    {
+        if (!ft_is_numeric(token->next->tokens))
+        {
+            fprintf(stderr, "exit: %s: numeric argument required\n",
+                token->next->tokens);
+            exit_code = 2;
+        }
+        else
+        {
+            exit_code = ft_atoi(token->next->tokens);
+            if (exit_code < 0)
+                exit_code = 256 + (exit_code % 256);
+            else
+                exit_code = exit_code % 256;
+        }
+    }
+    env->last_exit_status = exit_code;
+    exit(exit_code);
 }
 
 
-void	ft_cmd(t_token *token, t_env_cpy *env_cpy)
-{
-	if (token == NULL || token->tokens == NULL)
-	{
-		fprintf(stderr, "Error: Invalid token\n");
-		env_cpy->last_exit_status = 1;
-		return ;
-	}
-	else if ((ft_strcmp(token->tokens, "echo") == 0))
-		check_echo(token, env_cpy);
-	else if ((ft_strcmp(token->tokens, "pwd") == 0))
-	{
-		env_cpy->last_exit_status = 0;
-		ft_pwd(env_cpy);
-	}
-	else if ((ft_strcmp(token->tokens, "env") == 0))
-		ft_env(token, env_cpy);
-	else if ((ft_strcmp(token->tokens, "export") == 0))
-		ft_export(token, env_cpy);
-	else if ((ft_strcmp(token->tokens, "unset") == 0))
-		ft_unset(token, &env_cpy);
-	else if ((ft_strcmp(token->tokens, "cd") == 0))
-		ft_cd(token, env_cpy);
-	else if ((ft_strcmp(token->tokens, "exit") == 0))
-	{
-		printf("exit\n");
-		ft_exit(token, env_cpy);
-	}
-	else
-		do_comand(token, env_cpy);
-}
 
+void ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
+{
+    if (token == NULL || token->tokens == NULL)
+    {
+        fprintf(stderr, "Error: Invalid token\n");
+        env_cpy->last_exit_status = 1;
+        return;
+    }
+    else if ((ft_strcmp(token->tokens, "echo") == 0))
+        check_echo(token, env_cpy);
+    else if ((ft_strcmp(token->tokens, "pwd") == 0))
+    {
+        env_cpy->last_exit_status = 0;
+        ft_pwd(env_cpy);
+    }
+    else if ((ft_strcmp(token->tokens, "env") == 0))
+        ft_env(token, env_cpy);
+    else if ((ft_strcmp(token->tokens, "export") == 0))
+        ft_export(token, env_cpy);
+    else if ((ft_strcmp(token->tokens, "unset") == 0))
+        ft_unset(token, &env_cpy);
+    else if ((ft_strcmp(token->tokens, "cd") == 0))
+        ft_cd(token, env_cpy);
+    else if ((ft_strcmp(token->tokens, "exit") == 0))
+    {
+        if (is_main_shell)
+            printf("exit\n");
+        ft_exit(token, env_cpy);
+    }
+    else
+        do_comand(token, env_cpy);
+}

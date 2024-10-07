@@ -107,7 +107,7 @@ char		*return_path(char *env);
 /* Command Handling */
 char		*find_in_path(char *cmd, t_env_cpy *env);
 char		*get_old_path(t_env_cpy *env_cpy, char *msg);
-void		ft_cmd(t_token *token, t_env_cpy *env_cpy);
+void		ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell);
 
 /* Built-in Echo */
 void		check_echo(t_token *token, t_env_cpy *env_list);

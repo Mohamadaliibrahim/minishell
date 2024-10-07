@@ -152,37 +152,3 @@ int	main(int ac, char **av, char **env)
 	rl_free_line_state();
 	return (0);
 }
-
-/*correct these for that when we unset the PWD then move in folders by cd the OLDPWD will become null 
-after that when moving to another folder by cd it need to fill the OLDPWD...
-
-do that with keeping the cases in the cd work
-like after creating a file a by (mkdir a) then entering it by (cd a) after that create a file b inside a and entering it then creating a file c in file b and entering it after that deleting file a while you are in file c by (rm -rf ../../../a) then typing pwd and it should be as were we where and then typing (cd .. ) and gives and error then type pwd and give the same as before the (cd ..)but with /.. at the end ..
-
-what should happen in this case and its happening :
-Minishell > mkdir a
-Minishell > cd a
-Minishell > mkdir b
-Minishell > cd b
-Minishell > mkdir c
-Minishell > cd c
-Minishell > pwd
-/home/mohamibr/minishell/Minishell/a/b/c
-Minishell > rm -rf ../../../a
-Minishell > pwd
-/home/mohamibr/minishell/Minishell/a/b/c
-Minishell > cd ..
-cd: error retrieving current directory:getcwd: cannot access parent directories: No such file or directory
-Minishell > pwd
-/home/mohamibr/minishell/Minishell/a/b/c/..
-Minishell > cd ..
-cd: error retrieving current directory:getcwd: cannot access parent directories: No such file or directory
-Minishell > pwd
-/home/mohamibr/minishell/Minishell/a/b/c/../..
-Minishell > cd ..
-Minishell > pwd
-/home/mohamibr/minishell/Minishell
-Minishell > 
-
-the is correct keep the code do  that 
-but add the case that works with the OLDPWD*/
