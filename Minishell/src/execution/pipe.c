@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 14:14:50 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/07 14:34:35 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/08 11:36:20 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,35 +134,33 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
 
         if (pids[i] == 0)  // In child process
         {
-            // Handle input redirection if any
-            if (commands[i]->infile)
+            // Handle input redirection if any, including heredoc
+            if (commands[i]->infile || (env_cpy->heredoc_file && i == 0))
             {
-                infile_fd = open(commands[i]->infile, O_RDONLY);
+                char *input_file = commands[i]->infile ? commands[i]->infile : env_cpy->heredoc_file;
+                infile_fd = open(input_file, O_RDONLY);
                 if (infile_fd < 0)
                 {
-                    perror(commands[i]->infile);
+                    perror(input_file);
                     exit(1);
                 }
                 dup2(infile_fd, STDIN_FILENO);
                 close(infile_fd);
             }
 
-            // For stdin
-            if (!commands[i]->infile && i > 0)
+            // Handle pipes
+            if (i > 0)  // Not the first command
             {
-                // No input redirection, connect stdin to previous pipe
                 dup2(pipes[i - 1][0], STDIN_FILENO);
             }
 
-            // For stdout
-            if (i < num_commands - 1)
+            if (i < num_commands - 1)  // Not the last command
             {
-                // Not the last command: connect stdout to the next pipe
                 dup2(pipes[i][1], STDOUT_FILENO);
             }
 
-            // **Apply output redirection for the first command**
-            if (i == 0 && commands[i]->outfile)
+            // Handle output redirection if any
+            if (commands[i]->outfile)
             {
                 if (commands[i]->append)
                     outfile_fd = open(commands[i]->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
@@ -174,20 +172,8 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
                     perror(commands[i]->outfile);
                     exit(EXIT_FAILURE);
                 }
-                dup2(outfile_fd, STDOUT_FILENO);  // Redirect stdout to the file
-                // **Also duplicate stdout to the pipe**
-                if (i < num_commands - 1)
-                {
-                    dup2(outfile_fd, pipes[i][1]);
-                }
+                dup2(outfile_fd, STDOUT_FILENO);
                 close(outfile_fd);
-            }
-
-            // **Ignore output redirections in subsequent commands**
-            if (i != 0 && commands[i]->outfile)
-            {
-                // Do not apply output redirection
-                // Optionally, you can print a warning or handle as per your requirements
             }
 
             // Close all pipe file descriptors in child
@@ -226,4 +212,12 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
     free(pids);
     free_commands(commands);
     free_pipes(pipes, num_pipes);
+
+    // Unlink the heredoc file after all commands are finished
+    if (env_cpy->heredoc_file)
+    {
+        unlink(env_cpy->heredoc_file);
+        free(env_cpy->heredoc_file);
+        env_cpy->heredoc_file = NULL;
+    }
 }
