@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 14:14:50 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/08 11:36:20 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/08 16:18:16 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,19 +144,12 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
                     perror(input_file);
                     exit(1);
                 }
-                dup2(infile_fd, STDIN_FILENO);
+                dup2(infile_fd, STDIN_FILENO);  // Redirect stdin from the input file
                 close(infile_fd);
             }
-
-            // Handle pipes
-            if (i > 0)  // Not the first command
+            else if (i > 0)  // If no input redirection, use pipe
             {
-                dup2(pipes[i - 1][0], STDIN_FILENO);
-            }
-
-            if (i < num_commands - 1)  // Not the last command
-            {
-                dup2(pipes[i][1], STDOUT_FILENO);
+                dup2(pipes[i - 1][0], STDIN_FILENO);  // Connect stdin to the previous pipe
             }
 
             // Handle output redirection if any
@@ -172,8 +165,12 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
                     perror(commands[i]->outfile);
                     exit(EXIT_FAILURE);
                 }
-                dup2(outfile_fd, STDOUT_FILENO);
+                dup2(outfile_fd, STDOUT_FILENO);  // Redirect stdout to the file
                 close(outfile_fd);
+            }
+            else if (i < num_commands - 1)  // If no output redirection, use pipe
+            {
+                dup2(pipes[i][1], STDOUT_FILENO);  // Connect stdout to the next pipe
             }
 
             // Close all pipe file descriptors in child
