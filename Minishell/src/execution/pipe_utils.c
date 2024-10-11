@@ -105,15 +105,27 @@ int **create_pipes(int num_pipes)
     pipes = malloc(sizeof(int *) * num_pipes);
     if (!pipes)
         return (NULL); // Handle allocation failure
+    
     i = 0;
     while (i < num_pipes)
     {
         pipes[i] = malloc(sizeof(int) * 2);
         if (!pipes[i])
+        {
+            // Free previously allocated memory in case of failure
+            for (int j = 0; j < i; j++)
+                free(pipes[j]);
+            free(pipes);
             return (NULL); // Handle allocation failure
+        }
         if (pipe(pipes[i]) == -1)
         {
             perror("pipe");
+
+            // Free previously allocated memory in case of error
+            for (int j = 0; j <= i; j++)
+                free(pipes[j]);
+            free(pipes);
             exit(EXIT_FAILURE);
         }
         i++;
@@ -162,3 +174,11 @@ void free_commands(t_command **commands)
     free(commands);
 }
 
+void free_pids_and_commands(pid_t *pids, t_command **commands)
+{
+    if (pids)
+        free(pids);  // Free the pids array
+
+    if (commands)
+        free_commands(commands);  // Free the commands array (which should already handle freeing tokens and arguments)
+}

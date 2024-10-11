@@ -39,17 +39,19 @@ void	ft_free_2darray(char **tokens)
 	free(tokens);
 }
 
-void	free_token_list(t_token *head)
+void	free_token_list(t_token *token_list)
 {
-	t_token	*tmp;
+    t_token *current;
+    t_token *next;
 
-	while (head)
-	{
-		tmp = head;
-		head = head->next;
-		free(tmp->tokens);
-		free(tmp);
-	}
+    current = token_list;
+    while (current)
+    {
+        next = current->next;
+        free(current->tokens);  // Free the string duplicated with ft_strdup
+        free(current);  // Free the token structure
+        current = next;
+    }
 }
 
 void	free_env_list(t_env_cpy *head)
@@ -66,19 +68,6 @@ void	free_env_list(t_env_cpy *head)
 			free(tmp->type);
 		free(tmp);
 	}
-}
-
-void	free_single_env_list(t_env_cpy *head)
-{
-	t_env_cpy	*tmp;
-
-	tmp = head;
-	head = head->next;
-	if (tmp->env)
-		free(tmp->env);
-	if (tmp->type)
-		free(tmp->type);
-	free(tmp);
 }
 
 char *ft_strjoin_free(char *s1, char *s2)

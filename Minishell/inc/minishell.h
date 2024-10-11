@@ -178,9 +178,10 @@ void 		free_pipes(int **pipes, int num_pipes);
 void 		free_commands(t_command **commands);
 
 /*Handle Redirections in Pipe*/
-int search_for_redirection_input(t_token *token_list);
-int search_for_redirection_output(t_token *token_list);
-int handle_input_redirection(t_token *token);
-int handle_output_redirection(t_token *token, int append);
+int 		search_for_redirection_input(t_token *token_list);
+int 		search_for_redirection_output(t_token *token_list);
+int 		handle_input_redirection(t_token *token);
+int 		handle_output_redirection(t_token *token, int append);
+void 		free_pids_and_commands(pid_t *pids, t_command **commands);
 
 #endif

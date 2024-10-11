@@ -234,6 +234,5 @@ void check(char *input, t_env_cpy *env_cpy)
             env_cpy->last_exit_status = 127;
         }
     }
-    if (token)
-        free_token_list(token);
+    free_token_list(token);
 }

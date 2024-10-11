@@ -43,7 +43,10 @@ t_command **parse_commands(t_token *token_list, int *num_commands, t_env_cpy *en
         cmd_tokens = NULL;
         commands[i] = malloc(sizeof(t_command));
         if (!commands[i])
-            return (NULL); // Handle allocation failure
+        {
+            free_commands(commands); // Free all previously allocated commands
+            return (NULL);
+        }  
         commands[i]->infile = NULL;
         commands[i]->outfile = NULL;
         commands[i]->append = 0;
@@ -107,7 +110,7 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
         return; // Handle parsing error
 
     num_pipes = num_commands - 1;
-    pipes = create_pipes(num_pipes);
+    pipes = create_pipes(num_pipes);  // Allocate pipes
     if (!pipes)
     {
         free_commands(commands);
@@ -118,7 +121,7 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
     if (!pids)
     {
         free_commands(commands);
-        free_pipes(pipes, num_pipes);
+        free_pipes(pipes, num_pipes);  // Free pipes in case of failure
         return; // Handle allocation failure
     }
 
@@ -129,7 +132,7 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
         {
             perror("fork");
             env_cpy->last_exit_status = 1;
-            break;
+            break;  // On fork failure, ensure pipes and commands are freed
         }
 
         if (pids[i] == 0)  // In child process
@@ -142,6 +145,8 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
                 if (infile_fd < 0)
                 {
                     perror(input_file);
+                    free_pipes(pipes, num_pipes);  // Free pipes in child process
+                    free_pids_and_commands(pids, commands);  // Free other resources
                     exit(1);
                 }
                 dup2(infile_fd, STDIN_FILENO);  // Redirect stdin from the input file
@@ -163,6 +168,8 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
                 if (outfile_fd < 0)
                 {
                     perror(commands[i]->outfile);
+                    free_pipes(pipes, num_pipes);  // Free pipes in child process
+                    free_pids_and_commands(pids, commands);  // Free other resources
                     exit(EXIT_FAILURE);
                 }
                 dup2(outfile_fd, STDOUT_FILENO);  // Redirect stdout to the file
@@ -180,7 +187,17 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
             ft_cmd(commands[i]->token_list, env_cpy, 0);
 
             // If exec fails
+            free_pipes(pipes, num_pipes);  // Free pipes
+            free_pids_and_commands(pids, commands);  // Free other resources
             exit(env_cpy->last_exit_status);
+        }
+        else
+        {
+            // Close the pipe ends in the parent process
+            if (i > 0)
+                close(pipes[i - 1][0]);  // Close the read end of the previous pipe
+            if (i < num_commands - 1)
+                close(pipes[i][1]);  // Close the write end of the current pipe
         }
     }
 
@@ -208,7 +225,7 @@ void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
     // Free allocated memory
     free(pids);
     free_commands(commands);
-    free_pipes(pipes, num_pipes);
+    free_pipes(pipes, num_pipes);  // Ensure pipes are always freed
 
     // Unlink the heredoc file after all commands are finished
     if (env_cpy->heredoc_file)

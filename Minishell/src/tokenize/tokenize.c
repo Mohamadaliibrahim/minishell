@@ -20,6 +20,11 @@ static t_token	*new_token(char *input, t_env_cpy *env, char qoute_type)
 	if (!new_node)
 		return (NULL);
 	new_node->tokens = ft_strdup(input);
+    if (!new_node->tokens)  // Handle memory allocation failure for the string
+    {
+        free(new_node);  // Free the t_token structure if string duplication fails
+        return NULL;
+    }
 	new_node->next = NULL;
 	new_node->token_type = check_type(input, env);
 	new_node->qoute_type = qoute_type;

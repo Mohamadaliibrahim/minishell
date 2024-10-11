@@ -147,11 +147,18 @@ t_env_cpy	*cpy_env_helper(char *env)
 	cpy = malloc(sizeof(t_env_cpy));
 	if (!cpy)
 		return (NULL);
-	cpy->env = return_path(env);
-	cpy->type = return_type(env);
-	cpy->equal = check_for_equal(env);
-	cpy->next = NULL;
-	cpy->previous = NULL;
+
+	// Initialize all fields
+	cpy->env = return_path(env);  // Copy the path from the environment
+	cpy->type = return_type(env);  // Copy the type from the environment
+	cpy->equal = check_for_equal(env);  // Check for an equal sign in the environment variable
+	cpy->heredoc_file = NULL;  // Initialize heredoc_file to NULL
+	cpy->last_exit_status = 0;  // Initialize exit status to 0
+	cpy->last_output_fd = -1;  // Initialize output fd to -1 (no redirection)
+	cpy->last_input_fd = -1;  // Initialize input fd to -1 (no redirection)
+	cpy->next = NULL;  // Initialize next pointer to NULL
+	cpy->previous = NULL;  // Initialize previous pointer to NULL
+
 	return (cpy);
 }
 
