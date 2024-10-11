@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/03 15:12:27 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/11 19:09:26 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,7 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 	char	*hello;
 	int		should_free;
 
+	env_cpy->last_exit_status = 0;
 	update_env(env_cpy);
 	// Get PWD and OLDPWD from env_cpy
 	pwd_env = get_env_msg(env_cpy, "PWD");

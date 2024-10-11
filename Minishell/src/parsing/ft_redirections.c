@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 15:57:49 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/05 14:39:35 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/11 19:16:21 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,6 +240,36 @@ void	ft_redirection(t_token *token, t_env_cpy *env)
 	close(stdin_backup);
 }
 
+int	check_token(t_token *head)
+{
+	t_token	*token;
+
+	token = head;
+	while (token)
+	{
+		if (token->token_type == PIPE && (token->next == NULL
+				|| token->next->token_type == PIPE))
+			return (1);
+		else if (token && ((token->token_type == REDIRECT_IN)
+				|| (token->token_type == REDIRECT_OUT)
+				|| (token->token_type == APPEND)
+				|| (token->token_type == HEREDOC)
+				|| (token->token_type == PIPE)))
+		{
+			if (!token->next)
+				return (1);
+			else if (token->next && ((token->next->token_type == REDIRECT_IN)
+					|| (token->next->token_type == REDIRECT_OUT)
+					|| (token->next->token_type == APPEND)
+					|| (token->next->token_type == HEREDOC)
+					|| (token->next->token_type == PIPE)))
+				return (1);
+		}
+		token = token->next;
+	}
+	return (0);
+}
+
 void	check_redirections(t_token *token, t_env_cpy *env)
 {
 	if (token && ((token->token_type == REDIRECT_IN)
@@ -255,6 +285,12 @@ void	check_redirections(t_token *token, t_env_cpy *env)
 			env->last_exit_status = 2;
 			return ;
 		}
+	}
+	if (check_token(token))
+	{
+		fprintf(stderr, "zsh: parse error near `\\n'\n");
+		env->last_exit_status = 2;
+		return ;
 	}
 	ft_redirection(token, env);
 }

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/29 00:53:11 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/11 20:00:13 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,35 +45,28 @@ t_env_cpy	*fill_token(t_env_cpy *env_cpy, char *str)
 	if (!type)
 		return (env_cpy);
 	env_cpy = a_env(&env_cpy, type, env, equal);
+	free(type);
 	return (env_cpy);
 }
 
 int	check_ex(char *str)
 {
-	int		i;
-	char	*before;
+	int	i;
 
 	if (!str || str[0] == '\0')
 		return (0);
 	if (!((str[0] >= 'A' && str[0] <= 'Z') || (str[0] >= 'a' && str[0] <= 'z')
 			|| str[0] == '_'))
 		return (0);
-	before = return_type(str);
-	if (!before)
-		return (0);
-	i = 0;
-	while (before[++i])
+	i = 1;
+	while (str[i] && str[i] != '=')
 	{
-		if (!((before[i] >= 'A' && before[i] <= 'Z') || (before[i] >= 'a'
-					&& before[i] <= 'z') || (before[i] >= '0'
-					&& before[i] <= '9') || before[i] == '='
-				|| before[i] == '_' || before[i] == '$'))
-		{
-			free(before);
+		if (!((str[i] >= 'A' && str[i] <= 'Z') || (str[i] >= 'a'
+					&& str[i] <= 'z') || (str[i] >= '0' && str[i] <= '9')
+				|| str[i] == '_'))
 			return (0);
-		}
+		i++;
 	}
-	free(before);
 	return (1);
 }
 
@@ -95,7 +88,11 @@ void	ft_export(t_token *token, t_env_cpy *env_cpy)
 			if (token->tokens[0] != '{' && token->tokens[0] != '}')
 			{
 				if (check_ex(token->tokens))
+				{
 					env_cpy = fill_token(env_cpy, token->tokens);
+					if (!env_cpy)
+						flag = 1;
+				}
 				else
 				{
 					flag = 1;

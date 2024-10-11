@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_check.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/08 16:17:28 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/11 19:51:58 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,11 @@ int	check_type(char *token, t_env_cpy *env)
 		|| (ft_strcmp(token, "env") == 0) || (ft_strcmp(token, "echo") == 0)
 		|| (ft_strcmp(token, "pwd") == 0))
 		return (CMND);
+
+	if (token[0] == '$' && ft_strlen(token) > 1)
+		return (VARIABLE);
+	if (ft_strcmp(token, "=") == 0)
+		return (EQUAL);
 	cmd_path = find_in_path(token, env);
 	if (cmd_path != NULL)
 	{
@@ -63,6 +68,7 @@ int	check_type(char *token, t_env_cpy *env)
 		return (QUOTE);
 	return (UNKNOWN);
 }
+
 
 static int	check_for_quotations(char *input)
 {
@@ -164,75 +170,86 @@ int is_invalid_pipe_syntax(t_token *token_list)
     return 0;  // No invalid pipe usage found
 }
 
-
-void check(char *input, t_env_cpy *env_cpy)
+int	fix_pipe(char *str)
 {
-    t_token *token = NULL;
-    int error_flag = 0;
+	int	i;
 
-    // Preprocess input to add spaces around operators
-    char *preprocessed_input = preprocess_input(input);
-    if (!preprocessed_input)
-    {
-        fprintf(stderr, "Error: Memory allocation failed\n");
-        env_cpy->last_exit_status = 1;
-        return;
-    }
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '|')
+		{
+			if (str[i + 1] == '|')
+			{
+				fprintf(stderr,
+					"Minishell: syntax error near unexpected token `||'\n");
+				return (1);
+			}
+		}
+		i++;
+	}
+	return (0);
+}
 
-    // Tokenize the preprocessed input
-    tokenize_input(preprocessed_input, &token, env_cpy, &error_flag);
-    free(preprocessed_input); // Free the preprocessed input after tokenization
+void	check(char *input, t_env_cpy *env_cpy)
+{
+	t_token *token = NULL;
+	int error_flag = 0;
 
-    if (error_flag)
-    {
-        if (token)
-            free_token_list(token);
-        env_cpy->last_exit_status = 2;
-        return;
-    }
-    if (!token)
-        return;
-
-    // Check for unmatched quotations (this function may need adjustment)
-    if (!check_for_quotations(input))
-    {
-        fprintf(stderr, "Syntax error: unmatched quotes\n");
-        free_token_list(token);
-        env_cpy->last_exit_status = 2;
-        return;
-    }
-    if (is_invalid_pipe_syntax(token))
-    {
-        fprintf(stderr, "Minishell: syntax error near unexpected token `|'\n");
-        free_token_list(token);
-        env_cpy->last_exit_status = 2;
-        return;
-    }
-    // Optionally, print tokens for debugging
-    /*
-    t_token *current = token;
-    int i = 0;
-    while (current)
-    {
-        printf("token[%d]: %s\n", i, current->tokens);
-        current = current->next;
-        i++;
-    }
-    */
-
-    if (token)
-    {
-        if (search_for_pipe(token))
-            execute_pipeline(token, env_cpy);  // Execute piped commands
-        else if (search_for_redirection(token))
-            check_redirections(token, env_cpy);
-        else if (token->token_type == CMND)
-            ft_cmd(token, env_cpy, 1);
-        else if (token->token_type == UNKNOWN)
-        {
-            fprintf(stderr, "%s: Command not found\n", token->tokens);
-            env_cpy->last_exit_status = 127;
-        }
-    }
-    free_token_list(token);
+	if (fix_pipe(input))
+		return ;
+	char *preprocessed_input = preprocess_input(input);
+	if (!preprocessed_input)
+	{
+		fprintf(stderr, "Error: Memory allocation failed\n");
+		env_cpy->last_exit_status = 1;
+		return ;
+	}
+	tokenize_input(preprocessed_input, &token, env_cpy, &error_flag);
+	free(preprocessed_input); // Free the preprocessed input after tokenization
+	if (error_flag)
+	{
+		if (token)
+			free_token_list(token);
+		env_cpy->last_exit_status = 2;
+		return ;
+	}
+	if (!token)
+		return ;
+	if (!check_for_quotations(input))
+	{
+		fprintf(stderr, "Syntax error: unmatched quotes\n");
+		free_token_list(token);
+		env_cpy->last_exit_status = 2;
+		return ;
+	}
+	if (is_invalid_pipe_syntax(token))
+	{
+		fprintf(stderr, "Minishell: syntax error near unexpected token `|'\n");
+		free_token_list(token);
+		env_cpy->last_exit_status = 2;
+		return ;
+	}
+	if (token)
+	{
+		expand(token, env_cpy);
+		if (check_token(token))
+		{
+			fprintf(stderr, "zsh: parse error near `\\n'\n");
+			env_cpy->last_exit_status = 2;
+		}
+		else if (search_for_pipe(token))
+			execute_pipeline(token, env_cpy);
+		else if (search_for_redirection(token))
+			check_redirections(token, env_cpy);
+		else if (token->token_type == CMND)
+			ft_cmd(token, env_cpy, 1);
+		else if (token->token_type == UNKNOWN)
+		{
+			fprintf(stderr, "%s: Command not found\n", token->tokens);
+			env_cpy->last_exit_status = 127;
+		}
+	}
+	if (token)
+		free_token_list(token);
 }

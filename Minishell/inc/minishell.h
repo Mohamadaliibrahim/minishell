@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/06 13:13:50 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/11 19:17:33 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef enum e_token_type
 	REDIRECT_OUT,
 	APPEND,
 	HEREDOC,
+	EQUAL,
 	VARIABLE,
 	QUOTE,
 	DQUOTE,
@@ -117,6 +118,10 @@ void		ft_unset(t_token *token, t_env_cpy **env_cpy);
 void		remove_env(char *type, t_env_cpy **env_cpy);
 void		free_single_env_list(t_env_cpy *head);
 
+/* expand */
+void		expand(t_token *head, t_env_cpy *env);
+char		*find(char *str, t_env_cpy *head);
+
 /* Export */
 void		ft_export(t_token *token, t_env_cpy *env_cpy);
 void		print_sorted(t_env_cpy *head);
@@ -158,6 +163,7 @@ void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
 
 /* Redirection Handling */
+int			check_token(t_token *head);
 void 		handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
 void		handle_heredoc(char **input, t_env_cpy *env, int *error_flag);
 
