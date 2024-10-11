@@ -121,9 +121,6 @@ char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
     *i += var_len + 1;
     return temp;
 }
-
-
-
 // Handle $$ expansion (PID)
 char	*handle_double_dollar(char *result)
 {
@@ -136,8 +133,6 @@ char	*handle_double_dollar(char *result)
 	free(pid_str);
 	return (temp);
 }
-
-
 // Main function to expand tokens
 char	*expand_token_if_variable(char *token, t_env_cpy *env_list)
 {

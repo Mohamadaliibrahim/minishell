@@ -151,6 +151,7 @@ t_env_cpy	*cpy_env_helper(char *env);
 /* Dollar Expansion */
 char		*append_char(char *result, char c);
 char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
+char		*get_env_value(char *var_name, t_env_cpy *env_list);
 
 /* Signals */
 void		setup_signal_handlers(void);
