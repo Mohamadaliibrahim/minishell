@@ -153,8 +153,21 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
             handle_special_cases(input, &token, env->last_exit_status);
         else if (**input == '"' || **input == '\'')
         {
-            if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) != '\0')
-                handle_dollar_inside_quotes(input, &token, env, env->last_exit_status);  // Pass last_exit_status here
+            if (**input == '"')
+            {
+                // Handle double-quote
+                (*input)++;  // Skip the opening quote
+                while (**input && **input != '"')
+                {
+                    if (**input == '$' && *(*input + 1) == '?')
+                        handle_dollar_inside_quotes(input, &token, env, env->last_exit_status);  // Handle $?
+                    else
+                        token = append_char(token, **input);
+                    (*input)++;
+                }
+                if (**input == '"')
+                    (*input)++;  // Skip the closing quote
+            }
             else if (!handle_quote(input, &token, &quote_type))
             {
                 free(token);
