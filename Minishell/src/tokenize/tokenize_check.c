@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/11 19:51:58 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/12 16:50:25 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,7 @@ void	check(char *input, t_env_cpy *env_cpy)
 		else if (search_for_pipe(token))
 			execute_pipeline(token, env_cpy);
 		else if (search_for_redirection(token))
-			check_redirections(token, env_cpy);
+			check_redirections(&token, env_cpy);
 		else if (token->token_type == CMND)
 			ft_cmd(token, env_cpy, 1);
 		else if (token->token_type == UNKNOWN)

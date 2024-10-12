@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/11 19:17:33 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/12 16:51:10 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,8 @@ extern volatile	sig_atomic_t g_last_signal;
 void		do_comand(t_token *token, t_env_cpy *env_cpy);
 
 /* Redirection */
-void		check_redirections(t_token *token, t_env_cpy *env);
-void		ft_redirection(t_token *token, t_env_cpy *env);
+void		check_redirections(t_token **token, t_env_cpy *env);
+void		ft_redirection(t_token **token, t_env_cpy *env);
 int			search_for_redirection(t_token *token1);
 
 /* Tokenize */

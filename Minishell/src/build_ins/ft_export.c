@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/11 20:00:13 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/12 15:21:44 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,10 @@ t_env_cpy	*fill_token(t_env_cpy *env_cpy, char *str)
 	if (!type)
 		return (env_cpy);
 	env_cpy = a_env(&env_cpy, type, env, equal);
-	free(type);
+	// type is now handled in a_env, no need to free here
 	return (env_cpy);
 }
+
 
 int	check_ex(char *str)
 {

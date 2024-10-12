@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/24 11:50:12 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/12 15:55:20 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,17 +41,18 @@ void	ft_free_2darray(char **tokens)
 
 void	free_token_list(t_token *token_list)
 {
-    t_token *current;
-    t_token *next;
+	t_token	*current;
+	t_token	*next;
 
-    current = token_list;
-    while (current)
-    {
-        next = current->next;
-        free(current->tokens);  // Free the string duplicated with ft_strdup
-        free(current);  // Free the token structure
-        current = next;
-    }
+	current = token_list;
+	while (current)
+	{
+		next = current->next;
+		if (current->tokens)
+			free(current->tokens);
+		free(current);
+		current = next;
+	}
 }
 
 void	free_env_list(t_env_cpy *head)

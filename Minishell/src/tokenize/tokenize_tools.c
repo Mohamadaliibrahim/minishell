@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_tools.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/06 14:36:06 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/12 16:35:45 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 15:57:49 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/11 19:16:21 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/12 16:51:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,89 +156,101 @@ void	ft_infile(t_token *token, t_env_cpy *env)
 	env->last_input_fd = fd;
 }
 
-void	ft_redirection(t_token *token, t_env_cpy *env)
-{
-	t_token	*head;
-	int		stdout_backup;
-	int		stdin_backup;
+// ft_redirections.c
 
-	head = token;
-	env->last_output_fd = -1;  // Ensure initialization
-	env->last_input_fd = -1;   // Ensure initialization
-	env->last_exit_status = 0; // Initialize the exit status
-	stdout_backup = dup(STDOUT_FILENO);
-	if (stdout_backup == -1)
-	{
-		perror("dup");
-		env->last_exit_status = 1;
-		return ;
-	}
-	stdin_backup = dup(STDIN_FILENO);
-	if (stdin_backup == -1)
-	{
-		perror("dup");
-		close(stdout_backup); // Clean up before returning
-		env->last_exit_status = 1;
-		return ;
-	}
-	while (token)
-	{
-		if (token->token_type == REDIRECT_OUT)
-			ft_trunck(token, env);
-		else if (token->token_type == APPEND)
-			ft_append(token, env);
-		else if (token->token_type == REDIRECT_IN)
-			ft_infile(token, env);
-		token = token->next;
-	}
-	remove_redirection_tokens(&head);
-	if (env->last_exit_status != 0)
-	{
-		dup2(stdout_backup, STDOUT_FILENO);
-		close(stdout_backup);
-		dup2(stdin_backup, STDIN_FILENO);
-		close(stdin_backup);
-		return ;
-	}
-	if (env->last_input_fd != -1)
-	{
-		if (dup2(env->last_input_fd, STDIN_FILENO) == -1)
-		{
-			perror("dup2");
-			close(stdout_backup);
-			close(stdin_backup);
-			env->last_exit_status = 1;
-			return ;
-		}
-		close(env->last_input_fd);
-	}
-	if (env->last_output_fd != -1)
-	{
-		if (dup2(env->last_output_fd, STDOUT_FILENO) == -1)
-		{
-			perror("dup2");
-			close(stdout_backup);
-			close(stdin_backup);
-			env->last_exit_status = 1;
-			return ;
-		}
-		close(env->last_output_fd);
-	}
-	if (env->last_exit_status == 0)
-		ft_cmd(head, env, 1);
-	if (dup2(stdout_backup, STDOUT_FILENO) == -1)
-	{
-		perror("dup2");
-		env->last_exit_status = 1;
-	}
-	close(stdout_backup);
-	if (dup2(stdin_backup, STDIN_FILENO) == -1)
-	{
-		perror("dup2");
-		env->last_exit_status = 1;
-	}
-	close(stdin_backup);
+void ft_redirection(t_token **token, t_env_cpy *env)
+{
+    t_token *head = *token;
+    int stdout_backup;
+    int stdin_backup;
+
+    env->last_output_fd = -1;  // Ensure initialization
+    env->last_input_fd = -1;   // Ensure initialization
+    env->last_exit_status = 0; // Initialize the exit status
+
+    stdout_backup = dup(STDOUT_FILENO);
+    if (stdout_backup == -1)
+    {
+        perror("dup");
+        env->last_exit_status = 1;
+        return;
+    }
+
+    stdin_backup = dup(STDIN_FILENO);
+    if (stdin_backup == -1)
+    {
+        perror("dup");
+        close(stdout_backup); // Clean up before returning
+        env->last_exit_status = 1;
+        return;
+    }
+
+    while (head)
+    {
+        if (head->token_type == REDIRECT_OUT)
+            ft_trunck(head, env);
+        else if (head->token_type == APPEND)
+            ft_append(head, env);
+        else if (head->token_type == REDIRECT_IN)
+            ft_infile(head, env);
+        head = head->next;
+    }
+
+    remove_redirection_tokens(token);
+
+    if (env->last_exit_status != 0)
+    {
+        dup2(stdout_backup, STDOUT_FILENO);
+        close(stdout_backup);
+        dup2(stdin_backup, STDIN_FILENO);
+        close(stdin_backup);
+        return;
+    }
+
+    if (env->last_input_fd != -1)
+    {
+        if (dup2(env->last_input_fd, STDIN_FILENO) == -1)
+        {
+            perror("dup2");
+            close(stdout_backup);
+            close(stdin_backup);
+            env->last_exit_status = 1;
+            return;
+        }
+        close(env->last_input_fd);
+    }
+
+    if (env->last_output_fd != -1)
+    {
+        if (dup2(env->last_output_fd, STDOUT_FILENO) == -1)
+        {
+            perror("dup2");
+            close(stdout_backup);
+            close(stdin_backup);
+            env->last_exit_status = 1;
+            return;
+        }
+        close(env->last_output_fd);
+    }
+
+    if (env->last_exit_status == 0)
+        ft_cmd(*token, env, 1); // Use the updated token list
+
+    if (dup2(stdout_backup, STDOUT_FILENO) == -1)
+    {
+        perror("dup2");
+        env->last_exit_status = 1;
+    }
+    close(stdout_backup);
+
+    if (dup2(stdin_backup, STDIN_FILENO) == -1)
+    {
+        perror("dup2");
+        env->last_exit_status = 1;
+    }
+    close(stdin_backup);
 }
+
 
 int	check_token(t_token *head)
 {
@@ -270,27 +282,30 @@ int	check_token(t_token *head)
 	return (0);
 }
 
-void	check_redirections(t_token *token, t_env_cpy *env)
+// tokenize_check.c
+
+void check_redirections(t_token **token, t_env_cpy *env)
 {
-	if (token && ((token->token_type == REDIRECT_IN)
-			|| (token->token_type == REDIRECT_OUT)
-			|| (token->token_type == APPEND) || (token->token_type == HEREDOC)))
-	{
-		if (token->next && ((token->next->token_type == REDIRECT_IN)
-				|| (token->next->token_type == REDIRECT_OUT)
-				|| (token->next->token_type == APPEND)
-				|| (token->next->token_type == HEREDOC)))
-		{
-			perror(token->next->tokens);
-			env->last_exit_status = 2;
-			return ;
-		}
-	}
-	if (check_token(token))
-	{
-		fprintf(stderr, "zsh: parse error near `\\n'\n");
-		env->last_exit_status = 2;
-		return ;
-	}
-	ft_redirection(token, env);
+    if (*token && ((*token)->token_type == REDIRECT_IN
+            || (*token)->token_type == REDIRECT_OUT
+            || (*token)->token_type == APPEND
+            || (*token)->token_type == HEREDOC))
+    {
+        if ((*token)->next && ((*token)->next->token_type == REDIRECT_IN
+                || (*token)->next->token_type == REDIRECT_OUT
+                || (*token)->next->token_type == APPEND
+                || (*token)->next->token_type == HEREDOC))
+        {
+            perror((*token)->next->tokens);
+            env->last_exit_status = 2;
+            return;
+        }
+    }
+    if (check_token(*token))
+    {
+        fprintf(stderr, "zsh: parse error near `\\n'\n");
+        env->last_exit_status = 2;
+        return;
+    }
+    ft_redirection(token, env);
 }

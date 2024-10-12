@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 10:49:47 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/07 13:33:48 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/12 14:52:01 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,7 @@ void do_comand(t_token *token, t_env_cpy *env_cpy)
 	if (pid == 0)
 	{
 		// In child process
+		
 		execute_command(cmd_path, av, env, env_cpy);
 	}
 	else if (pid > 0)

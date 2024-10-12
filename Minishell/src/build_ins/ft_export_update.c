@@ -186,6 +186,9 @@ t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal)
 			return (NULL);
 		}
 		add_env_node(head, node);
+		free(type);
+		if (expanded_env)
+			free(expanded_env);
 		return (node);
 	}
 }
