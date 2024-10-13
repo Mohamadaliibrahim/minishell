@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/12 16:51:10 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/13 07:43:54 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ void		update_pwd_oldpwd(t_env_cpy *env, char *new_pwd, char *old_pwd);
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 
 /* PWD and CD */
-void		ft_pwd(t_env_cpy *env);
+void		ft_pwd(t_token *token, t_env_cpy *env);
 void		ft_cd(t_token *token, t_env_cpy *env_cpy);
 t_env_cpy	*update_env_var(t_env_cpy *env_cpy, char *key, char *value);
 

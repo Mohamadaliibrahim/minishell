@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/12 16:50:25 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/13 07:46:26 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ int	fix_pipe(char *str)
 	{
 		if (str[i] == '|')
 		{
-			if (str[i + 1] == '|')
+			if (str[i + 1] == '|' || str[i + 1] == '\0')
 			{
 				fprintf(stderr,
 					"Minishell: syntax error near unexpected token `||'\n");

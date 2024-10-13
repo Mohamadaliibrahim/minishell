@@ -6,14 +6,14 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/11 19:09:26 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/13 08:00:33 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-static char *internal_pwd = NULL;
-static char *internal_oldpwd = NULL;
+static char	*internal_pwd = NULL;
+static char	*internal_oldpwd = NULL;
 static int	flag = 0;
 
 // hay el function btraje3lak el path lal msg le bdk tfwto fiha
@@ -39,17 +39,16 @@ char	*get_env_msg(t_env_cpy *tmp, char *msg)
 	return (NULL);
 }
 
-
-
-
 char	*get_pwd(t_env_cpy *env_cpy)
 {
-	char *pwd = get_env_msg(env_cpy, "PWD");
+	char	*pwd;
+
+	pwd = get_env_msg(env_cpy, "PWD");
 	if (pwd)
-		return pwd;
+		return (pwd);
 	if (internal_pwd)
-		return ft_strdup(internal_pwd);
-	return NULL;
+		return (ft_strdup(internal_pwd));
+	return (NULL);
 }
 
 char	*get_oldpwd(t_env_cpy *env_cpy)
@@ -137,13 +136,35 @@ t_env_cpy	*update_env_var(t_env_cpy *env_cpy, char *key, char *value)
 	return (head);
 }
 
+int	check_after_pwd(t_token *head)
+{
+	if (head->next)
+	{
+		if ((ft_strncmp(head->next->tokens, "-", 1) == 0)
+			|| (ft_strncmp(head->next->tokens, "--", 2) == 0))
+		{
+			return (1);
+		}
+		else
+			return (0);
+	}
+	return (0);
+}
+
 // hay el function bt3ml she8el el pwd
-void	ft_pwd(t_env_cpy *env)
+void	ft_pwd(t_token *token, t_env_cpy *env)
 {
 	char	*pwd;
 	char	*env_pwd;
 	char	*hello;
 
+	if (check_after_pwd(token))
+	{
+		env->last_exit_status = 2;
+		fprintf(stderr, "Minishell: pwd: %s: invalid option\n",
+			token->next->tokens);
+		return ;
+	}
 	pwd = getcwd(NULL, 0);
 	if (pwd)
 	{
@@ -196,7 +217,6 @@ t_env_cpy	*add_env_pwd(t_env_cpy *env)
 	return (head);
 }
 
-
 // hyde el function bt3ml she8el el cd
 void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 {
@@ -236,7 +256,8 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 			old_pwd = ft_strdup(pwd_env);
 		else
 		{
-			ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+			ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n",
+				2);
 			env_cpy->last_exit_status = 1;
 			free(pwd_env);
 			free(oldpwd_env);
@@ -259,7 +280,6 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 	if (new_pwd)
 	{
 		// Update PWD
-
 		if (pwd_env)
 			update_env_var(env_cpy, "PWD", new_pwd);
 		else
@@ -279,7 +299,7 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 			if (internal_oldpwd)
 				free(internal_oldpwd);
 			if (pwd_env)
-				internal_oldpwd =ft_strdup(pwd_env);
+				internal_oldpwd = ft_strdup(pwd_env);
 			else
 			{
 				internal_oldpwd = ft_strdup(old_pwd);
@@ -299,11 +319,12 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 		}
 		free(new_pwd);
 		if (token->next && ft_strcmp(token->next->tokens, "-") == 0)
-			ft_pwd(env_cpy);
+			ft_pwd(token, env_cpy);
 	}
 	else
 	{
-		ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+		ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n",
+			2);
 		env_cpy = add_env_pwd(env_cpy);
 		if (pwd_env && oldpwd_env)
 		{
