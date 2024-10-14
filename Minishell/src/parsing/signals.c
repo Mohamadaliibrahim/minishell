@@ -28,3 +28,9 @@ void	setup_signal_handlers(void)
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
 }
+
+void heredoc_sigint_handler(int signo)
+{
+    (void)signo;  // Suppress unused parameter warning
+    write(STDOUT_FILENO, "\n", 1);  // Write a newline to move to the next line
+}

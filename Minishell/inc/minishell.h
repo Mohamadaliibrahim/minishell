@@ -28,7 +28,6 @@
 # include <limits.h>
 # include <sys/stat.h>
 # include <errno.h>
-# include <setjmp.h>
 
 /* Enum for Token Types */
 typedef enum e_token_type
@@ -162,6 +161,7 @@ char		*get_env_value(char *var_name, t_env_cpy *env_list);
 /* Signals */
 void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
+void 		heredoc_sigint_handler(int signo);
 
 /* Redirection Handling */
 int			check_token(t_token *head);
