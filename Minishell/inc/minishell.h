@@ -28,6 +28,7 @@
 # include <limits.h>
 # include <sys/stat.h>
 # include <errno.h>
+# include <setjmp.h>
 
 /* Enum for Token Types */
 typedef enum e_token_type

@@ -12,6 +12,14 @@
 
 #include "../../inc/minishell.h"
 
+static sigjmp_buf heredoc_jmpbuf;
+
+void heredoc_sigint_handler(int signo)
+{
+    (void)signo;  // Suppress unused parameter warning
+    siglongjmp(heredoc_jmpbuf, 1);
+}
+
 static void parse_heredoc_delimiter(char **input, char **delimiter, int *error_flag)
 {
     char quote_char = '\0';
@@ -45,42 +53,68 @@ static void parse_heredoc_delimiter(char **input, char **delimiter, int *error_f
 static int handle_heredoc_file(char *heredoc_file, char *delimiter)
 {
     int heredoc_fd = open(heredoc_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-    char *line;
+    char * volatile line = NULL;  // Declare line as volatile pointer to char
+    struct sigaction sa, old_sa;
 
     if (heredoc_fd < 0)
     {
         perror("minishell: heredoc");
         return (-1);
     }
-    while (1)
+
+    // Set up custom SIGINT handler
+    sa.sa_handler = heredoc_sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;  // Not using SA_RESTART
+    sigaction(SIGINT, &sa, &old_sa);
+
+    // Set jump point
+    if (sigsetjmp(heredoc_jmpbuf, 1) == 0)
     {
-        line = readline("> ");
-        if (!line)
-            break;
-        if (ft_strcmp(line, delimiter) == 0)
+        while (1)
         {
+            line = readline("> ");
+            if (!line)
+            {
+                // EOF or read error
+                break;
+            }
+            if (ft_strcmp(line, delimiter) == 0)
+            {
+                free(line);
+                break;
+            }
+            write(heredoc_fd, line, ft_strlen(line));
+            write(heredoc_fd, "\n", 1);
             free(line);
-            break;
         }
-        write(heredoc_fd, line, ft_strlen(line));
-        write(heredoc_fd, "\n", 1);
-        free(line);
     }
+    else
+    {
+        close(heredoc_fd);
+        unlink(heredoc_file);
+        // Restore original signal handler
+        sigaction(SIGINT, &old_sa, NULL);
+        return (-1);  // Indicate that heredoc was interrupted
+    }
+
+    // Restore original signal handler
+    sigaction(SIGINT, &old_sa, NULL);
     close(heredoc_fd);
-    return (heredoc_fd);
+    return (0);
 }
 
 void handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
 {
     char *delimiter;
-    int heredoc_fd;
+    int heredoc_result;
     char *heredoc_file = "/tmp/minishell_heredoc.tmp";
 
     parse_heredoc_delimiter(input, &delimiter, error_flag);
     if (*error_flag)
         return;
-    heredoc_fd = handle_heredoc_file(heredoc_file, delimiter);
-    if (heredoc_fd < 0)
+    heredoc_result = handle_heredoc_file(heredoc_file, delimiter);
+    if (heredoc_result < 0)
     {
         free(delimiter);
         *error_flag = 1;

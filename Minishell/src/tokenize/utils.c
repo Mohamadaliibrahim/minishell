@@ -55,20 +55,30 @@ void	free_token_list(t_token *token_list)
 	}
 }
 
-void	free_env_list(t_env_cpy *head)
+void free_env_list(t_env_cpy *head)
 {
-	t_env_cpy	*tmp;
+    t_env_cpy *current;
+    t_env_cpy *next;
 
-	while (head)
-	{
-		tmp = head;
-		head = head->next;
-		if (tmp->env)
-			free(tmp->env);
-		if (tmp->type)
-			free(tmp->type);
-		free(tmp);
-	}
+    current = head;
+    while (current != NULL)
+    {
+        next = current->next;
+
+        if (current->type)
+        {
+            free(current->type);
+            current->type = NULL;  // Set to NULL to avoid double free
+        }
+        if (current->env)
+        {
+            free(current->env);
+            current->env = NULL;  // Set to NULL to avoid double free
+        }
+
+        free(current);
+        current = next;
+    }
 }
 
 char *ft_strjoin_free(char *s1, char *s2)
