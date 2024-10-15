@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/15 11:25:28 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/15 11:35:51 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <limits.h>
 # include <sys/stat.h>
 # include <errno.h>
+# include <setjmp.h>
 
 /* Enum for Token Types */
 typedef enum e_token_type
