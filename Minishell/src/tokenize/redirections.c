@@ -6,11 +6,19 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/12 16:43:26 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/15 10:43:34 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
+
+static sigjmp_buf heredoc_jmpbuf;
+
+void heredoc_sigint_handler(int signo)
+{
+    (void)signo;  // Suppress unused parameter warning
+    siglongjmp(heredoc_jmpbuf, 1);
+}
 
 static void parse_heredoc_delimiter(char **input, char **delimiter, int *error_flag)
 {
@@ -45,11 +53,8 @@ static void parse_heredoc_delimiter(char **input, char **delimiter, int *error_f
 static int handle_heredoc_file(char *heredoc_file, char *delimiter)
 {
     int heredoc_fd = open(heredoc_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t nread;
+    char * volatile line = NULL;  // Declare line as volatile pointer to char
     struct sigaction sa, old_sa;
-    int interrupted = 0;
 
     if (heredoc_fd < 0)
     {
@@ -57,67 +62,47 @@ static int handle_heredoc_file(char *heredoc_file, char *delimiter)
         return (-1);
     }
 
-    // Set up custom SIGINT handler without SA_RESTART
+    // Set up custom SIGINT handler
     sa.sa_handler = heredoc_sigint_handler;
     sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;  // Do not set SA_RESTART
-    if (sigaction(SIGINT, &sa, &old_sa) == -1)
-    {
-        perror("sigaction");
-        close(heredoc_fd);
-        return (-1);
-    }
+    sa.sa_flags = 0;  // Not using SA_RESTART
+    sigaction(SIGINT, &sa, &old_sa);
 
-    while (1)
+    // Set jump point
+    if (sigsetjmp(heredoc_jmpbuf, 1) == 0)
     {
-        printf("> ");  // Prompt the user
-
-        nread = getline(&line, &len, stdin);
-        if (nread == -1)
+        while (1)
         {
-            if (errno == EINTR)
-            {
-                // getline was interrupted by SIGINT (Ctrl+C)
-                interrupted = 1;
-                break;
-            }
-            else
+            line = readline("> ");
+            if (!line)
             {
                 // EOF or read error
                 break;
             }
+            if (ft_strcmp(line, delimiter) == 0)
+            {
+                free(line);
+                break;
+            }
+            write(heredoc_fd, line, ft_strlen(line));
+            write(heredoc_fd, "\n", 1);
+            free(line);
         }
-
-        // Remove the newline character from the line
-        if (nread > 0 && line[nread - 1] == '\n')
-            line[nread - 1] = '\0';
-
-        if (strcmp(line, delimiter) == 0)
-        {
-            break;
-        }
-
-        write(heredoc_fd, line, strlen(line));
-        write(heredoc_fd, "\n", 1);
     }
-
-    // Restore original SIGINT handler
-    sigaction(SIGINT, &old_sa, NULL);
-    close(heredoc_fd);
-
-    if (line)
-        free(line);
-
-    if (interrupted)
+    else
     {
-        // Clean up and indicate interruption
+        close(heredoc_fd);
         unlink(heredoc_file);
+        // Restore original signal handler
+        sigaction(SIGINT, &old_sa, NULL);
         return (-1);  // Indicate that heredoc was interrupted
     }
 
+    // Restore original signal handler
+    sigaction(SIGINT, &old_sa, NULL);
+    close(heredoc_fd);
     return (0);
 }
-
 
 void handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
 {
@@ -128,7 +113,6 @@ void handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
     parse_heredoc_delimiter(input, &delimiter, error_flag);
     if (*error_flag)
         return;
-
     heredoc_result = handle_heredoc_file(heredoc_file, delimiter);
     if (heredoc_result < 0)
     {
@@ -136,9 +120,8 @@ void handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
         *error_flag = 1;
         return;
     }
-
     free(delimiter);
-    env->heredoc_file = strdup(heredoc_file);
+    env->heredoc_file = ft_strdup(heredoc_file);
 }
 
 void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)

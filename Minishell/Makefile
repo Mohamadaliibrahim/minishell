@@ -10,7 +10,11 @@ SRC = src/main.c \
       src/tokenize/utils.c \
       src/parsing/cmd.c \
       src/build_ins/echo.c \
-      src/build_ins/pwd_cd.c \
+      src/build_ins/pwd_cd/ft_cd.c \
+      src/build_ins/pwd_cd/pwd.c\
+      src/build_ins/pwd_cd/utils_pwd_cd.c\
+      src/build_ins/pwd_cd/env_utils_editing_pwd.c\
+       src/build_ins/pwd_cd/geting_path.c\
       src/parsing/dollar.c \
       src/tokenize/env_tokenizeing.c \
       src/build_ins/ft_env.c \

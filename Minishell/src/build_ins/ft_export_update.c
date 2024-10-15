@@ -110,12 +110,14 @@ t_env_cpy	*create_env_node(char *type, char *env, bool equal)
 	new_node = malloc(sizeof(t_env_cpy));
 	if (!new_node)
 		return (NULL);
+
 	new_node->type = ft_strdup(type);
 	if (!new_node->type)
 	{
 		free(new_node);
 		return (NULL);
 	}
+
 	if (equal)
 	{
 		if (env)
@@ -131,10 +133,22 @@ t_env_cpy	*create_env_node(char *type, char *env, bool equal)
 	}
 	else
 		new_node->env = NULL;
+
 	new_node->equal = equal;
 	new_node->next = NULL;
+	new_node->previous = NULL;
+	new_node->heredoc_file = NULL;
+	new_node->last_exit_status = 0;
+	new_node->last_output_fd = -1;
+	new_node->last_input_fd = -1;
+	new_node->internal_pwd = NULL;
+	new_node->internal_oldpwd = NULL;
+	new_node->flag = 0;
+
 	return (new_node);
 }
+
+
 
 
 void	add_env_node(t_env_cpy **head, t_env_cpy *new_node)
@@ -149,6 +163,7 @@ void	add_env_node(t_env_cpy **head, t_env_cpy *new_node)
 		while (tmp->next)
 			tmp = tmp->next;
 		tmp->next = new_node;
+		new_node->previous = tmp;
 	}
 }
 

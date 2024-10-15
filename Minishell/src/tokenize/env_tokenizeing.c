@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:03:44 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/12 13:49:05 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/15 07:09:01 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,34 +95,28 @@ bool	check_for_equal(char *env)
 t_env_cpy	*add_shell(t_env_cpy *env_cpy)
 {
 	t_env_cpy	*head;
+	t_env_cpy	*new_node;
 	int			x;
 
-	x = 0;
 	head = env_cpy;
 	while (env_cpy)
 	{
 		if (ft_strcmp(env_cpy->type, "SHLVL") == 0)
 		{
 			x = ft_atoi(env_cpy->env);
-			if (x <= 0)
-				x = 1;
-			else
-				x++;
-			if (x > INT_MAX)
-				x = INT_MAX;
+			x = (x <= 0) ? 1 : x + 1;
+			x = (x > INT_MAX) ? INT_MAX : x;
 			free(env_cpy->env);
-			env_cpy->env = ft_itoa((int)x);
+			env_cpy->env = ft_itoa(x);
 			if (!env_cpy->env)
 			{
-				perror("MEmory allocation error");
+				perror("Memory allocation error");
 				exit(EXIT_FAILURE);
 			}
 			return (head);
 		}
 		env_cpy = env_cpy->next;
 	}
-		t_env_cpy	*new_node;
-
 	new_node = malloc(sizeof(t_env_cpy));
 	if (!new_node)
 	{
@@ -130,15 +124,22 @@ t_env_cpy	*add_shell(t_env_cpy *env_cpy)
 		exit(EXIT_FAILURE);
 	}
 	new_node->type = ft_strdup("SHLVL");
-    new_node->env = ft_strdup("1");
-    new_node->equal = true;
-    new_node->next = head;
-    new_node->previous = NULL;
+	new_node->env = ft_strdup("1");
+	new_node->equal = true;
+	new_node->heredoc_file = NULL;
+	new_node->last_exit_status = 0;
+	new_node->last_output_fd = -1;
+	new_node->last_input_fd = -1;
+	new_node->internal_pwd = NULL;
+	new_node->internal_oldpwd = NULL;
+	new_node->flag = 0;
+	new_node->next = head;
+	new_node->previous = NULL;
 	if (head)
-		head->previous = NULL;
-	return (new_node);
+		head->previous = new_node;
 	return (new_node);
 }
+
 
 t_env_cpy	*cpy_env_helper(char *env)
 {
@@ -148,19 +149,22 @@ t_env_cpy	*cpy_env_helper(char *env)
 	if (!cpy)
 		return (NULL);
 
-	// Initialize all fields
-	cpy->env = return_path(env);  // Copy the path from the environment
-	cpy->type = return_type(env);  // Copy the type from the environment
-	cpy->equal = check_for_equal(env);  // Check for an equal sign in the environment variable
-	cpy->heredoc_file = NULL;  // Initialize heredoc_file to NULL
-	cpy->last_exit_status = 0;  // Initialize exit status to 0
-	cpy->last_output_fd = -1;  // Initialize output fd to -1 (no redirection)
-	cpy->last_input_fd = -1;  // Initialize input fd to -1 (no redirection)
-	cpy->next = NULL;  // Initialize next pointer to NULL
-	cpy->previous = NULL;  // Initialize previous pointer to NULL
+	cpy->env = return_path(env);
+	cpy->type = return_type(env);
+	cpy->equal = check_for_equal(env);
+	cpy->heredoc_file = NULL;
+	cpy->last_exit_status = 0;
+	cpy->last_output_fd = -1;
+	cpy->last_input_fd = -1;
+	cpy->next = NULL;
+	cpy->previous = NULL;
+	cpy->internal_pwd = NULL;
+	cpy->internal_oldpwd = NULL;
+	cpy->flag = 0;
 
 	return (cpy);
 }
+
 
 t_env_cpy	*cpy_env(char **env)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 11:24:57 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/25 10:33:37 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/15 11:25:32 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,4 @@ void	setup_signal_handlers(void)
 {
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
-}
-
-void heredoc_sigint_handler(int signo)
-{
-    (void)signo;  // Suppress unused parameter warning
-    write(STDOUT_FILENO, "\n", 1);  // Write a newline to move to the next line
 }

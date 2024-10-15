@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/12 15:55:20 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/15 06:50:16 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,31 +55,25 @@ void	free_token_list(t_token *token_list)
 	}
 }
 
-void free_env_list(t_env_cpy *head)
+void	free_env_list(t_env_cpy *head)
 {
-    t_env_cpy *current;
-    t_env_cpy *next;
+	t_env_cpy	*tmp;
 
-    current = head;
-    while (current != NULL)
-    {
-        next = current->next;
-
-        if (current->type)
-        {
-            free(current->type);
-            current->type = NULL;  // Set to NULL to avoid double free
-        }
-        if (current->env)
-        {
-            free(current->env);
-            current->env = NULL;  // Set to NULL to avoid double free
-        }
-
-        free(current);
-        current = next;
-    }
+	while (head)
+	{
+		tmp = head;
+		head = head->next;
+		free(tmp->env);
+		free(tmp->type);
+		if (tmp->internal_pwd)
+			free(tmp->internal_pwd);
+		if (tmp->internal_oldpwd)
+			free(tmp->internal_oldpwd);
+		free(tmp);
+	}
 }
+
+
 
 char *ft_strjoin_free(char *s1, char *s2)
 {

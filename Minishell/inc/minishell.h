@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/13 07:43:54 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/15 11:25:28 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,18 @@ typedef struct s_token
 	struct s_token	*previous;
 }					t_token;
 
+typedef struct s_cd
+{
+	char			*path;
+	char			*old_pwd;
+	char			*new_pwd;
+	char			*pwd_env;
+	char			*oldpwd_env;
+	char			*hello;
+	int				should_free;
+}					t_cd;
+
+
 /* Struct for Environment Copy */
 typedef struct s_env_cpy
 {
@@ -65,6 +77,9 @@ typedef struct s_env_cpy
 	int					last_exit_status;
 	int					last_output_fd;
 	int					last_input_fd;
+	char				*internal_pwd;
+	char				*internal_oldpwd;
+	int					flag;
 	struct s_env_cpy	*next;
 	struct s_env_cpy	*previous;
 }					t_env_cpy;
@@ -116,7 +131,6 @@ void		check_echo(t_token *token, t_env_cpy *env_list);
 /* Unset */
 void		ft_unset(t_token *token, t_env_cpy **env_cpy);
 void		remove_env(char *type, t_env_cpy **env_cpy);
-void		free_single_env_list(t_env_cpy *head);
 
 /* expand */
 void		expand(t_token *head, t_env_cpy *env);
@@ -127,15 +141,30 @@ void		ft_export(t_token *token, t_env_cpy *env_cpy);
 void		print_sorted(t_env_cpy *head);
 void		print_export(t_env_cpy *env_cpy);
 t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal);
-void		update_pwd_oldpwd(t_env_cpy *env, char *new_pwd, char *old_pwd);
 
 /* Environment */
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 
 /* PWD and CD */
+int			old_pwd_is_null(t_cd cd, t_env_cpy *env_cpy);
+t_cd		init_cd(t_token *token, t_env_cpy *env_cpy);
+t_env_cpy	*add_env_pwd(t_env_cpy *env);
+t_env_cpy	*update_env_var(t_env_cpy *env_cpy, char *key, char *value);
+char		*get_env_msg(t_env_cpy *tmp, char *msg);
+char		*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free);
+char		*if_cd_with_dash(t_env_cpy *env_cpy, int *should_free);
+char		*if_just_cd(t_env_cpy *env_cpy, int *should_free);
+char		*get_cd_path_helper(t_token **token);
+char		*get_pwd(t_env_cpy *env_cpy);
+char		*get_oldpwd(t_env_cpy *env_cpy);
+int			check_after_pwd(t_token *head);
+void		if_pwd_avialable(t_env_cpy *env, char *pwd);
+void		error_mes_after_checking(t_token *token, t_env_cpy *env);
+void		free_at_the_end(t_cd cd);
+void		too_long_error_cd(void);
+void		freeing_cd(t_cd cd, t_env_cpy *env_cpy, int x);
 void		ft_pwd(t_token *token, t_env_cpy *env);
 void		ft_cd(t_token *token, t_env_cpy *env_cpy);
-t_env_cpy	*update_env_var(t_env_cpy *env_cpy, char *key, char *value);
 
 /* Utilities */
 char		*ft_strndup(const char *s, size_t n);
@@ -161,7 +190,6 @@ char		*get_env_value(char *var_name, t_env_cpy *env_list);
 /* Signals */
 void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
-void 		heredoc_sigint_handler(int signo);
 
 /* Redirection Handling */
 int			check_token(t_token *head);

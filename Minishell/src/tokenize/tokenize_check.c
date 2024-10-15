@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/13 07:46:26 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/14 20:08:59 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,7 +206,7 @@ void	check(char *input, t_env_cpy *env_cpy)
 		return ;
 	}
 	tokenize_input(preprocessed_input, &token, env_cpy, &error_flag);
-	free(preprocessed_input); // Free the preprocessed input after tokenization
+	free(preprocessed_input);
 	if (error_flag)
 	{
 		if (token)
@@ -230,6 +230,13 @@ void	check(char *input, t_env_cpy *env_cpy)
 		env_cpy->last_exit_status = 2;
 		return ;
 	}
+	// t_token	*hey;
+	// hey = token;
+	// while (hey)
+	// {
+	// 	printf("%s\n",hey->tokens);
+	// 	hey = hey->next;
+	// }
 	if (token)
 	{
 		expand(token, env_cpy);

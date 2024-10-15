@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/12 16:35:45 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/13 13:24:16 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,26 +79,55 @@ static int	handle_quote(char **input, char **token, char *quote_type)
 		return (0);
 }
 
-static void	handle_unquoted(char **input, char **token)
+static void handle_unquoted(char **input, char **token, t_env_cpy *env)
 {
-    char    *start;
-    char    *tmp;
-    char    *old_token;
-
-    start = *input;
     while (**input && **input != ' '
         && **input != '\''
         && **input != '"'
         && **input != '\\'
         && **input != '<'
         && **input != '>')
-        (*input)++;
-    tmp = ft_strndup(start, *input - start);
-    old_token = *token;
-    *token = ft_strjoin(*token, tmp);
-    free(old_token);
-    free(tmp);
+    {
+        if (**input == '$')
+        {
+            (*input)++;
+            if (**input == '?')
+            {
+                // Handle $?
+                char *status_str = ft_itoa(env->last_exit_status);
+                *token = ft_strjoin_free(*token, status_str);
+                free(status_str);
+                (*input)++;
+            }
+            else
+            {
+                char *var_name = ft_strdup("");
+                while (**input && (ft_isalnum(**input) || **input == '_'))
+                {
+                    var_name = append_char(var_name, **input);
+                    (*input)++;
+                }
+                char *var_value = get_env_value(var_name, env);
+                if (var_value)
+                {
+                    *token = ft_strjoin_free(*token, var_value);
+                }
+                else
+                {
+                    // If variable not found, replace with empty string
+                    *token = ft_strjoin_free(*token, "");
+                }
+                free(var_name);
+            }
+        }
+        else
+        {
+            *token = append_char(*token, **input);
+            (*input)++;
+        }
+    }
 }
+
 
 void handle_special_cases(char **input, char **token, int last_exit_status)
 {
@@ -179,7 +208,7 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
         else if (ft_strncmp(*input, "$\'", 2) == 0)
             handle_quote(input, &token, &quote_type);
         else
-            handle_unquoted(input, &token);
+            handle_unquoted(input, &token, env);
     }
     if (ft_strlen(token) > 0 && *error_flag == 0)
     {

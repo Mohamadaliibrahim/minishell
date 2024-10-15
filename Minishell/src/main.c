@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/07 14:40:42 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/15 06:44:01 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,12 +108,6 @@ char	**list_to_2d(t_env_cpy *env)
 	return (dest);
 }
 
-// t_token	**fake_globale(void)
-// {
-// 	static t_token	*helo;
-
-// 	return (&helo)
-// }
 
 int	main(int ac, char **av, char **env)
 {

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 15:57:49 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/12 16:51:02 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/14 20:10:27 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,7 @@ void check_redirections(t_token **token, t_env_cpy *env)
     }
     if (check_token(*token))
     {
-        fprintf(stderr, "zsh: parse error near `\\n'\n");
+        perror((*token)->tokens);
         env->last_exit_status = 2;
         return;
     }

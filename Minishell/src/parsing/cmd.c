@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/13 07:43:22 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/14 20:09:09 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,9 +166,18 @@ void	ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
 	else if ((ft_strcmp(token->tokens, "unset") == 0))
 		ft_unset(token, &env_cpy);
 	else if ((ft_strcmp(token->tokens, "cd") == 0))
+	{
+		env_cpy->last_exit_status = 0;
 		ft_cd(token, env_cpy);
+	}
 	else if ((ft_strcmp(token->tokens, "exit") == 0))
 	{
+		if (token->next->next)
+		{
+			env_cpy->last_exit_status = 1;
+			fprintf(stderr, "Minishell: pwd: : invalid optioz\n");
+			return ;
+		}
 		if (is_main_shell)
 			printf("exit\n");
 		ft_exit(token, env_cpy);
