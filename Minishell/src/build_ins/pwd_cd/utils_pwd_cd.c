@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_pwd_cd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 07:45:50 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/15 07:45:55 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/18 19:08:13 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	freeing_cd(t_cd cd, t_env_cpy *env_cpy, int x)
 
 void	too_long_error_cd(void)
 {
-	ft_putstr_fd("cd: error retrieving"
+	ft_putstr_fd("cd: error retrieving "
 		"current directory: getcwd: cannot access"
 		" parent directories: No such file or directory\n",
 		2);
