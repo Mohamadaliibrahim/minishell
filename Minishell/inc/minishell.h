@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/15 11:35:51 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/18 17:41:48 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,13 @@ typedef struct s_cd
 	int				should_free;
 }					t_cd;
 
+typedef struct s_export
+{
+	char			*expanded_env;
+	char			*env;
+	char			*type;
+	bool			equal;
+}					t_export;
 
 /* Struct for Environment Copy */
 typedef struct s_env_cpy
@@ -86,13 +93,13 @@ typedef struct s_env_cpy
 }					t_env_cpy;
 
 typedef struct s_command
-{
-    char        **argv;      // Command arguments
-    t_token     *token_list; // Tokens for this command
-    char        *infile;     // Input redirection file (<)
-    char        *outfile;    // Output redirection file (>, >>)
-    int         append;      // Boolean for append redirection (>>)
-}               t_command;
+{		
+	char				**argv;
+	t_token				*token_list;
+	char				*infile;
+	char				*outfile;
+	int					append;
+}						t_command;
 
 /* Global Variable */
 extern volatile	sig_atomic_t g_last_signal;
@@ -103,7 +110,18 @@ void		do_comand(t_token *token, t_env_cpy *env_cpy);
 /* Redirection */
 void		check_redirections(t_token **token, t_env_cpy *env);
 void		ft_redirection(t_token **token, t_env_cpy *env);
-int			search_for_redirection(t_token *token1);
+int			checking_for_errors(t_env_cpy *env, int *in, int *out);
+int			check_token(t_token *head);
+int			its_redirection(t_token *token);
+void		error_occured(int *out, int *in, t_env_cpy *env);
+void		dup2_error(int *out, int *in);
+char		*get_filename(t_token *token);
+int			search_for_redirection(t_token *head);
+void		remove_redirection_tokens(t_token **head);
+void		remove_red_loop(t_token **current, t_token **prev, t_token **head);
+void		ft_infile(t_token *token, t_env_cpy *env);
+void		ft_append(t_token *token, t_env_cpy *env);
+void		ft_trunck(t_token *token, t_env_cpy *env);
 
 /* Tokenize */
 void		add_token(t_token **head, char *input, t_env_cpy *env, char qoute);
@@ -142,6 +160,20 @@ void		ft_export(t_token *token, t_env_cpy *env_cpy);
 void		print_sorted(t_env_cpy *head);
 void		print_export(t_env_cpy *env_cpy);
 t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal);
+
+
+void		add_env_node(t_env_cpy **head, t_env_cpy *new_node);
+t_env_cpy	*create_env_node(char *type, char *env, bool equal);
+t_env_cpy	*if_equal_new_node(t_env_cpy *new_node, char *env);
+t_env_cpy	*fill_else_new_node(t_env_cpy *new_node, bool equal);
+void		update_nd(t_env_cpy *node, t_env_cpy *head, char *env, bool equal);
+char		*test_dollar(char *env, t_env_cpy *head);
+char		*remove_dollar(char *env);
+int			find_dollar(char *env);
+t_env_cpy	*find_env_node(t_env_cpy *head, char *type);
+t_export	init_export(char *env, char *type, bool equal);
+void		free_export(t_export export, int flag);
+
 
 /* Environment */
 void		ft_env(t_token *token, t_env_cpy *env_cpy);

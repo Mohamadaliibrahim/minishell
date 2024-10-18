@@ -6,13 +6,13 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 11:24:57 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/15 11:25:32 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/18 07:23:33 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-volatile sig_atomic_t g_last_signal = 0;
+volatile sig_atomic_t	g_last_signal = 0;
 
 void	handle_sigint(int sig)
 {

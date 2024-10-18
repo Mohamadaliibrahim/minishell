@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/14 20:09:09 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/18 11:36:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void	expand(t_token *head, t_env_cpy *env)
 					fprintf(stderr,
 						"Error: Memory allocation failed during expansion\n");
 				}
-			token->token_type = CMND;
+				token->token_type = CMND;
 			}
 			else
 			{

@@ -6,25 +6,11 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 20:40:37 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/28 18:47:51 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/18 07:22:30 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
-
-// char	*get_pwd(t_env_cpy *tmp)
-// {
-// 	t_env_cpy	*env;
-
-// 	env = tmp;
-// 	while (env)
-// 	{
-// 		if (ft_strcmp(env->type, "PWD") == 0)
-// 			return (ft_strdup(env->env));
-// 		env = env->next;
-// 	}
-// 	return (NULL);
-// }
 
 char	*get_old_path(t_env_cpy *env_cpy, char *msg)
 {
@@ -44,8 +30,8 @@ t_env_cpy	*find_smallest(t_env_cpy *head, t_env_cpy *exclude)
 	smallest = NULL;
 	while (head)
 	{
-		if ((!exclude || strcmp(head->type, exclude->type) > 0) &&
-			(!smallest || strcmp(head->type, smallest->type) < 0))
+		if ((!exclude || strcmp(head->type, exclude->type) > 0)
+			&& (!smallest || strcmp(head->type, smallest->type) < 0))
 			smallest = head;
 		head = head->next;
 	}

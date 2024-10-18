@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/12 15:21:44 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/18 12:52:38 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ t_env_cpy	*fill_token(t_env_cpy *env_cpy, char *str)
 	if (!type)
 		return (env_cpy);
 	env_cpy = a_env(&env_cpy, type, env, equal);
-	// type is now handled in a_env, no need to free here
+	if (type)
+		free(type);
 	return (env_cpy);
 }
-
 
 int	check_ex(char *str)
 {
@@ -71,6 +71,26 @@ int	check_ex(char *str)
 	return (1);
 }
 
+void	ft_export_loop(t_token *token, t_env_cpy *env_cpy, int *flag)
+{
+	if (token->tokens[0] != '{' && token->tokens[0] != '}')
+	{
+		if (check_ex(token->tokens))
+		{
+			env_cpy = fill_token(env_cpy, token->tokens);
+			if (!env_cpy)
+				*flag = 1;
+		}
+		else
+		{
+			*flag = 1;
+			printf("bash: export: `%s': not a valid identifier\n",
+				token->tokens);
+			env_cpy->last_exit_status = 127;
+		}
+	}
+}
+
 void	ft_export(t_token *token, t_env_cpy *env_cpy)
 {
 	int	flag;
@@ -86,22 +106,7 @@ void	ft_export(t_token *token, t_env_cpy *env_cpy)
 		token = token->next;
 		while (token)
 		{
-			if (token->tokens[0] != '{' && token->tokens[0] != '}')
-			{
-				if (check_ex(token->tokens))
-				{
-					env_cpy = fill_token(env_cpy, token->tokens);
-					if (!env_cpy)
-						flag = 1;
-				}
-				else
-				{
-					flag = 1;
-					printf("bash: export: `%s': not a valid identifier\n",
-						token->tokens);
-					env_cpy->last_exit_status = 127;
-				}
-			}
+			ft_export_loop(token, env_cpy, &flag);
 			token = token->next;
 		}
 	}

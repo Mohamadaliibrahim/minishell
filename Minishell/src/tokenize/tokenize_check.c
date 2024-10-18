@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/14 20:08:59 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/18 14:55:14 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,7 +239,7 @@ void	check(char *input, t_env_cpy *env_cpy)
 	// }
 	if (token)
 	{
-		expand(token, env_cpy);
+		// expand(token, env_cpy);
 		if (check_token(token))
 		{
 			fprintf(stderr, "zsh: parse error near `\\n'\n");

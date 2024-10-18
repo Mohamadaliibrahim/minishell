@@ -21,11 +21,17 @@ SRC = src/main.c \
       src/build_ins/ft_export.c \
       src/build_ins/sort_export.c \
       src/build_ins/update_pwd.c \
-      src/build_ins/ft_export_update.c \
+      src/build_ins/export_edit/ft_export_update.c \
+      src/build_ins/export_edit/edit_env_node.c \
+      src/build_ins/export_edit/expanding.c \
+      src/build_ins/export_edit/utils_export_edit.c \
       src/build_ins/ft_unset.c \
       src/parsing/signals.c \
       src/execution/exec.c \
-      src/parsing/ft_redirections.c \
+      src/redirections/ft_redirections.c \
+      src/redirections/redirection_checking.c \
+      src/redirections/redirection_utils.c \
+      src/redirections/redirection_t_a.c \
       src/tokenize/redirections.c \
       src/execution/pipe.c \
       src/execution/pipe_utils.c
