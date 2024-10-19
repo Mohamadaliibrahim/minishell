@@ -32,6 +32,33 @@ static int	handle_quote(char **input, char **token, char *quote_type)
 	else
 		return (0);
 }
+\
+void	handle_dollar_inside_quotes(char **input, char **token)
+{
+	char	*var_name;
+	char	*var_value;
+
+	(*input)++;
+	(*input)++;
+	var_name = ft_strdup("");
+	while (**input && **input != '"')
+	{
+		var_name = append_char(var_name, **input);
+		(*input)++;
+	}
+	(*input)++;
+	var_value = getenv(var_name);
+	free(var_name);
+	if (var_value)
+		*token = ft_strjoin_free(*token, var_value);
+	while (**input && **input != ' ')
+	{
+        if (**input == '"')
+            (*input)++;
+		*token = append_char(*token, **input);
+		(*input)++;
+	}
+}
 
 void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
@@ -62,14 +89,16 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
                 return;
             }
         }
-		else if (**input == '\'' || **input == '"')
-		{
-			if (!handle_quote(input, &token, &quote_type))
-			{
-				free(token);
-				return ;
-			}
-		}
+        else if (**input == '"' || **input == '\'')
+        {
+            if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) != '\0')
+                handle_dollar_inside_quotes(input, &token);
+            else if (!handle_quote(input, &token, &quote_type))
+            {
+                free(token);
+                return;
+            }
+        }
         else if (ft_strncmp(*input, "$\"", 2) == 0)
             handle_quote(input, &token, &quote_type);
         else if (ft_strncmp(*input, "$\'", 2) == 0)
