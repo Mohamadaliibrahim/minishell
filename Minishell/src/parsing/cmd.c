@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/18 11:36:02 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/19 12:37:36 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,20 @@ void	expand(t_token *head, t_env_cpy *env)
 	}
 }
 
+int	prepare_to_exit(t_token *token, t_env_cpy *env_cpy, int shell)
+{
+	if (token->next && token->next->next)
+	{
+		env_cpy->last_exit_status = 1;
+		fprintf(stderr, "Minishell: pwd: : invalid optioz\n");
+		return (1);
+	}
+	if (shell)
+		printf("exit\n");
+	ft_exit(token, env_cpy);
+	return (0);
+}
+
 void	ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
 {
 	if (token == NULL)
@@ -171,17 +185,7 @@ void	ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
 		ft_cd(token, env_cpy);
 	}
 	else if ((ft_strcmp(token->tokens, "exit") == 0))
-	{
-		if (token->next->next)
-		{
-			env_cpy->last_exit_status = 1;
-			fprintf(stderr, "Minishell: pwd: : invalid optioz\n");
-			return ;
-		}
-		if (is_main_shell)
-			printf("exit\n");
-		ft_exit(token, env_cpy);
-	}
+		prepare_to_exit(token, env_cpy, is_main_shell);
 	else
 		do_comand(token, env_cpy);
 }
