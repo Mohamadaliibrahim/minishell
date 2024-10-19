@@ -12,52 +12,6 @@
 
 #include "../../inc/minishell.h"
 
-// static void handle_dollar_inside_quotes(char **input, char **token, t_env_cpy *env_list, int last_exit_status)
-// {
-//     char *var_value;
-//     char *var_name;
-
-//     (*input)++;  // Skip the initial '$'
-
-//     // Special case for $?
-//     if (**input == '?')
-//     {
-//         // Convert last_exit_status to a string and append it to the token
-//         char *status_str = ft_itoa(last_exit_status);
-//         *token = ft_strjoin_free(*token, status_str);  // Append the exit status to the token
-//         free(status_str);
-//         (*input)++;  // Move past '?'
-//         return;
-//     }
-
-//     // Extract the variable name
-//     var_name = ft_strdup("");
-//     while (**input && (ft_isalnum(**input) || **input == '_'))  // Accept alphanumeric and underscores for variable names
-//     {
-//         var_name = append_char(var_name, **input);
-//         (*input)++;
-//     }
-
-//     // Expand the variable using the env_list
-//     var_value = get_env_value(var_name, env_list);
-//     if (var_value)
-//     {
-//         *token = ft_strjoin_free(*token, var_value);  // Append the expanded variable value to the token
-//     }
-//     free(var_name);
-
-//     // Continue parsing the remaining characters inside the double quotes
-//     while (**input && **input != '"')
-//     {
-//         *token = append_char(*token, **input);  // Append other characters inside the quotes
-//         (*input)++;
-//     }
-
-//     // Skip the closing double quote
-//     if (**input == '"')
-//         (*input)++;
-// }
-
 static int	handle_quote(char **input, char **token, char *quote_type)
 {
 	char	q_char;
@@ -77,26 +31,6 @@ static int	handle_quote(char **input, char **token, char *quote_type)
 	}
 	else
 		return (0);
-}
-
-void handle_special_cases(char **input, char **token, int last_exit_status)
-{
-    if (**input == '\\')
-    {
-        if (**input)
-        {
-            *token = append_char(*token, **input);
-            (*input)++;
-        }
-    }
-    else if (**input == '$' && *(*input + 1) == '?')
-    {
-        // Handle $?: Replace with last exit status
-        char *status_str = ft_itoa(last_exit_status);
-        *token = ft_strjoin_free(*token, status_str);
-        *input += 2;  // Skip over the `$?`
-        free(status_str);
-    }
 }
 
 void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
@@ -128,12 +62,14 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
                 return;
             }
         }
-        else if (**input == '\\' || (**input == '$' && *(*input + 1) == '?'))
-            handle_special_cases(input, &token, env->last_exit_status);
-        else if (**input == '"' || **input == '\'')
-        {
-            handle_quote(input, &token, &quote_type);
-        }
+		else if (**input == '\'' || **input == '"')
+		{
+			if (!handle_quote(input, &token, &quote_type))
+			{
+				free(token);
+				return ;
+			}
+		}
         else if (ft_strncmp(*input, "$\"", 2) == 0)
             handle_quote(input, &token, &quote_type);
         else if (ft_strncmp(*input, "$\'", 2) == 0)

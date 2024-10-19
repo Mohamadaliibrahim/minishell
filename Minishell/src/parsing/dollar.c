@@ -40,79 +40,92 @@ char	*get_env_value(char *var_name, t_env_cpy *env_list)
 	return (NULL);
 }
 
-// Expand environment variable
-char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
+// Retrieve user ID (UID) as a special case
+char *handle_uid_expansion(char *result, int *i)
 {
-    char *var_name;
-    int var_len;
+    char *uid_str;
+    char *temp;
+
+    uid_str = ft_itoa(getuid());  // Retrieve the user ID using system call
+    temp = ft_strjoin(result, uid_str);
+    free(uid_str);
+    free(result);
+    *i += 4;  // Skip $ and 'UID'
+    return temp;
+}
+
+// Handle $? expansion (last command exit status)
+char *handle_exit_status_expansion(char *result, int *i, t_env_cpy *env_list)
+{
+    char *exit_status_str;
+    char *temp;
+
+    exit_status_str = ft_itoa(env_list->last_exit_status);
+    temp = ft_strjoin(result, exit_status_str);
+    free(exit_status_str);
+    free(result);
+    *i += 2;  // Skip $ and ?
+    return temp;
+}
+
+// Handle cases where $ is followed by a non-alphanumeric character or '_'
+char *handle_invalid_variable_expansion(char *result, char *var_name, int *i)
+{
+    char *temp;
+    char *temp2;
+
+    temp = ft_strjoin(result, "$");
+    if (temp)
+    {
+        temp2 = ft_strjoin(temp, var_name);
+        free(temp);
+        free(result);
+        result = temp2;
+    }
+    *i += 1 + ft_strlen(var_name);
+    return result;
+}
+
+// Handle cases where variable starts with a digit (e.g., $9HOME)
+char *handle_digit_variable_expansion(char *result, char *var_name, int *i)
+{
+    char *temp;
+    char *substr;
+    int var_len = 0;
+
+    var_name += 1;  // Skip the digit after $
+    *i += 2;  // Skip $ and the digit
+
+    while (var_name[var_len] && (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_'))
+        var_len++;
+
+    substr = ft_substr(var_name, 0, var_len);
+    if (substr)
+    {
+        temp = ft_strjoin(result, substr);
+        free(substr);
+        free(result);
+        result = temp;
+    }
+    *i += var_len;
+    return result;
+}
+
+// Handle general variable expansion (normal alphanumeric variables)
+char *handle_general_variable_expansion(char *result, char *var_name, int var_len, int *i, t_env_cpy *env_list)
+{
+    char *substr;
     char *env_value;
     char *temp;
 
-    var_name = token + (*i) + 1;
-
-    // Check if the first character after $ is not alphanumeric or '_'
-    if (!ft_isalnum(var_name[0]) && var_name[0] != '_')
-    {
-        temp = ft_strjoin(result, "$");
-        if (temp)
-        {
-            char *temp2 = ft_strjoin(temp, var_name);
-            free(temp);
-            free(result);
-            result = temp2;
-        }
-        *i += 1 + ft_strlen(var_name);
-        return result;
-    }
-
-    // Handle cases where the variable starts with a digit, such as $9HOME
-    if (ft_isdigit(var_name[0]))
-    {
-        var_name += 1;
-        *i += 2; // Skip $ and the digit
-
-        var_len = 0;
-        while (var_name[var_len] && (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_'))
-            var_len++;
-
-        char *substr = ft_substr(var_name, 0, var_len);
-        if (substr)
-        {
-            temp = ft_strjoin(result, substr);
-            free(substr);
-            free(result);
-            result = temp;
-        }
-        *i += var_len;
-        return result;
-    }
-
-    // Normal expansion process for other variables
-    var_len = 0;
-    while (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_')
-    {
-        var_len++;
-    }
-
-    if (ft_strncmp(var_name, "UID", var_len) == 0 && var_len == 3)
-    {
-        result = ft_strjoin(result, "1000");
-        (*i) += var_len + 1;
-        return result;
-    }
-
-    char *substr = ft_substr(var_name, 0, var_len);
+    substr = ft_substr(var_name, 0, var_len);
     env_value = get_env_value(substr, env_list);
     free(substr);
 
     if (!env_value)
-    {
         env_value = ft_strdup("");  // Handle cases where the env variable is not found
-    }
     else
-    {
         env_value = ft_strdup(env_value);  // Create a copy to avoid modifying the original string
-    }
 
     temp = ft_strjoin(result, env_value);
     free(result);
@@ -121,19 +134,39 @@ char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
     *i += var_len + 1;
     return temp;
 }
-// Handle $$ expansion (PID)
-char	*handle_double_dollar(char *result)
-{
-	char	*pid_str;
-	char	*temp;
 
-	pid_str = ft_itoa(getpid());
-	temp = ft_strjoin(result, pid_str);
-	free(result);
-	free(pid_str);
-	return (temp);
+// Main expand variable function, delegates to specialized functions
+char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
+{
+    char *var_name = token + (*i) + 1;
+    int var_len;
+
+    // Handle $UID special case
+    if (ft_strncmp(var_name, "UID", 3) == 0)
+        return handle_uid_expansion(result, i);
+
+    // Handle $? special case
+    if (var_name[0] == '?')
+        return handle_exit_status_expansion(result, i, env_list);
+
+    // Handle non-alphanumeric or '_' after $
+    if (!ft_isalnum(var_name[0]) && var_name[0] != '_')
+        return handle_invalid_variable_expansion(result, var_name, i);
+
+    // Handle cases where the variable starts with a digit
+    if (ft_isdigit(var_name[0]))
+        return handle_digit_variable_expansion(result, var_name, i);
+
+    // Calculate the length of the variable name (alphanumeric and '_')
+    var_len = 0;
+    while (ft_isalnum(var_name[var_len]) || var_name[var_len] == '_')
+        var_len++;
+
+    // Handle general variable expansion
+    return handle_general_variable_expansion(result, var_name, var_len, i, env_list);
 }
-// Main function to expand tokens
+
+// Main function to expand tokens, handling escape characters
 char	*expand_token_if_variable(char *token, t_env_cpy *env_list)
 {
 	char	*result;
@@ -143,12 +176,27 @@ char	*expand_token_if_variable(char *token, t_env_cpy *env_list)
 	result = ft_strdup("");
 	while (token[i])
 	{
-		if (token[i] == '$' && token[i + 1] == '$')
-			result = handle_double_dollar(result), i += 2;
+		// Check for the escape character
+		if (token[i] == '\\' && token[i + 1] == '$')
+		{
+			result = append_char(result, '$');  // Append $ literally
+			i += 2;  // Skip both '\' and '$'
+		}
+		else if (token[i] == '$' && token[i + 1] == '\\')
+		{
+			result = append_char(result, '$');  // Append $ literally
+			i += 2;  // Skip both '\' and '$'
+		}      
 		else if (token[i] == '$')
+		{
 			result = expand_variable(token, &i, env_list, result);
+		}
 		else
-			result = append_char(result, token[i]), i++;
+		{
+			// Append normal characters
+			result = append_char(result, token[i]);
+			i++;
+		}
 	}
 	return (result);
 }
