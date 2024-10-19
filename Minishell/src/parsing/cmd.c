@@ -71,83 +71,6 @@ void	ft_exit(t_token *token, t_env_cpy *env)
 	exit(exit_code);
 }
 
-char	*get_after(char *str)
-{
-	char	*ptr;
-	int		i;
-	int		j;
-
-	ptr = malloc(sizeof(char) * (ft_strlen(str)));
-	if (!ptr)
-		return (NULL);
-	i = 1;
-	j = 0;
-	while (str[i])
-	{
-		ptr[j] = str[i];
-		j++;
-		i++;
-	}
-	ptr[j] = '\0';
-	return (ptr);
-}
-
-char	*find(char *str, t_env_cpy *head)
-{
-	t_env_cpy	*env;
-	char		*ptr;
-
-	ptr = get_after(str);
-	env = head;
-	while (env)
-	{
-		if (ft_strcmp(ptr, env->type) == 0)
-		{
-			free(ptr);
-			return (env->env);
-		}
-		env = env->next;
-	}
-	free(ptr);
-	return (NULL);
-}
-
-void	expand(t_token *head, t_env_cpy *env)
-{
-	t_token	*token;
-	char	*str;
-
-	token = head;
-	while (token)
-	{
-		if (token->token_type == VARIABLE)
-		{
-			str = find(token->tokens, env);
-			if (str)
-			{
-				free(token->tokens);
-				token->tokens = ft_strdup(str);
-				if (!token->tokens)
-				{
-					fprintf(stderr,
-						"Error: Memory allocation failed during expansion\n");
-				}
-				token->token_type = CMND;
-			}
-			else
-			{
-				free(token->tokens);
-				token->tokens = ft_strdup("");
-				if (!token->tokens)
-					fprintf(stderr,
-						"Error: Memory allocation failed during expansion\n");
-			}
-			token->token_type = CMND;
-		}
-		token = token->next;
-	}
-}
-
 int	prepare_to_exit(t_token *token, t_env_cpy *env_cpy, int shell)
 {
 	if (token->next && token->next->next)
@@ -162,30 +85,44 @@ int	prepare_to_exit(t_token *token, t_env_cpy *env_cpy, int shell)
 	return (0);
 }
 
-void	ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
+void ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
 {
-	if (token == NULL)
-		return ;
-	if ((ft_strcmp(token->tokens, "echo") == 0))
-		check_echo(token, env_cpy);
-	else if ((ft_strcmp(token->tokens, "pwd") == 0))
-	{
-		env_cpy->last_exit_status = 0;
-		ft_pwd(token, env_cpy);
-	}
-	else if ((ft_strcmp(token->tokens, "env") == 0))
-		ft_env(token, env_cpy);
-	else if ((ft_strcmp(token->tokens, "export") == 0))
-		ft_export(token, env_cpy);
-	else if ((ft_strcmp(token->tokens, "unset") == 0))
-		ft_unset(token, &env_cpy);
-	else if ((ft_strcmp(token->tokens, "cd") == 0))
-	{
-		env_cpy->last_exit_status = 0;
-		ft_cd(token, env_cpy);
-	}
-	else if ((ft_strcmp(token->tokens, "exit") == 0))
-		prepare_to_exit(token, env_cpy, is_main_shell);
-	else
-		do_comand(token, env_cpy);
+    char *expanded_cmd;
+
+    if (token == NULL)
+        return;
+
+    // Handle variable expansion for commands like $a
+    if (token->tokens[0] == '$')
+    {
+        expanded_cmd = get_env_value(token->tokens + 1, env_cpy); // Skip the '$'
+        if (expanded_cmd)
+        {
+            free(token->tokens); // Free the original token
+            token->tokens = ft_strdup(expanded_cmd); // Replace with expanded value
+        }
+    }
+    // Built-in commands
+    if ((ft_strcmp(token->tokens, "echo") == 0))
+        check_echo(token, env_cpy);
+    else if ((ft_strcmp(token->tokens, "pwd") == 0))
+    {
+        env_cpy->last_exit_status = 0;
+        ft_pwd(token, env_cpy);
+    }
+    else if ((ft_strcmp(token->tokens, "env") == 0))
+        ft_env(token, env_cpy);
+    else if ((ft_strcmp(token->tokens, "export") == 0))
+        ft_export(token, env_cpy);
+    else if ((ft_strcmp(token->tokens, "unset") == 0))
+        ft_unset(token, &env_cpy);
+    else if ((ft_strcmp(token->tokens, "cd") == 0))
+    {
+        env_cpy->last_exit_status = 0;
+        ft_cd(token, env_cpy);
+    }
+    else if ((ft_strcmp(token->tokens, "exit") == 0))
+        prepare_to_exit(token, env_cpy, is_main_shell);
+    else
+        do_comand(token, env_cpy); // Handle external commands
 }

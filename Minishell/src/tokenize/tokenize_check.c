@@ -26,48 +26,61 @@ int search_for_pipe(t_token *token_list)
     return (0);
 }
 
-int	check_type(char *token, t_env_cpy *env)
+int check_type(char *token, t_env_cpy *env)
 {
-	char	*cmd_path;
+    char *cmd_path;
 
-	if (ft_strncmp(token, "/", 1) == 0 || ft_strncmp(token, "./", 2) == 0
-		|| ft_strncmp(token, "../", 3) == 0)
-	{
-		if (access(token, X_OK) == 0)
-			return (CMND);
-		else
-			return (UNKNOWN);
-	}
-	if ((ft_strcmp(token, "cd") == 0) || (ft_strcmp(token, "export") == 0)
-		|| (ft_strcmp(token, "unset") == 0) || (ft_strcmp(token, "exit") == 0)
-		|| (ft_strcmp(token, "env") == 0) || (ft_strcmp(token, "echo") == 0)
-		|| (ft_strcmp(token, "pwd") == 0))
-		return (CMND);
-
-	if (token[0] == '$' && ft_strlen(token) > 1)
-		return (VARIABLE);
-	if (ft_strcmp(token, "=") == 0)
-		return (EQUAL);
-	cmd_path = find_in_path(token, env);
-	if (cmd_path != NULL)
-	{
-		free(cmd_path);
-		return (CMND);
-	}
-	else if (ft_strcmp(token, "|") == 0)
-		return (PIPE);
-	else if (ft_strcmp(token, "<<") == 0)
-		return (HEREDOC);
-	else if (ft_strcmp(token, ">>") == 0)
-		return (APPEND);
-	else if (ft_strcmp(token, "<") == 0)
-		return (REDIRECT_IN);
-	else if (ft_strcmp(token, ">") == 0)
-		return (REDIRECT_OUT);
-	else if (ft_strcmp(token, "'") == 0 || ft_strcmp(token, "\"") == 0)
-		return (QUOTE);
-	return (UNKNOWN);
+    if (ft_strncmp(token, "/", 1) == 0 || ft_strncmp(token, "./", 2) == 0
+        || ft_strncmp(token, "../", 3) == 0)
+    {
+        if (access(token, X_OK) == 0)
+            return (CMND);
+        else
+            return (UNKNOWN);
+    }
+    
+    // Handle variable substitution for commands like $a
+    if (token[0] == '$')
+    {
+        char *var_value = get_env_value(token + 1, env); // Skip $
+        if (var_value)
+        {
+            free(token); // Free the old token
+            token = ft_strdup(var_value); // Replace token with the value of the variable
+            if (!token)
+                return (UNKNOWN); // Handle error case
+        }
+    }
+    
+    // Built-in commands
+    if ((ft_strcmp(token, "cd") == 0) || (ft_strcmp(token, "export") == 0)
+        || (ft_strcmp(token, "unset") == 0) || (ft_strcmp(token, "exit") == 0)
+        || (ft_strcmp(token, "env") == 0) || (ft_strcmp(token, "echo") == 0)
+        || (ft_strcmp(token, "pwd") == 0))
+        return (CMND);
+    
+    cmd_path = find_in_path(token, env);
+    if (cmd_path != NULL)
+    {
+        free(cmd_path);
+        return (CMND);
+    }
+    
+    // Handle redirections and pipes
+    if (ft_strcmp(token, "|") == 0)
+        return (PIPE);
+    if (ft_strcmp(token, "<<") == 0)
+        return (HEREDOC);
+    if (ft_strcmp(token, ">>") == 0)
+        return (APPEND);
+    if (ft_strcmp(token, "<") == 0)
+        return (REDIRECT_IN);
+    if (ft_strcmp(token, ">") == 0)
+        return (REDIRECT_OUT);
+    
+    return (UNKNOWN);
 }
+
 
 
 static int	check_for_quotations(char *input)
@@ -239,7 +252,6 @@ void	check(char *input, t_env_cpy *env_cpy)
 	// }
 	if (token)
 	{
-		// expand(token, env_cpy);
 		if (check_token(token))
 		{
 			fprintf(stderr, "zsh: parse error near `\\n'\n");
