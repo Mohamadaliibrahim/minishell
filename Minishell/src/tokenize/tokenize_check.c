@@ -28,7 +28,8 @@ int search_for_pipe(t_token *token_list)
 
 int check_type(char *token, t_env_cpy *env)
 {
-    char *cmd_path;
+    char	*cmd_path;
+    char    *expanded_token;
 
     if (ft_strncmp(token, "/", 1) == 0 || ft_strncmp(token, "./", 2) == 0
         || ft_strncmp(token, "../", 3) == 0)
@@ -39,17 +40,26 @@ int check_type(char *token, t_env_cpy *env)
             return (UNKNOWN);
     }
     
-    // Handle variable substitution for commands like $a
-    if (token[0] == '$')
+    // Handle expansion of variables used as commands
+    if (token[0] == '$' && ft_strlen(token) > 1)
     {
-        char *var_value = get_env_value(token + 1, env); // Skip $
-        if (var_value)
+        expanded_token = get_env_value(token + 1, env);  // Expand $a to its value
+        if (expanded_token)
         {
-            free(token); // Free the old token
-            token = ft_strdup(var_value); // Replace token with the value of the variable
-            if (!token)
-                return (UNKNOWN); // Handle error case
+            // If the expanded token is a valid command, return the command type
+            if ((ft_strcmp(expanded_token, "cd") == 0) || (ft_strcmp(expanded_token, "export") == 0)
+                || (ft_strcmp(expanded_token, "unset") == 0) || (ft_strcmp(expanded_token, "exit") == 0)
+                || (ft_strcmp(expanded_token, "env") == 0) || (ft_strcmp(expanded_token, "echo") == 0)
+                || (ft_strcmp(expanded_token, "pwd") == 0))
+                return (CMND);
+            cmd_path = find_in_path(expanded_token, env);
+            if (cmd_path != NULL)
+            {
+                free(cmd_path);
+                return (CMND);
+            }
         }
+        return (VARIABLE);
     }
     
     // Built-in commands

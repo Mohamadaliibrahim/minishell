@@ -32,33 +32,43 @@ static int	handle_quote(char **input, char **token, char *quote_type)
 	else
 		return (0);
 }
-\
-void	handle_dollar_inside_quotes(char **input, char **token)
+
+void	handle_dollar_inside_quotes(char **input, char **token, t_env_cpy *env)
 {
 	char	*var_name;
 	char	*var_value;
 
-	(*input)++;
-	(*input)++;
-	var_name = ft_strdup("");
-	while (**input && **input != '"')
+	(*input)++;  // Move past the '$'
+
+    // Handle special case for "$?"
+    if (**input == '?')
+    {
+        (*input)++;  // Move past the '?'
+        var_value = ft_itoa(env->last_exit_status);  // Get the last exit status as a string
+        *token = ft_strjoin_free(*token, var_value);  // Append the exit status
+        free(var_value);
+        return;
+    }
+
+	// Normal variable handling
+	var_name = ft_strdup("");  // Initialize var_name to an empty string
+
+	// Collect the variable name until we hit a non-alphanumeric or non-underscore character
+	while (**input && (ft_isalnum(**input) || **input == '_'))
 	{
-		var_name = append_char(var_name, **input);
+		var_name = append_char(var_name, **input);  // Build the variable name
 		(*input)++;
 	}
-	(*input)++;
-	var_value = getenv(var_name);
-	free(var_name);
+
+	// Lookup the value of the environment variable
+	var_value = get_env_value(var_name, env);
+	free(var_name);  // Free the variable name after use
+
+	// If the environment variable is found, append its value to the token
 	if (var_value)
 		*token = ft_strjoin_free(*token, var_value);
-	while (**input && **input != ' ')
-	{
-        if (**input == '"')
-            (*input)++;
-		*token = append_char(*token, **input);
-		(*input)++;
-	}
 }
+
 
 void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
@@ -91,12 +101,27 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
         }
         else if (**input == '"' || **input == '\'')
         {
-            if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) != '\0')
-                handle_dollar_inside_quotes(input, &token);
-            else if (!handle_quote(input, &token, &quote_type))
+            // Handle double quotes (")
+            if (**input == '"')
             {
-                free(token);
-                return;
+                (*input)++;  // Skip the opening double quote
+                while (**input && **input != '"')
+                {
+                    // Handle variable expansion inside double quotes
+                    if (**input == '$')
+                        handle_dollar_inside_quotes(input, &token, env);
+                    else
+                    {
+                        token = append_char(token, **input);
+                        (*input)++;
+                    }
+                }
+                (*input)++;  // Skip the closing double quote
+            }
+            // Handle single quotes ('), which prevent variable expansion
+            else if (**input == '\'')
+            {
+                handle_quote(input, &token, &quote_type);
             }
         }
         else if (ft_strncmp(*input, "$\"", 2) == 0)
