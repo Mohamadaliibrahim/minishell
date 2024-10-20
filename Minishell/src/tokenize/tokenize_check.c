@@ -58,6 +58,8 @@ int	check_type(char *token, t_env_cpy *env)
 				free(cmd_path);
 				return (CMND);
 			}
+			else if (!cmd_path)
+				printf("Command '%s' not found\n", expanded_token);
 		}
 		return (VARIABLE);
 	}
