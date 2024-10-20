@@ -93,6 +93,7 @@ t_command **parse_commands(t_token *token_list, int *num_commands, t_env_cpy *en
     return commands;
 }
 
+
 void execute_pipeline(t_token *token_list, t_env_cpy *env_cpy)
 {
     int         num_commands;

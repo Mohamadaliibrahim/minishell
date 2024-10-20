@@ -161,18 +161,29 @@ void free_pipes(int **pipes, int num_pipes)
 
 void free_commands(t_command **commands)
 {
-    int i;
+    int i = 0;
 
-    i = 0;
     while (commands[i])
     {
-        ft_free_2darray(commands[i]->argv);
-        free_token_list(commands[i]->token_list);
+        if (commands[i]->infile)
+            free(commands[i]->infile);
+        if (commands[i]->outfile)
+            free(commands[i]->outfile);
+        if (commands[i]->argv)
+        {
+            int j = 0;
+            while (commands[i]->argv[j])
+                free(commands[i]->argv[j++]);
+            free(commands[i]->argv);
+        }
+        if (commands[i]->token_list)
+            free_token_list(commands[i]->token_list);  // Ensure tokens are freed
         free(commands[i]);
         i++;
     }
-    free(commands);
+    free(commands);  // Free the main commands array
 }
+
 
 void free_pids_and_commands(pid_t *pids, t_command **commands)
 {
