@@ -33,7 +33,7 @@ static int	handle_quote(char **input, char **token, char *quote_type)
 		return (0);
 }
 
-void	handle_dollar_inside_quotes(char **input, char **token, t_env_cpy *env)
+static void	handle_dollar_inside_quotes(char **input, char **token, t_env_cpy *env)
 {
 	char	*var_name;
 	char	*var_value;
@@ -69,6 +69,43 @@ void	handle_dollar_inside_quotes(char **input, char **token, t_env_cpy *env)
 		*token = ft_strjoin_free(*token, var_value);
 }
 
+// Handle redirection logic
+static int handle_redirection_token(char **input, char **token, t_token **token_list, t_env_cpy *env, int *error_flag, char *quote_type)
+{
+    if (ft_strlen(*token) > 0)
+    {
+        add_token(token_list, *token, env, *quote_type);
+        free(*token);
+        *token = ft_strdup("");
+        *quote_type = 0;
+        if (!*token)
+            return (1);
+    }
+    handle_redirection(input, token_list, env, error_flag);
+    if (*error_flag)
+    {
+        free(*token);
+        return (1);
+    }
+    return (0);
+}
+
+// Handle quotes and variable expansion inside quotes
+static void handle_quotes_and_expansion(char **input, char **token, t_env_cpy *env)
+{
+    (*input)++;  // Skip the opening double quote
+    while (**input && **input != '"')
+    {
+        if (**input == '$')
+            handle_dollar_inside_quotes(input, token, env);
+        else
+        {
+            *token = append_char(*token, **input);
+            (*input)++;
+        }
+    }
+    (*input)++;  // Skip the closing double quote
+}
 
 void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
@@ -78,55 +115,17 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
     token = ft_strdup("");
     if (!token)
         return;
+
     while (**input && **input != ' ' && *error_flag == 0)
     {
         if ((**input == '<' || **input == '>'))
         {
-            if (ft_strlen(token) > 0)
-            {
-                // Add the accumulated token before the redirection operator
-                add_token(token_list, token, env, quote_type);
-                free(token);
-                token = ft_strdup("");
-                quote_type = 0; // Reset quote_type
-                if (!token)
-                    return;
-            }
-            handle_redirection(input, token_list, env, error_flag);
-            if (*error_flag)
-            {
-                free(token);
+            if (handle_redirection_token(input, &token, token_list, env, error_flag, &quote_type))
                 return;
-            }
         }
-        else if (**input == '"' || **input == '\'')
-        {
-            // Handle double quotes (")
-            if (**input == '"')
-            {
-                (*input)++;  // Skip the opening double quote
-                while (**input && **input != '"')
-                {
-                    // Handle variable expansion inside double quotes
-                    if (**input == '$')
-                        handle_dollar_inside_quotes(input, &token, env);
-                    else
-                    {
-                        token = append_char(token, **input);
-                        (*input)++;
-                    }
-                }
-                (*input)++;  // Skip the closing double quote
-            }
-            // Handle single quotes ('), which prevent variable expansion
-            else if (**input == '\'')
-            {
-                handle_quote(input, &token, &quote_type);
-            }
-        }
-        else if (ft_strncmp(*input, "$\"", 2) == 0)
-            handle_quote(input, &token, &quote_type);
-        else if (ft_strncmp(*input, "$\'", 2) == 0)
+        else if (**input == '"')
+            handle_quotes_and_expansion(input, &token, env);
+        else if (**input == '\'')
             handle_quote(input, &token, &quote_type);
         else
         {
@@ -134,10 +133,9 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
             (*input)++;
         }
     }
+
     if (ft_strlen(token) > 0 && *error_flag == 0)
-    {
         add_token(token_list, token, env, quote_type);
-        quote_type = 0; // Reset quote_type after adding the token
-    }
+
     free(token);
 }

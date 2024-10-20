@@ -17,8 +17,10 @@ static sigjmp_buf heredoc_jmpbuf;
 void heredoc_sigint_handler(int signo)
 {
     (void)signo;  // Suppress unused parameter warning
-    siglongjmp(heredoc_jmpbuf, 1);
+    write(STDOUT_FILENO, "\n", 1);  // Output ^C followed by a newline
+    siglongjmp(heredoc_jmpbuf, 1);  // Jump to the set jump point
 }
+
 
 static void parse_heredoc_delimiter(char **input, char **delimiter, int *error_flag)
 {
@@ -76,7 +78,7 @@ static int handle_heredoc_file(char *heredoc_file, char *delimiter)
             line = readline("> ");
             if (!line)
             {
-                // EOF or read error
+                fprintf(stderr, "Minishell: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter);
                 break;
             }
             if (ft_strcmp(line, delimiter) == 0)
