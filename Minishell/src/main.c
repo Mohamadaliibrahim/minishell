@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/15 06:44:01 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/20 11:37:17 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,13 @@ t_env_cpy	*history(void)
 	dest[3] = NULL;
 	free(pwd);
 	return (cpy_env(dest));
+}
+
+void	fill_dest(char ***dest, int *i)
+{
+	(*dest)[*i++] = ft_strdup("SHLVL=1");
+	(*dest)[*i++] = ft_strdup("_=/usr/bin/env");
+	(*dest)[*i] = NULL;
 }
 
 char	**define_env(char **env)
@@ -54,9 +61,7 @@ char	**define_env(char **env)
 		}
 		i++;
 	}
-	dest[i++] = ft_strdup("SHLVL=1");
-	dest[i++] = ft_strdup("_=/usr/bin/env");
-	dest[i] = NULL;
+	fill_dest(&dest, &i);
 	return (dest);
 }
 
