@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/20 11:37:17 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/20 12:38:03 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,32 @@ char	**define_env(char **env)
 	return (dest);
 }
 
+int	env_loop_to_2d(char **combine, t_env_cpy *env, char ***dest, int *i)
+{
+	if (env->equal)
+		(*combine) = ft_strjoin(env->type, "=");
+	else
+		(*combine) = ft_strjoin(env->type, "");
+	if (!(*combine))
+	{
+		while ((*i) > 0)
+			free((*dest)[--(*i)]);
+		free((*dest));
+		return (1);
+	}
+	(*dest)[(*i)] = ft_strjoin((*combine), env->env);
+	free((*combine));
+	if (!(*dest)[(*i)])
+	{
+		while ((*i) > 0)
+			free(dest[--(*i)]);
+		free(dest);
+		return (1);
+	}
+	(*i)++;
+	return (0);
+}
+
 char	**list_to_2d(t_env_cpy *env)
 {
 	t_env_cpy	*head;
@@ -86,47 +112,54 @@ char	**list_to_2d(t_env_cpy *env)
 	env = head;
 	while (env)
 	{
-		if (env->equal)
-			combine = ft_strjoin(env->type, "=");
-		else
-			combine = ft_strjoin(env->type, "");
-		if (!combine)
-		{
-			while (i > 0)
-				free(dest[--i]);
-			free(dest);
+		if (env_loop_to_2d(&combine, env, &dest, &i))
 			return (NULL);
-		}
-		dest[i] = ft_strjoin(combine, env->env);
-		free(combine);
-		if (!dest[i])
-		{
-			while (i > 0)
-				free(dest[--i]);
-			free(dest);
-			return (NULL);
-		}
-		i++;
 		env = env->next;
 	}
 	dest[i] = NULL;
 	return (dest);
 }
 
+void	creating_env(t_env_cpy **env_cpy, char **env)
+{
+	if (env[0] == NULL)
+		(*env_cpy) = history();
+	else
+		(*env_cpy) = cpy_env(env);
+	(*env_cpy) = add_shell((*env_cpy));
+}
+
+void	check_ac_av(int ac, char **av)
+{
+	(void)(av);
+	if (ac > 1)
+	{
+		ft_putstr_fd("ERROR: too many arguments\n", 2);
+		exit(127);
+	}
+}
+
+void	freez(t_env_cpy **env_cpy)
+{
+	free_env_list(*env_cpy);
+	clear_history();
+	rl_clear_history();
+	rl_free_line_state();
+}
+
+void	preparing(int ac, char **av, t_env_cpy **env_cpy, char **env)
+{
+	check_ac_av(ac, av);
+	setup_signal_handlers();
+	creating_env(&(*env_cpy), env);
+}
 
 int	main(int ac, char **av, char **env)
 {
 	char		*input;
 	t_env_cpy	*env_cpy;
 
-	(void)ac;
-	(void)av;
-	setup_signal_handlers();
-	if (env[0] == NULL)
-		env_cpy = history();
-	else
-		env_cpy = cpy_env(env);
-	env_cpy = add_shell(env_cpy);
+	preparing(ac, av, &env_cpy, env);
 	while (1)
 	{
 		input = readline("\033[0;31mHELL>\033[0m ");
@@ -145,9 +178,6 @@ int	main(int ac, char **av, char **env)
 		check(input, env_cpy);
 		free(input);
 	}
-	free_env_list(env_cpy);
-	clear_history();
-	rl_clear_history();
-	rl_free_line_state();
+	freez(&env_cpy);
 	return (0);
 }

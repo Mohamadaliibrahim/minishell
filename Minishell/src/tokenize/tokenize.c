@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/09/25 20:24:26 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/20 12:39:08 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@ static t_token	*new_token(char *input, t_env_cpy *env, char qoute_type)
 	if (!new_node)
 		return (NULL);
 	new_node->tokens = ft_strdup(input);
-    if (!new_node->tokens)  // Handle memory allocation failure for the string
-    {
-        free(new_node);  // Free the t_token structure if string duplication fails
-        return NULL;
-    }
+	if (!new_node->tokens)
+	{
+		free(new_node);
+		return (NULL);
+	}
 	new_node->next = NULL;
 	new_node->token_type = check_type(input, env);
 	new_node->qoute_type = qoute_type;

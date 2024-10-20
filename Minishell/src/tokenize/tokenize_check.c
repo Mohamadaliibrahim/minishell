@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/20 11:30:44 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/20 12:38:48 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,6 @@ int	check_type(char *token, t_env_cpy *env)
 				free(cmd_path);
 				return (CMND);
 			}
-			else if (!cmd_path)
-				printf("Command '%s' not found\n", expanded_token);
 		}
 		return (VARIABLE);
 	}

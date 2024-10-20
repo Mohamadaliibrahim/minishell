@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:03:44 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/15 07:09:01 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/20 12:38:56 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,26 +58,6 @@ char	*return_type(char *env)
 	return (dest);
 }
 
-
-// char	*return_type(char *env)
-// {
-// 	int		i;
-// 	char	*dest;
-
-// 	i = 0;
-// 	while (env[i] != '=')
-// 		i++;
-// 	dest = malloc(sizeof(char) * (i + 1));
-// 	i = 0;
-// 	while (env[i] != '=')
-// 	{
-// 		dest[i] = env[i];
-// 		i++;
-// 	}
-// 	dest[i] = '\0';
-// 	return (dest);
-// }
-
 bool	check_for_equal(char *env)
 {
 	int	i;
@@ -92,6 +72,46 @@ bool	check_for_equal(char *env)
 	return (false);
 }
 
+void	fill_new_node(t_env_cpy **new_node, t_env_cpy **head)
+{
+	(*new_node)->type = ft_strdup("SHLVL");
+	(*new_node)->env = ft_strdup("1");
+	(*new_node)->equal = true;
+	(*new_node)->heredoc_file = NULL;
+	(*new_node)->last_exit_status = 0;
+	(*new_node)->last_output_fd = -1;
+	(*new_node)->last_input_fd = -1;
+	(*new_node)->internal_pwd = NULL;
+	(*new_node)->internal_oldpwd = NULL;
+	(*new_node)->flag = 0;
+	(*new_node)->next = (*head);
+	(*new_node)->previous = NULL;
+}
+
+void	check_x(int	*x)
+{
+	if ((*x) <= 0)
+		(*x) = 1;
+	else
+		(*x) += 1;
+	if ((*x) > INT_MAX)
+		(*x) = INT_MAX;
+	else
+		(*x) = (*x);
+}
+
+void	error_happend(void)
+{
+	perror("Memory allocation error");
+	exit(EXIT_FAILURE);
+}
+
+void	check_head(t_env_cpy **head, t_env_cpy **new_node)
+{
+	if ((*head))
+		(*head)->previous = (*new_node);
+}
+
 t_env_cpy	*add_shell(t_env_cpy *env_cpy)
 {
 	t_env_cpy	*head;
@@ -104,42 +124,22 @@ t_env_cpy	*add_shell(t_env_cpy *env_cpy)
 		if (ft_strcmp(env_cpy->type, "SHLVL") == 0)
 		{
 			x = ft_atoi(env_cpy->env);
-			x = (x <= 0) ? 1 : x + 1;
-			x = (x > INT_MAX) ? INT_MAX : x;
+			check_x(&x);
 			free(env_cpy->env);
 			env_cpy->env = ft_itoa(x);
 			if (!env_cpy->env)
-			{
-				perror("Memory allocation error");
-				exit(EXIT_FAILURE);
-			}
+				error_happend();
 			return (head);
 		}
 		env_cpy = env_cpy->next;
 	}
 	new_node = malloc(sizeof(t_env_cpy));
 	if (!new_node)
-	{
-		perror("Memory allocation error");
-		exit(EXIT_FAILURE);
-	}
-	new_node->type = ft_strdup("SHLVL");
-	new_node->env = ft_strdup("1");
-	new_node->equal = true;
-	new_node->heredoc_file = NULL;
-	new_node->last_exit_status = 0;
-	new_node->last_output_fd = -1;
-	new_node->last_input_fd = -1;
-	new_node->internal_pwd = NULL;
-	new_node->internal_oldpwd = NULL;
-	new_node->flag = 0;
-	new_node->next = head;
-	new_node->previous = NULL;
-	if (head)
-		head->previous = new_node;
+		error_happend();
+	fill_new_node(&new_node, &head);
+	check_head(&head, &new_node);
 	return (new_node);
 }
-
 
 t_env_cpy	*cpy_env_helper(char *env)
 {
@@ -148,7 +148,6 @@ t_env_cpy	*cpy_env_helper(char *env)
 	cpy = malloc(sizeof(t_env_cpy));
 	if (!cpy)
 		return (NULL);
-
 	cpy->env = return_path(env);
 	cpy->type = return_type(env);
 	cpy->equal = check_for_equal(env);
@@ -161,10 +160,15 @@ t_env_cpy	*cpy_env_helper(char *env)
 	cpy->internal_pwd = NULL;
 	cpy->internal_oldpwd = NULL;
 	cpy->flag = 0;
-
 	return (cpy);
 }
 
+void	else_in_env_loop(t_env_cpy **current, t_env_cpy **new_node)
+{
+	(*current)->next = (*new_node);
+	(*new_node)->previous = (*current);
+	(*current) = (*new_node);
+}
 
 t_env_cpy	*cpy_env(char **env)
 {
@@ -188,11 +192,7 @@ t_env_cpy	*cpy_env(char **env)
 			current = head;
 		}
 		else
-		{
-			current->next = new_node;
-			new_node->previous = current;
-			current = new_node;
-		}
+			else_in_env_loop(&current, &new_node);
 	}
 	return (head);
 }
