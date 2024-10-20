@@ -6,92 +6,84 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/18 14:55:14 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/20 11:30:44 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-int search_for_pipe(t_token *token_list)
+int	search_for_pipe(t_token *token_list)
 {
-    t_token *current;
+	t_token	*current;
 
-    current = token_list;
-    while (current)
-    {
-        if (current->token_type == PIPE)
-            return (1);
-        current = current->next;
-    }
-    return (0);
+	current = token_list;
+	while (current)
+	{
+		if (current->token_type == PIPE)
+			return (1);
+		current = current->next;
+	}
+	return (0);
 }
 
-int check_type(char *token, t_env_cpy *env)
+int	check_type(char *token, t_env_cpy *env)
 {
-    char	*cmd_path;
-    char    *expanded_token;
+	char	*cmd_path;
+	char	*expanded_token;
 
-    if (ft_strncmp(token, "/", 1) == 0 || ft_strncmp(token, "./", 2) == 0
-        || ft_strncmp(token, "../", 3) == 0)
-    {
-        if (access(token, X_OK) == 0)
-            return (CMND);
-        else
-            return (UNKNOWN);
-    }
-    
-    // Handle expansion of variables used as commands
-    if (token[0] == '$' && ft_strlen(token) > 1)
-    {
-        expanded_token = get_env_value(token + 1, env);  // Expand $a to its value
-        if (expanded_token)
-        {
-            // If the expanded token is a valid command, return the command type
-            if ((ft_strcmp(expanded_token, "cd") == 0) || (ft_strcmp(expanded_token, "export") == 0)
-                || (ft_strcmp(expanded_token, "unset") == 0) || (ft_strcmp(expanded_token, "exit") == 0)
-                || (ft_strcmp(expanded_token, "env") == 0) || (ft_strcmp(expanded_token, "echo") == 0)
-                || (ft_strcmp(expanded_token, "pwd") == 0))
-                return (CMND);
-            cmd_path = find_in_path(expanded_token, env);
-            if (cmd_path != NULL)
-            {
-                free(cmd_path);
-                return (CMND);
-            }
-        }
-        return (VARIABLE);
-    }
-    
-    // Built-in commands
-    if ((ft_strcmp(token, "cd") == 0) || (ft_strcmp(token, "export") == 0)
-        || (ft_strcmp(token, "unset") == 0) || (ft_strcmp(token, "exit") == 0)
-        || (ft_strcmp(token, "env") == 0) || (ft_strcmp(token, "echo") == 0)
-        || (ft_strcmp(token, "pwd") == 0))
-        return (CMND);
-    
-    cmd_path = find_in_path(token, env);
-    if (cmd_path != NULL)
-    {
-        free(cmd_path);
-        return (CMND);
-    }
-    
-    // Handle redirections and pipes
-    if (ft_strcmp(token, "|") == 0)
-        return (PIPE);
-    if (ft_strcmp(token, "<<") == 0)
-        return (HEREDOC);
-    if (ft_strcmp(token, ">>") == 0)
-        return (APPEND);
-    if (ft_strcmp(token, "<") == 0)
-        return (REDIRECT_IN);
-    if (ft_strcmp(token, ">") == 0)
-        return (REDIRECT_OUT);
-    
-    return (UNKNOWN);
+	if (ft_strncmp(token, "/", 1) == 0 || ft_strncmp(token, "./", 2) == 0
+		|| ft_strncmp(token, "../", 3) == 0)
+	{
+		if (access(token, X_OK) == 0)
+			return (CMND);
+		else
+			return (UNKNOWN);
+	}
+	if (token[0] == '$' && ft_strlen(token) > 1)
+	{
+		expanded_token = get_env_value(token + 1, env);
+		if (expanded_token)
+		{
+			if ((ft_strcmp(expanded_token, "cd") == 0)
+				|| (ft_strcmp(expanded_token, "export") == 0)
+				|| (ft_strcmp(expanded_token, "unset") == 0)
+				|| (ft_strcmp(expanded_token, "exit") == 0)
+				|| (ft_strcmp(expanded_token, "env") == 0)
+				|| (ft_strcmp(expanded_token, "echo") == 0)
+				|| (ft_strcmp(expanded_token, "pwd") == 0))
+				return (CMND);
+			cmd_path = find_in_path(expanded_token, env);
+			if (cmd_path != NULL)
+			{
+				free(cmd_path);
+				return (CMND);
+			}
+		}
+		return (VARIABLE);
+	}
+	if ((ft_strcmp(token, "cd") == 0) || (ft_strcmp(token, "export") == 0)
+		|| (ft_strcmp(token, "unset") == 0) || (ft_strcmp(token, "exit") == 0)
+		|| (ft_strcmp(token, "env") == 0) || (ft_strcmp(token, "echo") == 0)
+		|| (ft_strcmp(token, "pwd") == 0))
+		return (CMND);
+	cmd_path = find_in_path(token, env);
+	if (cmd_path != NULL)
+	{
+		free(cmd_path);
+		return (CMND);
+	}
+	if (ft_strcmp(token, "|") == 0)
+		return (PIPE);
+	if (ft_strcmp(token, "<<") == 0)
+		return (HEREDOC);
+	if (ft_strcmp(token, ">>") == 0)
+		return (APPEND);
+	if (ft_strcmp(token, "<") == 0)
+		return (REDIRECT_IN);
+	if (ft_strcmp(token, ">") == 0)
+		return (REDIRECT_OUT);
+	return (UNKNOWN);
 }
-
-
 
 static int	check_for_quotations(char *input)
 {
@@ -115,82 +107,71 @@ static int	check_for_quotations(char *input)
 	return (1);
 }
 
-char *preprocess_input(char *input)
+char	*preprocess_input(char *input)
 {
-    char *new_input;
-    int i = 0, j = 0;
-    int len = ft_strlen(input);
-    int new_len = len * 2; // Maximum possible length after adding spaces
-    new_input = malloc(new_len + 1); // +1 for null terminator
-    if (!new_input)
-        return NULL;
+	char	*new_input;
+	int		i;
+	int		j;
+	int		len;
+	char	quote;
+	int		new_len;
 
-    while (input[i])
-    {
-        // Handle quoted strings
-        if (input[i] == '\'' || input[i] == '"')
-        {
-            char quote = input[i++];
-            new_input[j++] = quote; // Copy opening quote
-            while (input[i] && input[i] != quote)
-                new_input[j++] = input[i++];
-            if (input[i] == quote)
-                new_input[j++] = input[i++]; // Copy closing quote
-        }
-        // Check for operators outside quotes
-        else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
-        {
-            // Add space before the operator if necessary
-            if (i > 0 && input[i - 1] != ' ')
-                new_input[j++] = ' ';
-            
-            // Add the operator
-            new_input[j++] = input[i];
-
-            // Handle double-character operators (<<, >>)
-            if ((input[i] == '<' || input[i] == '>') && input[i + 1] == input[i])
-            {
-                i++;
-                new_input[j++] = input[i];
-            }
-
-            // Add space after the operator if necessary
-            if (input[i + 1] && input[i + 1] != ' ')
-                new_input[j++] = ' ';
-            i++;
-        }
-        else
-        {
-            // Copy other characters
-            new_input[j++] = input[i++];
-        }
-    }
-    new_input[j] = '\0';
-
-    return new_input;
+	i = 0;
+	j = 0;
+	len = ft_strlen(input);
+	new_len = len * 2;
+	new_input = malloc(new_len + 1);
+	if (!new_input)
+		return (NULL);
+	while (input[i])
+	{
+		if (input[i] == '\'' || input[i] == '"')
+		{
+			quote = input[i++];
+			new_input[j++] = quote;
+			while (input[i] && input[i] != quote)
+				new_input[j++] = input[i++];
+			if (input[i] == quote)
+				new_input[j++] = input[i++];
+		}
+		else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
+		{
+			if (i > 0 && input[i - 1] != ' ')
+				new_input[j++] = ' ';
+			new_input[j++] = input[i];
+			if ((input[i] == '<' || input[i] == '>')
+				&& input[i + 1] == input[i])
+			{
+				i++;
+				new_input[j++] = input[i];
+			}
+			if (input[i + 1] && input[i + 1] != ' ')
+				new_input[j++] = ' ';
+			i++;
+		}
+		else
+			new_input[j++] = input[i++];
+	}
+	new_input[j] = '\0';
+	return (new_input);
 }
 
-int is_invalid_pipe_syntax(t_token *token_list)
+int	is_invalid_pipe_syntax(t_token *token_list)
 {
-    t_token *current = token_list;
+	t_token	*current;
 
-    // Check if the first token is a pipe
-    if (current->token_type == PIPE)
-        return 1;
-
-    // Traverse the token list and check for consecutive pipes
-    while (current->next)
-    {
-        if (current->token_type == PIPE && current->next->token_type == PIPE)
-            return 1;  // Consecutive pipes are invalid
-        current = current->next;
-    }
-
-    // Check if the last token is a pipe
-    if (current->token_type == PIPE)
-        return 1;
-
-    return 0;  // No invalid pipe usage found
+	current = token_list;
+	if (current->token_type == PIPE)
+		return (1);
+	while (current->next)
+	{
+		if (current->token_type == PIPE && current->next->token_type == PIPE)
+			return (1);
+		current = current->next;
+	}
+	if (current->token_type == PIPE)
+		return (1);
+	return (0);
 }
 
 int	fix_pipe(char *str)
@@ -216,12 +197,15 @@ int	fix_pipe(char *str)
 
 void	check(char *input, t_env_cpy *env_cpy)
 {
-	t_token *token = NULL;
-	int error_flag = 0;
+	t_token	*token;
+	int		error_flag;
+	char	*preprocessed_input;
 
+	token = NULL;
+	error_flag = 0;
 	if (fix_pipe(input))
 		return ;
-	char *preprocessed_input = preprocess_input(input);
+	preprocessed_input = preprocess_input(input);
 	if (!preprocessed_input)
 	{
 		fprintf(stderr, "Error: Memory allocation failed\n");
@@ -253,13 +237,6 @@ void	check(char *input, t_env_cpy *env_cpy)
 		env_cpy->last_exit_status = 2;
 		return ;
 	}
-	// t_token	*hey;
-	// hey = token;
-	// while (hey)
-	// {
-	// 	printf("%s\n",hey->tokens);
-	// 	hey = hey->next;
-	// }
 	if (token)
 	{
 		if (check_token(token))
