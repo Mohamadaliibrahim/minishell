@@ -6,11 +6,22 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/19 12:37:36 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/20 11:23:37 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
+
+int	fill_and_shape_path(char **path_env, char ***paths, t_env_cpy *env)
+{
+	(*path_env) = get_old_path(env, "PATH");
+	if (!(*path_env))
+		return (1);
+	(*paths) = ft_split((*path_env), ':');
+	if (!(*paths))
+		return (1);
+	return (0);
+}
 
 char	*find_in_path(char *cmd, t_env_cpy *env)
 {
@@ -19,11 +30,7 @@ char	*find_in_path(char *cmd, t_env_cpy *env)
 	char	*full_path;
 	int		i;
 
-	path_env = get_old_path(env, "PATH");
-	if (!path_env)
-		return (NULL);
-	paths = ft_split(path_env, ':');
-	if (!paths)
+	if (fill_and_shape_path(&path_env, &paths, env))
 		return (NULL);
 	i = -1;
 	while (paths[++i])
@@ -85,44 +92,46 @@ int	prepare_to_exit(t_token *token, t_env_cpy *env_cpy, int shell)
 	return (0);
 }
 
-void ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
+void	build_ins(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
 {
-    char *expanded_cmd;
+	if ((ft_strcmp(token->tokens, "echo") == 0))
+		check_echo(token, env_cpy);
+	else if ((ft_strcmp(token->tokens, "pwd") == 0))
+	{
+		env_cpy->last_exit_status = 0;
+		ft_pwd(token, env_cpy);
+	}
+	else if ((ft_strcmp(token->tokens, "env") == 0))
+		ft_env(token, env_cpy);
+	else if ((ft_strcmp(token->tokens, "export") == 0))
+		ft_export(token, env_cpy);
+	else if ((ft_strcmp(token->tokens, "unset") == 0))
+		ft_unset(token, &env_cpy);
+	else if ((ft_strcmp(token->tokens, "cd") == 0))
+	{
+		env_cpy->last_exit_status = 0;
+		ft_cd(token, env_cpy);
+	}
+	else if ((ft_strcmp(token->tokens, "exit") == 0))
+		prepare_to_exit(token, env_cpy, is_main_shell);
+	else
+		do_comand(token, env_cpy);
+}
 
-    if (token == NULL)
-        return;
+void	ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell)
+{
+	char	*expanded_cmd;
 
-    // Handle variable expansion for commands like $a
-    if (token->tokens[0] == '$')
-    {
-        expanded_cmd = get_env_value(token->tokens + 1, env_cpy); // Skip the '$'
-        if (expanded_cmd)
-        {
-            free(token->tokens); // Free the original token
-            token->tokens = ft_strdup(expanded_cmd); // Replace with expanded value
-        }
-    }
-    // Built-in commands
-    if ((ft_strcmp(token->tokens, "echo") == 0))
-        check_echo(token, env_cpy);
-    else if ((ft_strcmp(token->tokens, "pwd") == 0))
-    {
-        env_cpy->last_exit_status = 0;
-        ft_pwd(token, env_cpy);
-    }
-    else if ((ft_strcmp(token->tokens, "env") == 0))
-        ft_env(token, env_cpy);
-    else if ((ft_strcmp(token->tokens, "export") == 0))
-        ft_export(token, env_cpy);
-    else if ((ft_strcmp(token->tokens, "unset") == 0))
-        ft_unset(token, &env_cpy);
-    else if ((ft_strcmp(token->tokens, "cd") == 0))
-    {
-        env_cpy->last_exit_status = 0;
-        ft_cd(token, env_cpy);
-    }
-    else if ((ft_strcmp(token->tokens, "exit") == 0))
-        prepare_to_exit(token, env_cpy, is_main_shell);
-    else
-        do_comand(token, env_cpy); // Handle external commands
+	if (token == NULL)
+		return ;
+	if (token->tokens[0] == '$')
+	{
+		expanded_cmd = get_env_value(token->tokens + 1, env_cpy);
+		if (expanded_cmd)
+		{
+			free(token->tokens);
+			token->tokens = ft_strdup(expanded_cmd);
+		}
+	}
+	build_ins(token, env_cpy, is_main_shell);
 }
