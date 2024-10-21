@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/20 12:38:03 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/21 16:39:40 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,14 @@ char	**define_env(char **env)
 	return (dest);
 }
 
-int	env_loop_to_2d(char **combine, t_env_cpy *env, char ***dest, int *i)
+void	free_dest(char ***dest, int *i)
+{
+	while ((*i) > 0)
+		free((*dest)[--(*i)]);
+	free((*dest));
+}
+
+int	fill_combine(char **combine, t_env_cpy *env, char ***dest, int *i)
 {
 	if (env->equal)
 		(*combine) = ft_strjoin(env->type, "=");
@@ -73,18 +80,34 @@ int	env_loop_to_2d(char **combine, t_env_cpy *env, char ***dest, int *i)
 		(*combine) = ft_strjoin(env->type, "");
 	if (!(*combine))
 	{
-		while ((*i) > 0)
-			free((*dest)[--(*i)]);
-		free((*dest));
+		free_dest(dest, i);
 		return (1);
 	}
-	(*dest)[(*i)] = ft_strjoin((*combine), env->env);
+	return (0);
+}
+
+int	env_loop_to_2d(char **combine, t_env_cpy *env, char ***dest, int *i)
+{
+	char	*env_value;
+
+	if (fill_combine(combine, env, dest, i))
+		return (1);
+	if (env->env)
+		env_value = ft_strdup(env->env);
+	else
+		env_value = ft_strdup("");
+	if (!env_value)
+	{
+		free((*combine));
+		free_dest(dest, i);
+		return (1);
+	}
+	(*dest)[(*i)] = ft_strjoin((*combine), env_value);
 	free((*combine));
+	free(env_value);
 	if (!(*dest)[(*i)])
 	{
-		while ((*i) > 0)
-			free(dest[--(*i)]);
-		free(dest);
+		free_dest(dest, i);
 		return (1);
 	}
 	(*i)++;
