@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/20 20:27:29 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/21 13:00:55 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,13 @@ void	check(char *input, t_env_cpy *env_cpy)
 		env_cpy->last_exit_status = 2;
 		return ;
 	}
+	// t_token *h;
+	// h = token;
+	// while (h)
+	// {
+	// 	printf("%s\n",h->tokens);
+	// 	h = h->next;
+	// }
 	if (token)
 	{
 		if (check_token(token))

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 07:45:28 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/21 08:47:29 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/21 12:13:04 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,12 @@ char	*if_cd_with_dash(t_env_cpy *env_cpy, int *should_free)
 	return (path);
 }
 
+void	error_statment(t_env_cpy *env_cpy, int x)
+{
+	env_cpy->last_exit_status = x;
+	ft_putstr_fd("cd: invalid option\n", 2);
+}
+
 // hay el function btrj3lk el path lal token
 
 char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
@@ -60,7 +66,12 @@ char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
 	char	*path;
 
 	*should_free = 0;
-	if (token->next == NULL || (ft_strcmp(token->next->tokens, "~") == 0) 
+	if (ft_strncmp(token->next->tokens, "---", 3) == 0)
+	{
+		error_statment(env_cpy, 2);
+		return (NULL);
+	}
+	else if (token->next == NULL || (ft_strcmp(token->next->tokens, "~") == 0) 
 		|| (ft_strcmp(token->next->tokens, "--") == 0))
 		path = if_just_cd(env_cpy, should_free);
 	else if (ft_strcmp(token->next->tokens, "-") == 0)
@@ -72,8 +83,7 @@ char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
 	{
 		if (token->next->tokens[0] == '-' && ft_strlen(token->next->tokens) > 1)
 		{
-			ft_putstr_fd("cd: invalid option\n", 2);
-			env_cpy->last_exit_status = 1;
+			error_statment(env_cpy, 1);
 			return (NULL);
 		}
 		path = token->next->tokens;

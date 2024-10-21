@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/20 19:43:56 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/21 12:44:50 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,10 @@ static int handle_redirection_token(char **input, char **token, t_token **token_
 }
 
 // Handle quotes and variable expansion inside quotes
-static void handle_quotes_and_expansion(char **input, char **token, t_env_cpy *env)
+static void handle_quotes_and_expansion(char **input, char **token, t_env_cpy *env, char *quote_type)
 {
     (*input)++;  // Skip the opening double quote
+    *quote_type = '"';  // Set quote_type to double quote
     while (**input && **input != '"')
     {
         if (**input == '$')
@@ -104,8 +105,10 @@ static void handle_quotes_and_expansion(char **input, char **token, t_env_cpy *e
             (*input)++;
         }
     }
-    (*input)++;  // Skip the closing double quote
+    if (**input == '"')  // Ensure we are at the closing quote
+        (*input)++;  // Skip the closing double quote
 }
+
 
 void process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)
 {
@@ -122,9 +125,10 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
         {
             if (handle_redirection_token(input, &token, token_list, env, error_flag, &quote_type))
                 return;
+            break ;
         }
         else if (**input == '"')
-            handle_quotes_and_expansion(input, &token, env);
+            handle_quotes_and_expansion(input, &token, env, &quote_type);
         else if (**input == '\'')
             handle_quote(input, &token, &quote_type);
         else
@@ -134,8 +138,9 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
         }
     }
 
-    if (*error_flag == 0)
+    if (*error_flag == 0 && (ft_strlen(token) > 0 || quote_type != 0))
         add_token(token_list, token, env, quote_type);
+
 
     free(token);
 }
