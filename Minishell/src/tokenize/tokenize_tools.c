@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/18 14:53:09 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/20 19:43:56 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
         }
     }
 
-    if (ft_strlen(token) > 0 && *error_flag == 0)
+    if (*error_flag == 0)
         add_token(token_list, token, env, quote_type);
 
     free(token);

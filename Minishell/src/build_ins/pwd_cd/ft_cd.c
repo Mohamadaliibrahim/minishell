@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/15 07:46:08 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/21 09:09:53 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int	checking(t_cd cd, t_env_cpy *env_cpy)
 		old_pwd_is_null(cd, env_cpy);
 	if (chdir(cd.path) == -1)
 	{
+		fprintf(stderr, "minishell: cd: %s: %s\n", cd.path, strerror(errno));
 		freeing_cd(cd, env_cpy, 1);
 		return (1);
 	}
@@ -108,4 +109,4 @@ void	ft_cd(t_token *token, t_env_cpy *env_cpy)
 		ft_cd_helper2(cd, env_cpy);
 	free_at_the_end(cd);
 }
-//stop!!
+// stop!!
