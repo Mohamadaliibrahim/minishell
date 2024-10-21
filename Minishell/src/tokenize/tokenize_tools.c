@@ -131,6 +131,12 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
             handle_quotes_and_expansion(input, &token, env, &quote_type);
         else if (**input == '\'')
             handle_quote(input, &token, &quote_type);
+        else if (**input == '$')
+        {
+            int i = 0; // Initialize index
+            token = expand_variable(*input, &i, env, token);
+            *input += i; // Advance the input pointer by the number of characters consumed
+        }
         else
         {
             token = append_char(token, **input);

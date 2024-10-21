@@ -44,14 +44,6 @@ int	check_type(char *token, t_env_cpy *env)
 		expanded_token = get_env_value(token + 1, env);
 		if (expanded_token)
 		{
-			if ((ft_strcmp(expanded_token, "cd") == 0)
-				|| (ft_strcmp(expanded_token, "export") == 0)
-				|| (ft_strcmp(expanded_token, "unset") == 0)
-				|| (ft_strcmp(expanded_token, "exit") == 0)
-				|| (ft_strcmp(expanded_token, "env") == 0)
-				|| (ft_strcmp(expanded_token, "echo") == 0)
-				|| (ft_strcmp(expanded_token, "pwd") == 0))
-				return (CMND);
 			cmd_path = find_in_path(expanded_token, env);
 			if (cmd_path != NULL)
 			{
@@ -59,7 +51,7 @@ int	check_type(char *token, t_env_cpy *env)
 				return (CMND);
 			}
 		}
-		return (VARIABLE);
+		return (UNKNOWN);
 	}
 	if ((ft_strcmp(token, "cd") == 0) || (ft_strcmp(token, "export") == 0)
 		|| (ft_strcmp(token, "unset") == 0) || (ft_strcmp(token, "exit") == 0)
