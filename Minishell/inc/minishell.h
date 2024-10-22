@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/22 14:36:20 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 18:27:55 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,9 +221,14 @@ t_env_cpy	*fill_token(t_env_cpy *env_cpy, char *str);
 char		*return_type(char *env);
 char		*return_path(char *env);
 t_env_cpy	*add_shell(t_env_cpy *env_cpy);
-bool		check_for_equal(char *env);
 char		**list_to_2d(t_env_cpy *env);
+void		else_in_env_loop(t_env_cpy **current, t_env_cpy **new_node);
+void		check_head(t_env_cpy **head, t_env_cpy **new_node);
+void		check_x(int	*x);
+bool		check_for_equal(char *env);
+void		error_happend(void);
 t_env_cpy	*cpy_env_helper(char *env);
+void		fill_new_node(t_env_cpy **new_node, t_env_cpy **head);
 
 /* Dollar Expansion */
 char		*append_char(char *result, char c);

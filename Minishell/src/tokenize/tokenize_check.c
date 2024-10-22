@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/22 15:27:13 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 19:00:16 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ int	fix_pipe(char *str)
 			if (str[i + 1] == '|' || str[i + 1] == '\0')
 			{
 				write_error("Minishell:"
-							"syntax error near unexpected token `||'\n");
+					"syntax error near unexpected token `||'\n");
 				return (1);
 			}
 		}
@@ -267,9 +267,7 @@ void	if_there_error(int flag, t_token *token, char *input,
 	if (is_invalid_pipe_syntax(token))
 	{
 		error_occurd_status("Minishell: syntax error near"
-							" unexpected token `|'\n",
-							2,
-							env_cpy);
+			" unexpected token `|'\n", 2, env_cpy);
 		free_token_list(token);
 		return ;
 	}
