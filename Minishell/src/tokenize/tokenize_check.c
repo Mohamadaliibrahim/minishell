@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/22 10:25:10 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 15:27:13 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,21 +231,47 @@ void	error_occurd_status(char *msg, int x, t_env_cpy *env)
 	env->last_exit_status = x;
 }
 
-void	check_main_token(t_token *token, t_env_cpy *env_cpy)
+void	check_main_token(t_token **token, t_env_cpy *env_cpy)
 {
-	if (check_token(token))
+	if (check_token(*token))
 		error_occurd_status("zsh: parse error near `\\n'\n", 2, env_cpy);
-	else if (search_for_pipe(token))
-		execute_pipeline(token, env_cpy);
-	else if (search_for_redirection(token))
-		check_redirections(&token, env_cpy);
-	else if (token->token_type == CMND)
-		ft_cmd(token, env_cpy, 1);
-	else if (token->token_type == UNKNOWN)
+	else if (search_for_pipe(*token))
+		execute_pipeline(*token, env_cpy);
+	else if (search_for_redirection(*token))
+		check_redirections(token, env_cpy);
+	else if ((*token)->token_type == CMND)
+		ft_cmd(*token, env_cpy, 1);
+	else if ((*token)->token_type == UNKNOWN)
 	{
-		ft_putstr_fd(token->tokens, 2);
+		ft_putstr_fd((*token)->tokens, 2);
 		write_error(": Command not found\n");
 		env_cpy->last_exit_status = 127;
+	}
+}
+
+void	if_there_error(int flag, t_token *token, char *input,
+		t_env_cpy *env_cpy)
+{
+	if (flag)
+	{
+		free_token_list(token);
+		env_cpy->last_exit_status = 2;
+		return ;
+	}
+	if (!check_for_quotations(input))
+	{
+		error_occurd_status("Syntax error: unmatched quotes\n", 2, env_cpy);
+		free_token_list(token);
+		return ;
+	}
+	if (is_invalid_pipe_syntax(token))
+	{
+		error_occurd_status("Minishell: syntax error near"
+							" unexpected token `|'\n",
+							2,
+							env_cpy);
+		free_token_list(token);
+		return ;
 	}
 }
 
@@ -267,30 +293,11 @@ void	check(char *input, t_env_cpy *env_cpy)
 	}
 	tokenize_input(preprocessed_input, &token, env_cpy, &error_flag);
 	free(preprocessed_input);
-	if (error_flag)
-	{
-		if (token)
-			free_token_list(token);
-		env_cpy->last_exit_status = 2;
-		return ;
-	}
 	if (!token)
 		return ;
-	if (!check_for_quotations(input))
-	{
-		error_occurd_status("Syntax error: unmatched quotes\n", 2, env_cpy);
-		free_token_list(token);
-		return ;
-	}
-	if (is_invalid_pipe_syntax(token))
-	{
-		error_occurd_status("Minishell: syntax error near"
-			" unexpected token `|'\n", 2, env_cpy);
-		free_token_list(token);
-		return ;
-	}
+	if_there_error(error_flag, token, input, env_cpy);
 	if (token)
-		check_main_token(token, env_cpy);
+		check_main_token(&token, env_cpy);
 	if (token)
 		free_token_list(token);
 }

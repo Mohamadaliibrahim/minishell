@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 09:56:49 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/05 13:50:00 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/22 15:28:18 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
