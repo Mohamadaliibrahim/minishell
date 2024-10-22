@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/15 10:43:34 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 10:09:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static void parse_heredoc_delimiter(char **input, char **delimiter, int *error_f
     }
     if (delimiter_length == 0)
     {
-        fprintf(stderr, "minishell: syntax error near unexpected token `newline'\n");
+        write_error("minishell: syntax error near unexpected token `newline'\n");
         *error_flag = 1;
         return;
     }
@@ -78,7 +78,9 @@ static int handle_heredoc_file(char *heredoc_file, char *delimiter)
             line = readline("> ");
             if (!line)
             {
-                fprintf(stderr, "Minishell: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter);
+                write_error("Minishell: warning: here-document delimited by end-of-file (wanted `");
+                write_error(delimiter);
+                write_error("')\n");
                 break;
             }
             if (ft_strcmp(line, delimiter) == 0)
@@ -142,7 +144,9 @@ void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int 
 
         if (count > 2)
         {
-            fprintf(stderr, "minishell: syntax error near unexpected token `%.*s'\n", count, *input - count);
+            write_error("minishell: syntax error near unexpected token `");
+            write(STDERR_FILENO, *input - count, count);
+            write_error("'\n");
             *error_flag = 1;
             return;
         }

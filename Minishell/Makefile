@@ -16,7 +16,9 @@ SRC = src/main.c \
       src/build_ins/pwd_cd/env_utils_editing_pwd.c\
        src/build_ins/pwd_cd/geting_path.c\
       src/parsing/dollar.c \
-      src/tokenize/env_tokenizeing.c \
+      src/tokenize/env/env_tokenizeing.c \
+      src/tokenize/env/env_utils.c \
+      src/tokenize/env/filling_env.c \
       src/build_ins/ft_env.c \
       src/build_ins/ft_export.c \
       src/build_ins/sort_export.c \

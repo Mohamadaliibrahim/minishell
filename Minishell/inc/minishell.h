@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/21 09:07:33 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 18:27:55 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,16 @@ typedef struct s_token
 	struct s_token	*next;
 	struct s_token	*previous;
 }					t_token;
+
+typedef struct s_input
+{
+	char			*new_input;
+	int				i;
+	int				j;
+	int				len;
+	char			quote;
+	int				new_len;
+}					t_input;
 
 typedef struct s_cd
 {
@@ -211,9 +221,14 @@ t_env_cpy	*fill_token(t_env_cpy *env_cpy, char *str);
 char		*return_type(char *env);
 char		*return_path(char *env);
 t_env_cpy	*add_shell(t_env_cpy *env_cpy);
-bool		check_for_equal(char *env);
 char		**list_to_2d(t_env_cpy *env);
+void		else_in_env_loop(t_env_cpy **current, t_env_cpy **new_node);
+void		check_head(t_env_cpy **head, t_env_cpy **new_node);
+void		check_x(int	*x);
+bool		check_for_equal(char *env);
+void		error_happend(void);
 t_env_cpy	*cpy_env_helper(char *env);
+void		fill_new_node(t_env_cpy **new_node, t_env_cpy **head);
 
 /* Dollar Expansion */
 char		*append_char(char *result, char c);
@@ -253,5 +268,10 @@ int 		search_for_redirection_output(t_token *token_list);
 int 		handle_input_redirection(t_token *token);
 int 		handle_output_redirection(t_token *token, int append);
 void 		free_pids_and_commands(pid_t *pids, t_command **commands);
+
+
+
+
+void		write_error(char *msg);
 
 #endif

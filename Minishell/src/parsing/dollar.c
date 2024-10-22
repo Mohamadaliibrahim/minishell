@@ -68,23 +68,32 @@ char *handle_exit_status_expansion(char *result, int *i, t_env_cpy *env_list)
     return temp;
 }
 
-// Handle cases where $ is followed by a non-alphanumeric character or '_'
 char *handle_invalid_variable_expansion(char *result, char *var_name, int *i)
 {
     char *temp;
-    char *temp2;
 
+    // Append the '$' to the result
     temp = ft_strjoin(result, "$");
-    if (temp)
+    free(result);
+
+    // If there is a character after the '$', append it
+    if (var_name[0] != '\0')
     {
-        temp2 = ft_strjoin(temp, var_name);
+        result = ft_strjoin(temp, (char[]){var_name[0], '\0'});
         free(temp);
-        free(result);
-        result = temp2;
+        // Increment index by 2 to skip the '$' and the invalid character
+        *i += 2;
     }
-    *i += 1 + ft_strlen(var_name);
+    else
+    {
+        // If there's nothing after '$', just increment index by 1
+        result = temp;
+        *i += 1;
+    }
+
     return result;
 }
+
 
 // Handle cases where variable starts with a digit (e.g., $9HOME)
 char *handle_digit_variable_expansion(char *result, char *var_name, int *i)
@@ -141,6 +150,36 @@ char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
     char *var_name = token + (*i) + 1;
     int var_len;
 
+    // Handle $'HO''ME' case: skip the dollar sign, process quoted content
+    if (var_name[0] == '\'')
+    {
+        (*i)++;  // Move past the $
+        while (token[*i])  // Process content inside quotes
+        {
+            if (token[*i] == '\'')  // Skip over single quotes
+            {
+                (*i)++;
+                continue;
+            }
+            result = append_char(result, token[*i]);
+            (*i)++;
+        }
+        return result;
+    }
+    // Handle $"HOME" case: skip the dollar sign and quotes, return the inner content
+    if (var_name[0] == '"')
+    {
+        (*i)++; // Move past the initial dollar sign and the opening quote
+        while (token[*i] && token[*i] != '"')  // Collect everything inside the quotes
+        {
+            result = append_char(result, token[*i]);
+            (*i)++;
+        }
+        if (token[*i] == '"')  // Skip the closing quote
+            (*i)++;
+        return result;
+    }
+
     // Handle $UID special case
     if (ft_strncmp(var_name, "UID", 3) == 0)
         return handle_uid_expansion(result, i);
@@ -176,13 +215,7 @@ char	*expand_token_if_variable(char *token, t_env_cpy *env_list)
 	result = ft_strdup("");
 	while (token[i])
 	{
-		// Check for the escape character
-		if (token[i] == '\\' && token[i + 1] == '$')
-		{
-			result = append_char(result, '$');  // Append $ literally
-			i += 2;  // Skip both '\' and '$'
-		}
-		else if (token[i] == '$' && token[i + 1] == '\\')
+		if (token[i] == '$' && token[i + 1] == '\\')
 		{
 			result = append_char(result, '$');  // Append $ literally
 			i += 2;  // Skip both '\' and '$'

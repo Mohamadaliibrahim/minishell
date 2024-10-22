@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 10:49:47 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/12 14:52:01 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 18:46:28 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ char *get_command_path(char **av, t_env_cpy *env_cpy)
 
 	if (!cmd_path)
 	{
-		fprintf(stderr, "%s: command not found\n", av[0]);
+		write_error(av[0]);
+		write_error(": command not found\n");
 		env_cpy->last_exit_status = 127; // Command not found
 	}
 	return (cmd_path);
@@ -137,56 +138,72 @@ static void handle_parent_process(int pid, t_env_cpy *env_cpy)
 
 void do_comand(t_token *token, t_env_cpy *env_cpy)
 {
-	int		pid;
-	char	*cmd_path;
-	char	**env;
-	char	**av;
+    char    *cmd_path;
+    char    **env;
+    char    **av;
+    char    *home;
+    char    *pwd;
 
-	env = list_to_2d(env_cpy);
-	//env_cpy->heredoc_file = 0;
-	av = allocate_arguments(token);
-	if (!av)
-	{
-		ft_free_2darray(env);
-		return ; // Handle memory allocation failure
-	}
-	cmd_path = get_command_path(av, env_cpy);
-	if (!cmd_path)
-	{
-		ft_free_2darray(env);
-		ft_free_2darray(av);
-		return ;
-	}
+    env = list_to_2d(env_cpy);
+    av = allocate_arguments(token);
+    if (!av)
+    {
+        ft_free_2darray(env);
+        return; // Handle memory allocation failure
+    }
 
-	// Fork the process to execute the command
-	pid = fork();
-	if (pid == 0)
-	{
-		// In child process
-		
-		execute_command(cmd_path, av, env, env_cpy);
-	}
-	else if (pid > 0)
-	{
-		// In parent process
-		handle_parent_process(pid, env_cpy);
-	}
-	else
-	{
-		perror("fork");
-		env_cpy->last_exit_status = 1;
-	}
+    // Retrieve HOME and PWD from the environment
+    home = get_env_value("HOME", env_cpy);
+    pwd = get_env_value("PWD", env_cpy);
 
-	// Clean up
-	free(cmd_path);
-	ft_free_2darray(env);
-	ft_free_2darray(av);
+    // Safely compare av[0] with HOME and PWD
+    if ((home && ft_strcmp(av[0], home) == 0) || (pwd && ft_strcmp(av[0], pwd) == 0))
+    {
+        printf("cd -- %s\n", av[0]);  // Handle the specific case
+        env_cpy->last_exit_status = 0;
 
-	// Unlink the heredoc file after use
-	if (env_cpy->heredoc_file)
-	{
-		unlink(env_cpy->heredoc_file);  // Remove the temporary heredoc file
-		free(env_cpy->heredoc_file);  // Free the heredoc file path memory
-		env_cpy->heredoc_file = NULL;  // Reset the pointer in the environment struct
-	}
+        ft_free_2darray(av);
+        ft_free_2darray(env);
+        return;  // Exit after handling
+    }
+
+    // Proceed with finding and executing the command
+    cmd_path = get_command_path(av, env_cpy);
+    if (!cmd_path)
+    {
+        ft_free_2darray(env);
+        ft_free_2darray(av);
+        return;
+    }
+
+    // Fork and execute the command
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+        // Child process
+        execute_command(cmd_path, av, env, env_cpy);
+    }
+    else if (pid > 0)
+    {
+        // Parent process
+        handle_parent_process(pid, env_cpy);
+    }
+    else
+    {
+        perror("fork");
+        env_cpy->last_exit_status = 1;
+    }
+
+    // Clean up
+    free(cmd_path);
+    ft_free_2darray(env);
+    ft_free_2darray(av);
+
+    // Handle heredoc cleanup if necessary
+    if (env_cpy->heredoc_file)
+    {
+        unlink(env_cpy->heredoc_file);
+        free(env_cpy->heredoc_file);
+        env_cpy->heredoc_file = NULL;
+    }
 }
