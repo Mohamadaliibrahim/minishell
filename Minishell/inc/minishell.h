@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/21 09:07:33 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 07:09:05 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,16 @@ typedef struct s_token
 	struct s_token	*next;
 	struct s_token	*previous;
 }					t_token;
+
+typedef struct s_input
+{
+	char			*new_input;
+	int				i;
+	int				j;
+	int				len;
+	char			quote;
+	int				new_len;
+}					t_input;
 
 typedef struct s_cd
 {

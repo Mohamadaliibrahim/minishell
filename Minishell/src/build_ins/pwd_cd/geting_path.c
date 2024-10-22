@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 07:45:28 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/21 12:13:04 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 07:37:20 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ void	error_statment(t_env_cpy *env_cpy, int x)
 }
 
 // hay el function btrj3lk el path lal token
-
 char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
 {
 	char	*path;
@@ -71,7 +70,7 @@ char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
 		error_statment(env_cpy, 2);
 		return (NULL);
 	}
-	else if (token->next == NULL || (ft_strcmp(token->next->tokens, "~") == 0) 
+	else if (token->next == NULL || (ft_strcmp(token->next->tokens, "~") == 0)
 		|| (ft_strcmp(token->next->tokens, "--") == 0))
 		path = if_just_cd(env_cpy, should_free);
 	else if (ft_strcmp(token->next->tokens, "-") == 0)

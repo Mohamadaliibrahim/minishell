@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/21 13:00:55 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 07:34:37 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,51 @@ int	search_for_pipe(t_token *token_list)
 	return (0);
 }
 
+int	pipe_or_redirection(char *token)
+{
+	if (ft_strcmp(token, "|") == 0)
+		return (PIPE);
+	if (ft_strcmp(token, "<<") == 0)
+		return (HEREDOC);
+	if (ft_strcmp(token, ">>") == 0)
+		return (APPEND);
+	if (ft_strcmp(token, "<") == 0)
+		return (REDIRECT_IN);
+	if (ft_strcmp(token, ">") == 0)
+		return (REDIRECT_OUT);
+	return (UNKNOWN);
+}
+
+int	is_build_ins(char *token)
+{
+	if ((ft_strcmp(token, "cd") == 0) || (ft_strcmp(token, "export") == 0)
+		|| (ft_strcmp(token, "unset") == 0) || (ft_strcmp(token, "exit") == 0)
+		|| (ft_strcmp(token, "env") == 0) || (ft_strcmp(token, "echo") == 0)
+		|| (ft_strcmp(token, "pwd") == 0))
+		return (1);
+	return (0);
+}
+
+int	check_for_dollar(char *token, t_env_cpy *env, char **cmd_path,
+		char **expanded_token)
+{
+	if (token[0] == '$' && ft_strlen(token) > 1)
+	{
+		(*expanded_token) = get_env_value(token + 1, env);
+		if (*expanded_token)
+		{
+			(*cmd_path) = find_in_path(*expanded_token, env);
+			if (*cmd_path != NULL)
+			{
+				free(*cmd_path);
+				return (CMND);
+			}
+		}
+		return (UNKNOWN);
+	}
+	return (-1);
+}
+
 int	check_type(char *token, t_env_cpy *env)
 {
 	char	*cmd_path;
@@ -39,24 +84,9 @@ int	check_type(char *token, t_env_cpy *env)
 		else
 			return (UNKNOWN);
 	}
-	if (token[0] == '$' && ft_strlen(token) > 1)
-	{
-		expanded_token = get_env_value(token + 1, env);
-		if (expanded_token)
-		{
-			cmd_path = find_in_path(expanded_token, env);
-			if (cmd_path != NULL)
-			{
-				free(cmd_path);
-				return (CMND);
-			}
-		}
-		return (UNKNOWN);
-	}
-	if ((ft_strcmp(token, "cd") == 0) || (ft_strcmp(token, "export") == 0)
-		|| (ft_strcmp(token, "unset") == 0) || (ft_strcmp(token, "exit") == 0)
-		|| (ft_strcmp(token, "env") == 0) || (ft_strcmp(token, "echo") == 0)
-		|| (ft_strcmp(token, "pwd") == 0))
+	if (check_for_dollar(token, env, &cmd_path, &expanded_token) != -1)
+		return (check_for_dollar(token, env, &cmd_path, &expanded_token));
+	if (is_build_ins(token))
 		return (CMND);
 	cmd_path = find_in_path(token, env);
 	if (cmd_path != NULL)
@@ -64,17 +94,7 @@ int	check_type(char *token, t_env_cpy *env)
 		free(cmd_path);
 		return (CMND);
 	}
-	if (ft_strcmp(token, "|") == 0)
-		return (PIPE);
-	if (ft_strcmp(token, "<<") == 0)
-		return (HEREDOC);
-	if (ft_strcmp(token, ">>") == 0)
-		return (APPEND);
-	if (ft_strcmp(token, "<") == 0)
-		return (REDIRECT_IN);
-	if (ft_strcmp(token, ">") == 0)
-		return (REDIRECT_OUT);
-	return (UNKNOWN);
+	return (pipe_or_redirection(token));
 }
 
 static int	check_for_quotations(char *input)
@@ -99,53 +119,67 @@ static int	check_for_quotations(char *input)
 	return (1);
 }
 
+t_input	init_input(char *input)
+{
+	t_input	prepare;
+
+	prepare.i = 0;
+	prepare.j = 0;
+	prepare.quote = '\0';
+	prepare.len = ft_strlen(input);
+	prepare.new_len = prepare.len * 2;
+	prepare.new_input = malloc(prepare.new_len + 1);
+	if (!prepare.new_input)
+		prepare.new_input = NULL;
+	return (prepare);
+}
+
+void	if_input_is_qoutaton(t_input *prepare, char **input)
+{
+	(*prepare).quote = (*input)[(*prepare).i++];
+	(*prepare).new_input[(*prepare).j++] = (*prepare).quote;
+	while ((*input)[(*prepare).i]
+		&& (*input)[(*prepare).i] != (*prepare).quote)
+		(*prepare).new_input[(*prepare).j++] = (*input)[(*prepare).i++];
+	if ((*input)[(*prepare).i] == (*prepare).quote)
+		(*prepare).new_input[(*prepare).j++] = (*input)[(*prepare).i++];
+}
+
+void	proprocess_loop(t_input *prepare, char **input)
+{
+	if ((*input)[(*prepare).i] == '\'' || (*input)[(*prepare).i] == '"')
+		if_input_is_qoutaton(prepare, input);
+	else if ((*input)[(*prepare).i] == '|' || (*input)[(*prepare).i] == '<'
+		|| (*input)[(*prepare).i] == '>')
+	{
+		if ((*prepare).i > 0 && (*input)[(*prepare).i - 1] != ' ')
+			(*prepare).new_input[(*prepare).j++] = ' ';
+		(*prepare).new_input[(*prepare).j++] = (*input)[(*prepare).i];
+		if (((*input)[(*prepare).i] == '<' || (*input)[(*prepare).i] == '>')
+			&& (*input)[(*prepare).i + 1] == (*input)[(*prepare).i])
+		{
+			(*prepare).i++;
+			(*prepare).new_input[(*prepare).j++] = (*input)[(*prepare).i];
+		}
+		if ((*input)[(*prepare).i + 1] && (*input)[(*prepare).i + 1] != ' ')
+			(*prepare).new_input[(*prepare).j++] = ' ';
+		(*prepare).i++;
+	}
+	else
+		(*prepare).new_input[(*prepare).j++] = (*input)[(*prepare).i++];
+}
+
 char	*preprocess_input(char *input)
 {
-	char	*new_input;
-	int		i;
-	int		j;
-	int		len;
-	char	quote;
-	int		new_len;
+	t_input	prepare;
 
-	i = 0;
-	j = 0;
-	len = ft_strlen(input);
-	new_len = len * 2;
-	new_input = malloc(new_len + 1);
-	if (!new_input)
+	prepare = init_input(input);
+	if (!prepare.new_input)
 		return (NULL);
-	while (input[i])
-	{
-		if (input[i] == '\'' || input[i] == '"')
-		{
-			quote = input[i++];
-			new_input[j++] = quote;
-			while (input[i] && input[i] != quote)
-				new_input[j++] = input[i++];
-			if (input[i] == quote)
-				new_input[j++] = input[i++];
-		}
-		else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
-		{
-			if (i > 0 && input[i - 1] != ' ')
-				new_input[j++] = ' ';
-			new_input[j++] = input[i];
-			if ((input[i] == '<' || input[i] == '>')
-				&& input[i + 1] == input[i])
-			{
-				i++;
-				new_input[j++] = input[i];
-			}
-			if (input[i + 1] && input[i + 1] != ' ')
-				new_input[j++] = ' ';
-			i++;
-		}
-		else
-			new_input[j++] = input[i++];
-	}
-	new_input[j] = '\0';
-	return (new_input);
+	while (input[prepare.i])
+		proprocess_loop(&prepare, &input);
+	prepare.new_input[prepare.j] = '\0';
+	return (prepare.new_input);
 }
 
 int	is_invalid_pipe_syntax(t_token *token_list)
@@ -229,13 +263,6 @@ void	check(char *input, t_env_cpy *env_cpy)
 		env_cpy->last_exit_status = 2;
 		return ;
 	}
-	// t_token *h;
-	// h = token;
-	// while (h)
-	// {
-	// 	printf("%s\n",h->tokens);
-	// 	h = h->next;
-	// }
 	if (token)
 	{
 		if (check_token(token))
