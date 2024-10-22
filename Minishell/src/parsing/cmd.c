@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/21 12:29:19 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:47:39 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,9 @@ void	ft_exit(t_token *token, t_env_cpy *env)
 	{
 		if (!ft_is_numeric(token->next->tokens))
 		{
-			fprintf(stderr, "exit: %s: numeric argument required\n",
-				token->next->tokens);
+			ft_putstr_fd("exit: ", 2);
+			ft_putstr_fd(token->next->tokens, 2);
+			write_error(": numeric argument required\n");
 			exit_code = 2;
 		}
 		else
@@ -82,8 +83,8 @@ int	prepare_to_exit(t_token *token, t_env_cpy *env_cpy, int shell)
 {
 	if (token->next && token->next->next)
 	{
+		write_error("Minishell: pwd: : invalid option\n");
 		env_cpy->last_exit_status = 1;
-		fprintf(stderr, "Minishell: pwd: : invalid optioz\n");
 		return (1);
 	}
 	if (shell)

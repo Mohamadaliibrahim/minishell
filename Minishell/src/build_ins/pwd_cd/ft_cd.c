@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/21 10:19:17 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 10:01:14 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,17 @@ int	checking(t_cd cd, t_env_cpy *env_cpy)
 		old_pwd_is_null(cd, env_cpy);
 	if (chdir(cd.path) == -1)
 	{
-		fprintf(stderr, "minishell: cd: %s: %s\n", cd.path, strerror(errno));
+		write_error("minishell: cd: ");
+		write_error(cd.path);
+		write_error(": ");
+		write_error(strerror(errno));
+		write_error("\n");
 		freeing_cd(cd, env_cpy, 1);
 		return (1);
 	}
 	return (0);
 }
+
 
 void	pwd_or_oldpwd_got_unseted(t_cd cd, t_env_cpy *env_cpy)
 {

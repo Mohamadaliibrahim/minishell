@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/21 12:44:50 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 11:02:17 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,12 +131,6 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
             handle_quotes_and_expansion(input, &token, env, &quote_type);
         else if (**input == '\'')
             handle_quote(input, &token, &quote_type);
-        else if (**input == '$')
-        {
-            int i = 0; // Initialize index
-            token = expand_variable(*input, &i, env, token);
-            *input += i; // Advance the input pointer by the number of characters consumed
-        }
         else
         {
             token = append_char(token, **input);

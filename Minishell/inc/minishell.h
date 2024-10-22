@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/22 07:09:05 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 09:34:45 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,5 +263,10 @@ int 		search_for_redirection_output(t_token *token_list);
 int 		handle_input_redirection(t_token *token);
 int 		handle_output_redirection(t_token *token, int append);
 void 		free_pids_and_commands(pid_t *pids, t_command **commands);
+
+
+
+
+void		write_error(char *msg);
 
 #endif

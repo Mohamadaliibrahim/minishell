@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 10:49:47 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/12 14:52:01 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 11:14:13 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ char *get_command_path(char **av, t_env_cpy *env_cpy)
 
 	if (!cmd_path)
 	{
-		fprintf(stderr, "%s: command not found\n", av[0]);
+		write_error(av[0]);
+		write_error(": command not found\n");
 		env_cpy->last_exit_status = 127; // Command not found
 	}
 	return (cmd_path);

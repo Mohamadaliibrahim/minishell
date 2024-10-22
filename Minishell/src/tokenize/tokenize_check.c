@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/22 07:34:37 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/22 10:25:10 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,8 +138,7 @@ void	if_input_is_qoutaton(t_input *prepare, char **input)
 {
 	(*prepare).quote = (*input)[(*prepare).i++];
 	(*prepare).new_input[(*prepare).j++] = (*prepare).quote;
-	while ((*input)[(*prepare).i]
-		&& (*input)[(*prepare).i] != (*prepare).quote)
+	while ((*input)[(*prepare).i] && (*input)[(*prepare).i] != (*prepare).quote)
 		(*prepare).new_input[(*prepare).j++] = (*input)[(*prepare).i++];
 	if ((*input)[(*prepare).i] == (*prepare).quote)
 		(*prepare).new_input[(*prepare).j++] = (*input)[(*prepare).i++];
@@ -211,14 +210,43 @@ int	fix_pipe(char *str)
 		{
 			if (str[i + 1] == '|' || str[i + 1] == '\0')
 			{
-				fprintf(stderr,
-					"Minishell: syntax error near unexpected token `||'\n");
+				write_error("Minishell:"
+							"syntax error near unexpected token `||'\n");
 				return (1);
 			}
 		}
 		i++;
 	}
 	return (0);
+}
+
+void	write_error(char *msg)
+{
+	write(STDERR_FILENO, msg, ft_strlen(msg));
+}
+
+void	error_occurd_status(char *msg, int x, t_env_cpy *env)
+{
+	write_error(msg);
+	env->last_exit_status = x;
+}
+
+void	check_main_token(t_token *token, t_env_cpy *env_cpy)
+{
+	if (check_token(token))
+		error_occurd_status("zsh: parse error near `\\n'\n", 2, env_cpy);
+	else if (search_for_pipe(token))
+		execute_pipeline(token, env_cpy);
+	else if (search_for_redirection(token))
+		check_redirections(&token, env_cpy);
+	else if (token->token_type == CMND)
+		ft_cmd(token, env_cpy, 1);
+	else if (token->token_type == UNKNOWN)
+	{
+		ft_putstr_fd(token->tokens, 2);
+		write_error(": Command not found\n");
+		env_cpy->last_exit_status = 127;
+	}
 }
 
 void	check(char *input, t_env_cpy *env_cpy)
@@ -234,8 +262,7 @@ void	check(char *input, t_env_cpy *env_cpy)
 	preprocessed_input = preprocess_input(input);
 	if (!preprocessed_input)
 	{
-		fprintf(stderr, "Error: Memory allocation failed\n");
-		env_cpy->last_exit_status = 1;
+		error_occurd_status("Error: Memory allocation failed\n", 1, env_cpy);
 		return ;
 	}
 	tokenize_input(preprocessed_input, &token, env_cpy, &error_flag);
@@ -251,37 +278,19 @@ void	check(char *input, t_env_cpy *env_cpy)
 		return ;
 	if (!check_for_quotations(input))
 	{
-		fprintf(stderr, "Syntax error: unmatched quotes\n");
+		error_occurd_status("Syntax error: unmatched quotes\n", 2, env_cpy);
 		free_token_list(token);
-		env_cpy->last_exit_status = 2;
 		return ;
 	}
 	if (is_invalid_pipe_syntax(token))
 	{
-		fprintf(stderr, "Minishell: syntax error near unexpected token `|'\n");
+		error_occurd_status("Minishell: syntax error near"
+			" unexpected token `|'\n", 2, env_cpy);
 		free_token_list(token);
-		env_cpy->last_exit_status = 2;
 		return ;
 	}
 	if (token)
-	{
-		if (check_token(token))
-		{
-			fprintf(stderr, "zsh: parse error near `\\n'\n");
-			env_cpy->last_exit_status = 2;
-		}
-		else if (search_for_pipe(token))
-			execute_pipeline(token, env_cpy);
-		else if (search_for_redirection(token))
-			check_redirections(&token, env_cpy);
-		else if (token->token_type == CMND)
-			ft_cmd(token, env_cpy, 1);
-		else if (token->token_type == UNKNOWN)
-		{
-			fprintf(stderr, "%s: Command not found\n", token->tokens);
-			env_cpy->last_exit_status = 127;
-		}
-	}
+		check_main_token(token, env_cpy);
 	if (token)
 		free_token_list(token);
 }
