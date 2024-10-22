@@ -150,6 +150,17 @@ void do_comand(t_token *token, t_env_cpy *env_cpy)
 		ft_free_2darray(env);
 		return ; // Handle memory allocation failure
 	}
+    // Check if the token refers to $HOME or $PWD and handle directory
+    if (ft_strcmp(av[0], get_env_value("HOME", env_cpy)) == 0 || ft_strcmp(av[0], get_env_value("PWD", env_cpy)) == 0)
+    {
+        // Print the "cd --" command if it's a directory
+        printf("cd -- %s\n", av[0]);  // Print cd -- <path>
+        env_cpy->last_exit_status = 0;
+        
+        ft_free_2darray(av);
+        ft_free_2darray(env);
+        return;  // Return after handling the directory
+    }
 	cmd_path = get_command_path(av, env_cpy);
 	if (!cmd_path)
 	{
