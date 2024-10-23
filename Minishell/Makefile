@@ -5,7 +5,10 @@ NAME = minishell
 
 SRC = src/main.c \
       src/tokenize/tokenize.c \
-      src/tokenize/tokenize_check.c \
+      src/tokenize/checking_token/building.c \
+      src/tokenize/checking_token/checking_utils.c \
+      src/tokenize/checking_token/checking.c \
+      src/tokenize/checking_token/tokenize_preprocess.c \
       src/tokenize/tokenize_tools.c \
       src/tokenize/utils.c \
       src/parsing/cmd.c \

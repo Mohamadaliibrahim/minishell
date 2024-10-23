@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/22 18:27:55 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 08:46:22 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,21 @@ t_env_cpy	*update_env(t_env_cpy *env);
 
 /* Tokenize Check */
 int			check_type(char *token, t_env_cpy *env);
+void		if_error(int flag, t_token *token, char *input, t_env_cpy *env_cpy);
 void		check(char *input, t_env_cpy *env_cpy);
+void		if_input_is_qoutaton(t_input *prepare, char **input);
+void		proprocess_loop(t_input *prepare, char **input);
+char		*preprocess_input(char *input);
+int			is_invalid_pipe_syntax(t_token *token_list);
+int			fix_pipe(char *str);
+int			is_build_ins(char *token);
+int			pipe_or_redirection(char *token);
+int			search_for_pipe(t_token *token_list);
+void		error_occurd_status(char *msg, int x, t_env_cpy *env);
+void		write_error(char *msg);
+t_input		init_input(char *input);
+int			check_type(char *token, t_env_cpy *env);
+void		check_main_token(t_token **token, t_env_cpy *env_cpy);
 
 /* Tokenize Tools */
 void		process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);

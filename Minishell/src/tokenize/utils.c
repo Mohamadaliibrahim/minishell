@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/22 15:15:11 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 08:59:39 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,3 +85,4 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	free(s1);
 	return (new_str);
 }
+//stop!!
