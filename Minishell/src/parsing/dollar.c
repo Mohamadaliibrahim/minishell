@@ -156,13 +156,11 @@ char *expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
         (*i)++;  // Move past the $
         while (token[*i])  // Process content inside quotes
         {
-            if (token[*i] == '\'')  // Skip over single quotes
+            if (token[*i] != '\'')  // Only append if the character is not a single quote
             {
-                (*i)++;
-                continue;
+                result = append_char(result, token[*i]);
             }
-            result = append_char(result, token[*i]);
-            (*i)++;
+            (*i)++;  // Always increment the index to move to the next character
         }
         return result;
     }
