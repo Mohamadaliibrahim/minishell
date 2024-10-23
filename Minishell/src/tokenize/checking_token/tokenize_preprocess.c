@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/23 15:40:53 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 17:11:21 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,23 +77,25 @@ int	is_invalid_pipe_syntax(t_token *token_list)
 	return (0);
 }
 
-int	its(char *str, int i)
+int	its(char *str, int i, t_env_cpy *env)
 {
 	if ((str[i + 1] == '"' || str[i + 1] == '\'') && str[i + 2] == '\0')
 	{
+		env->last_exit_status = 2;
 		write_error("Minishell:""syntax error near unexpected token `|'\n");
 		return (1);
 	}
 	if ((str[i + 1] == '"' || str[i + 1] == '\'')
 		&& (str[i + 2] == '"' || str[i + 2] == '\''))
 	{
+		env->last_exit_status = 2;
 		write_error("Minishell:""syntax error near unexpected token `|'\n");
 		return (1);
 	}
 	return (0);
 }
 
-int	fix_pipe(char *str)
+int	fix_pipe(char *str, t_env_cpy *env)
 {
 	int		i;
 	char	quote;
@@ -114,15 +116,17 @@ int	fix_pipe(char *str)
 		{
 			if (str[i + 1] == '|')
 			{
+				env->last_exit_status = 2;
 				write_error("Minishell: syntax error near unexpected token `||'\n");
 				return (1);
 			}
 			if (str[i + 1] == '\0' || (str[i + 1] == ' ' && str[i + 2] == '\0'))
 			{
+				env->last_exit_status = 2;
 				write_error("Minishell: syntax error near unexpected token `|'\n");
 				return (1);
 			}
-			if (its(str, i))
+			if (its(str, i, env))
 				return (1);
 		}
 		i++;

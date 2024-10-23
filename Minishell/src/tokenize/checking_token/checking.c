@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:57:49 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/23 15:41:46 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 17:15:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,13 +100,25 @@ void	check_main_token(t_token **token, t_env_cpy *env_cpy)
 	}
 }
 
+int	check_pipe(t_token *head, t_env_cpy *env)
+{
+	if (head->token_type == PIPE)
+	{
+		write_error("Minishell: syntax error near unexpected token `|'\n");
+		env->last_exit_status = 2;
+		free_token_list(head);
+		return (1);
+	}
+	return (0);
+}
+
 void	check(char *input, t_env_cpy *env_cpy)
 {
 	t_token	*token;
 	int		error_flag;
 	char	*preprocessed_input;
 
-	if (fix_pipe(input))
+	if (fix_pipe(input, env_cpy))
 		return ;
 	token = NULL;
 	error_flag = 0;
@@ -118,9 +130,10 @@ void	check(char *input, t_env_cpy *env_cpy)
 	}
 	tokenize_input(preprocessed_input, &token, env_cpy, &error_flag);
 	free(preprocessed_input);
-	if (!token)
+	if (!token || check_pipe(token, env_cpy))
 		return ;
-	if_error(error_flag, token, input, env_cpy);
+	if (if_error(error_flag, token, input, env_cpy))
+		return ;
 	if (token)
 		check_main_token(&token, env_cpy);
 	if (token)

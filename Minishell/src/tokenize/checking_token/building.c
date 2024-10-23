@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   building.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:57:24 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/23 08:57:33 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 17:13:58 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,25 +49,26 @@ static int	check_for_quotations(char *input)
 	return (1);
 }
 
-void	if_error(int flag, t_token *token, char *input, t_env_cpy *env_cpy)
+int	if_error(int flag, t_token *token, char *input, t_env_cpy *env_cpy)
 {
 	if (flag)
 	{
 		free_token_list(token);
 		env_cpy->last_exit_status = 2;
-		return ;
+		return (1);
 	}
 	if (!check_for_quotations(input))
 	{
 		error_occurd_status("Syntax error: unmatched quotes\n", 2, env_cpy);
 		free_token_list(token);
-		return ;
+		return (1);
 	}
 	if (is_invalid_pipe_syntax(token))
 	{
 		error_occurd_status("Minishell: syntax error near"
 			" unexpected token `|'\n", 2, env_cpy);
 		free_token_list(token);
-		return ;
+		return (1);
 	}
+	return (0);
 }
