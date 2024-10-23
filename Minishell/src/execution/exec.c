@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 10:49:47 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/22 18:46:28 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 19:59:21 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,22 +117,30 @@ static void handle_parent_process(int pid, t_env_cpy *env_cpy)
 	prev_sigint_handler = signal(SIGINT, SIG_IGN);
 
 	// Wait for the child process to finish
-	waitpid(pid, &status, 0);
-
-	// Restore the original SIGINT handler
-	signal(SIGINT, prev_sigint_handler);
-
-	// Handle exit status
-	if (WIFEXITED(status))
-		env_cpy->last_exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
+    if (waitpid(pid, &status, 0) == -1)
+    {
+        perror("waitpid");
+        env_cpy->last_exit_status = 1; // Set a default error status
+    }
+	else
 	{
-		sig = WTERMSIG(status);
-		env_cpy->last_exit_status = 128 + sig;
-		if (sig == SIGINT)
-			write(1, "\n", 1);
-		else if (sig == SIGQUIT)
-			write(1, "Quit: 3\n", 8);
+		// Restore the original SIGINT handler
+		signal(SIGINT, prev_sigint_handler);
+
+		// Handle exit status
+		if (WIFEXITED(status))
+			env_cpy->last_exit_status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+		{
+			sig = WTERMSIG(status);
+			env_cpy->last_exit_status = 128 + sig;
+			if (sig == SIGINT)
+				write(1, "\n", 1);
+			else if (sig == SIGQUIT)
+				write(1, "Quit: 3\n", 8);
+		}
+		else
+			env_cpy->last_exit_status = 0;
 	}
 }
 
