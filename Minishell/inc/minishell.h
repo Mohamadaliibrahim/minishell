@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/23 08:46:22 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 15:40:41 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ t_env_cpy	*cpy_env(char **env);
 t_env_cpy	*update_env(t_env_cpy *env);
 
 /* Tokenize Check */
-int			check_type(char *token, t_env_cpy *env);
+int			check_type(char *token, t_env_cpy *env, char quote);
 void		if_error(int flag, t_token *token, char *input, t_env_cpy *env_cpy);
 void		check(char *input, t_env_cpy *env_cpy);
 void		if_input_is_qoutaton(t_input *prepare, char **input);
@@ -155,7 +155,6 @@ int			search_for_pipe(t_token *token_list);
 void		error_occurd_status(char *msg, int x, t_env_cpy *env);
 void		write_error(char *msg);
 t_input		init_input(char *input);
-int			check_type(char *token, t_env_cpy *env);
 void		check_main_token(t_token **token, t_env_cpy *env_cpy);
 
 /* Tokenize Tools */

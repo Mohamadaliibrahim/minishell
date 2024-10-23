@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checking.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:57:49 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/23 08:57:50 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 15:41:46 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,13 @@ int	check_for_dollar(char *token, t_env_cpy *env, char **cmd_path,
 	return (-1);
 }
 
-int	check_type(char *token, t_env_cpy *env)
+int	check_type(char *token, t_env_cpy *env, char qoute)
 {
 	char	*cmd_path;
 	char	*expanded_token;
 
+	if (qoute != 0)
+		return (CMND);
 	if (ft_strncmp(token, "/", 1) == 0 || ft_strncmp(token, "./", 2) == 0
 		|| ft_strncmp(token, "../", 3) == 0)
 	{
@@ -104,10 +106,10 @@ void	check(char *input, t_env_cpy *env_cpy)
 	int		error_flag;
 	char	*preprocessed_input;
 
-	token = NULL;
-	error_flag = 0;
 	if (fix_pipe(input))
 		return ;
+	token = NULL;
+	error_flag = 0;
 	preprocessed_input = preprocess_input(input);
 	if (!preprocessed_input)
 	{

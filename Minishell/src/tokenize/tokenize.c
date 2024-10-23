@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/20 12:39:08 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/23 15:34:34 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static t_token	*new_token(char *input, t_env_cpy *env, char qoute_type)
 		return (NULL);
 	}
 	new_node->next = NULL;
-	new_node->token_type = check_type(input, env);
+	new_node->token_type = check_type(input, env, qoute_type);
 	new_node->qoute_type = qoute_type;
 	new_node->previous = NULL;
 	return (new_node);
