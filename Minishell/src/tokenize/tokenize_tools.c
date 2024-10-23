@@ -136,6 +136,16 @@ void process_token(char **input, t_token **token_list, t_env_cpy *env, int *erro
                 return;
             break ;
         }
+        else if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) == '"')  // Skip backslash and print the dollar sign
+        {
+            write(1, "$", 1);  // Directly print the $ character without appending it to the token
+            (*input) += 2;  // Skip both the backslash and the dollar sign
+        }
+        else if (**input == '\\' && *(*input + 1) == '$')  // Skip backslash and print the dollar sign
+        {
+            write(1, "$", 1);  // Directly print the $ character without appending it to the token
+            (*input) += 2;  // Skip both the backslash and the dollar sign
+        }
         else if (**input == '"')
             handle_quotes_and_expansion(input, &token, env, &quote_type);
         else if (**input == '\'')
