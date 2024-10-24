@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:57:49 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/23 17:15:02 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/24 10:31:48 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	check_type(char *token, t_env_cpy *env, char qoute)
 	if (ft_strncmp(token, "/", 1) == 0 || ft_strncmp(token, "./", 2) == 0
 		|| ft_strncmp(token, "../", 3) == 0)
 	{
-		if (access(token, X_OK) == 0)
+		if (access(token, F_OK) == 0)
 			return (CMND);
 		else
 			return (UNKNOWN);
@@ -59,28 +59,6 @@ int	check_type(char *token, t_env_cpy *env, char qoute)
 	}
 	return (pipe_or_redirection(token));
 }
-
-// static int	check_for_quotations(char *input)
-// {
-// 	int	i;
-// 	int	single_quote_open;
-// 	int	double_quote_open;
-
-// 	i = 0;
-// 	single_quote_open = 0;
-// 	double_quote_open = 0;
-// 	while (input[i])
-// 	{
-// 		if (input[i] == '"' && !single_quote_open)
-// 			double_quote_open = !double_quote_open;
-// 		else if (input[i] == '\'' && !double_quote_open)
-// 			single_quote_open = !single_quote_open;
-// 		i++;
-// 	}
-// 	if (single_quote_open || double_quote_open)
-// 		return (0);
-// 	return (1);
-// }
 
 void	check_main_token(t_token **token, t_env_cpy *env_cpy)
 {

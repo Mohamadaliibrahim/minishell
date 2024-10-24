@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 10:49:47 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/23 19:59:21 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/24 10:41:27 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,11 @@ void execute_command(char *cmd_path, char **av, char **env, t_env_cpy *env_cpy)
 		ft_free_2darray(env);
 		ft_free_2darray(av);
 		free(cmd_path);
-		exit(EXIT_FAILURE);
+		if (errno == EACCES || errno == EISDIR || errno == ENOEXEC
+			|| errno == EINVAL || errno == ETXTBSY)
+			exit(126);
+		else
+			exit(EXIT_FAILURE);
 	}
 }
 
@@ -167,8 +171,10 @@ void do_comand(t_token *token, t_env_cpy *env_cpy)
     // Safely compare av[0] with HOME and PWD
     if ((home && ft_strcmp(av[0], home) == 0) || (pwd && ft_strcmp(av[0], pwd) == 0))
     {
-        printf("cd -- %s\n", av[0]);  // Handle the specific case
-        env_cpy->last_exit_status = 0;
+        write_error("minishell: ");  // Handle the specific case
+		write_error(av[0]);
+		write_error(": IS a directory\n");
+        env_cpy->last_exit_status = 126;
 
         ft_free_2darray(av);
         ft_free_2darray(env);

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/22 09:47:39 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/24 10:32:51 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	*find_in_path(char *cmd, t_env_cpy *env)
 		strcpy(full_path, paths[i]);
 		strcat(full_path, "/");
 		strcat(full_path, cmd);
-		if (access(full_path, X_OK) == 0)
+		if (access(full_path, F_OK) == 0)
 		{
 			ft_free_2darray(paths);
 			return (full_path);
