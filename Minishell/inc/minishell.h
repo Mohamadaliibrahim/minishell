@@ -111,6 +111,14 @@ typedef struct s_command
 	int					append;
 }						t_command;
 
+typedef struct s_token_context
+{
+    t_env_cpy *env;
+    int *error_flag;
+    char *quote_type;
+} t_token_context;
+
+
 /* Global Variable */
 extern volatile	sig_atomic_t g_last_signal;
 
@@ -136,7 +144,8 @@ void		ft_trunck(t_token *token, t_env_cpy *env);
 /* Tokenize */
 void		add_token(t_token **head, char *input, t_env_cpy *env, char qoute);
 char		*extract_quoted_token(char **input, char quote_type);
-void		tokenize_input(char *input, t_token **token_list, t_env_cpy *env, int *flag);
+void		tokenize_input(char *input, t_token **token_list,
+				t_env_cpy *env, int *flag);
 t_env_cpy	*cpy_env(char **env);
 t_env_cpy	*update_env(t_env_cpy *env);
 
@@ -158,9 +167,14 @@ t_input		init_input(char *input);
 void		check_main_token(t_token **token, t_env_cpy *env_cpy);
 
 /* Tokenize Tools */
-void		process_token(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
-char		*return_type(char *env);
-char		*return_path(char *env);
+int			handle_quote(char **input, char **token, char *quote_type);
+void		handle_special_cases(char **input);
+int			handle_redirection_token(char **input, char **token,
+				t_token **token_list, t_token_context *ctx);
+void		handle_quotes_and_expansion(char **input, char **token,
+				t_env_cpy *env, char *quote_type);
+void		process_token(char **input, t_token **token_list,
+				t_env_cpy *env, int *error_flag);
 
 /* Command Handling */
 char		*find_in_path(char *cmd, t_env_cpy *env);

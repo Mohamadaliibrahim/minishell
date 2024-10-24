@@ -39,7 +39,8 @@ SRC = src/main.c \
       src/redirections/redirection_t_a.c \
       src/tokenize/redirections.c \
       src/execution/pipe.c \
-      src/execution/pipe_utils.c
+      src/execution/pipe_utils.c \
+      src/tokenize/process_token.c 
 
 OBJS = $(SRC:.c=.o)
 
