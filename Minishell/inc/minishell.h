@@ -118,6 +118,13 @@ typedef struct s_token_context
     char *quote_type;
 } t_token_context;
 
+typedef struct s_var_expansion
+{
+    char *result;
+    char *var_name;
+    int var_len;
+    int *i;
+} t_var_expansion;
 
 /* Global Variable */
 extern volatile	sig_atomic_t g_last_signal;
@@ -259,9 +266,17 @@ void		fill_new_node(t_env_cpy **new_node, t_env_cpy **head);
 
 /* Dollar Expansion */
 char		*append_char(char *result, char c);
-char 		*expand_variable(char *token, int *i, t_env_cpy *env_list, char *result);
-char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
 char		*get_env_value(char *var_name, t_env_cpy *env_list);
+char		*handle_special_expansion(char *result, int *i,
+				t_env_cpy *env_list, int is_uid);
+char		*handle_invalid_variable_expansion(char *result,
+				char *var_name, int *i);
+char		*handle_digit_variable_expansion(char *result,
+				char *var_name, int *i);
+char		*expand_variable(char *token, int *i,
+				t_env_cpy *env_list, char *result);
+char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
+
 
 /* Signals */
 void		setup_signal_handlers(void);
