@@ -41,7 +41,11 @@ SRC = src/main.c \
       src/execution/pipe.c \
       src/execution/pipe_utils.c \
       src/parsing/expand.c \
-      src/tokenize/process_token.c
+      src/tokenize/process_token.c \
+      src/execution/allocate_arguments.c \
+      src/execution/execute_command.c \
+      src/execution/handle_parent_process.c \
+
 
 OBJS = $(SRC:.c=.o)
 

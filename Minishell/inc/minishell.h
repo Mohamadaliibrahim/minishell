@@ -133,6 +133,11 @@ typedef struct s_var_expansion
 extern volatile sig_atomic_t	g_last_signal;
 
 /* Execution */
+char		**allocate_arguments(t_token *token);
+void		execute_command(char *cmd_path, char **av,
+			char **env, t_env_cpy *env_cpy);
+char		*get_command_path(char **av, t_env_cpy *env_cpy);
+void		handle_parent_process(int pid, t_env_cpy *env_cpy);
 void		do_comand(t_token *token, t_env_cpy *env_cpy);
 
 /* Redirection */
