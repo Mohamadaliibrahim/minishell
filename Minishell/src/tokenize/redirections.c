@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/26 15:03:49 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/26 19:59:22 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,7 +232,14 @@ void handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
         return;
     }
     free(delimiter);
+    if (env->heredoc_file != NULL)
+        free(env->heredoc_file);
     env->heredoc_file = ft_strdup(heredoc_file);
+    if (!env->heredoc_file)
+    {
+        write_error("minishell: Memory allocation failed for heredoc file\n");
+        *error_flag = 1;
+    }
 }
 
 void handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag)

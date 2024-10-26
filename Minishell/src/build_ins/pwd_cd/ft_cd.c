@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/26 14:42:27 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/26 20:15:09 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	pwd_or_oldpwd_got_unseted(t_cd cd, t_env_cpy *env_cpy)
 		free(env_cpy->internal_oldpwd);
 	if (cd.pwd_env)
 		env_cpy->internal_oldpwd = ft_strdup(cd.pwd_env);
-	else
+	else if (find_env_node(env_cpy, "OLDPWD"))
 	{
 		env_cpy->internal_oldpwd = ft_strdup(cd.old_pwd);
 		remove_env("OLDPWD", &env_cpy);
@@ -49,7 +49,7 @@ void	pwd_or_oldpwd_got_unseted(t_cd cd, t_env_cpy *env_cpy)
 			fill_token(env_cpy, "OLDPWD");
 			env_cpy->flag++;
 		}
-		else if (env_cpy->flag > 0)
+		else if (env_cpy->flag > 0 && cd.old_pwd)
 		{
 			cd.hello = ft_strjoin("OLDPWD=", env_cpy->internal_oldpwd);
 			fill_token(env_cpy, cd.hello);
