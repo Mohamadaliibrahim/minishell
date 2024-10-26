@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_preprocess.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/26 14:49:41 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/26 15:48:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,63 +74,5 @@ int	is_invalid_pipe_syntax(t_token *token_list)
 	}
 	if (current->token_type == PIPE)
 		return (1);
-	return (0);
-}
-
-int	its(char *str, int i, t_env_cpy *env)
-{
-	if ((str[i + 1] == '"' || str[i + 1] == '\'') && str[i + 2] == '\0')
-	{
-		env->last_exit_status = 2;
-		write_error("Minishell:""syntax error near unexpected token `|'\n");
-		return (1);
-	}
-	if ((str[i + 1] == '"' || str[i + 1] == '\'')
-		&& (str[i + 2] == '"' || str[i + 2] == '\''))
-	{
-		env->last_exit_status = 2;
-		write_error("Minishell:""syntax error near unexpected token `|'\n");
-		return (1);
-	}
-	return (0);
-}
-
-int	fix_pipe(char *str, t_env_cpy *env)
-{
-	int		i;
-	char	quote;
-
-	i = 0;
-	quote = 0;
-	while (str[i])
-	{
-		if (str[i] == '"' || str[i] == '\'')
-		{
-			if (quote == 0)
-				quote = str[i];
-			else if (quote == str[i])
-				quote = 0;
-		}
-		else if (str[i] == '|' && quote == 0)
-		{
-			if (str[i + 1] == '|')
-			{
-				env->last_exit_status = 2;
-				write_error("Minishell: syntax error near");
-				write_error(" unexpected token `||'\n");
-				return (1);
-			}
-			if (str[i + 1] == '\0' || (str[i + 1] == ' ' && str[i + 2] == '\0'))
-			{
-				env->last_exit_status = 2;
-				write_error("Minishell: syntax error near");
-				write_error(" unexpected token `||'\n");
-				return (1);
-			}
-			if (its(str, i, env))
-				return (1);
-		}
-		i++;
-	}
 	return (0);
 }

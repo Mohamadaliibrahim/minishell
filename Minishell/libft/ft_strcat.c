@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strcat.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mohamibr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/26 15:52:02 by mohamibr          #+#    #+#             */
+/*   Updated: 2024/10/26 15:52:06 by mohamibr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/minishell.h"
 
 char	*ft_strcat(char *dest, const char *src)
@@ -7,22 +19,14 @@ char	*ft_strcat(char *dest, const char *src)
 
 	i = 0;
 	j = 0;
-
-	// Find the end of the destination string
 	while (dest[i] != '\0')
 		i++;
-
-	// Append the source string to the destination string
 	while (src[j] != '\0')
 	{
 		dest[i] = src[j];
 		i++;
 		j++;
 	}
-
-	// Null-terminate the concatenated string
 	dest[i] = '\0';
-
 	return (dest);
 }
-
