@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/26 14:47:05 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/26 15:29:38 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,6 +240,7 @@ void		free_export(t_export export, int flag);
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 
 /* PWD and CD */
+int			dot(t_token **token);
 int			old_pwd_is_null(t_cd cd, t_env_cpy *env_cpy);
 t_cd		init_cd(t_token *token, t_env_cpy *env_cpy);
 t_env_cpy	*add_env_pwd(t_env_cpy *env);

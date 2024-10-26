@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 07:45:50 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/18 19:08:13 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/26 15:28:46 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,3 +53,12 @@ void	error_mes_after_checking(t_token *token, t_env_cpy *env)
 	write(2, token->next->tokens, ft_strlen(token->next->tokens));
 	write(2, ": invalid option\n", 17);
 }
+
+int	dot(t_token **token)
+{
+	if ((ft_strcmp((*token)->next->tokens, ".") == 0)
+		|| (ft_strcmp((*token)->next->tokens, "..") == 0))
+		return (1);
+	return (0);
+}
+//stop!!

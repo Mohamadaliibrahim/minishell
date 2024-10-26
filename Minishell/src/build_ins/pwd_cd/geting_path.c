@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 07:45:28 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/23 09:07:20 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/26 15:30:07 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,7 @@ char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
 	}
 	else if (ft_strcmp(token->next->tokens, "-") == 0)
 		path = if_cd_with_dash(env_cpy, should_free);
-	else if ((ft_strcmp(token->next->tokens, ".") == 0)
-		|| (ft_strcmp(token->next->tokens, "..") == 0))
+	else if (dot(&token))
 		path = get_cd_path_helper(&token);
 	else
 	{
