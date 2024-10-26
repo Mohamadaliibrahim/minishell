@@ -173,7 +173,7 @@ void do_comand(t_token *token, t_env_cpy *env_cpy)
     {
         write_error("minishell: ");  // Handle the specific case
 		write_error(av[0]);
-		write_error(": IS a directory\n");
+		write_error(": is a directory\n");
         env_cpy->last_exit_status = 126;
 
         ft_free_2darray(av);

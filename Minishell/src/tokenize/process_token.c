@@ -12,71 +12,66 @@
 
 #include "../../inc/minishell.h"
 
-static	char	*initialize_token_context(t_token_context *ctx,
-	t_env_cpy *env, int *error_flag, char *quote_type)
+static void	handle_special_cases(char **input)
 {
-	char	*token;
-
-	token = ft_strdup("");
-	if (!token)
-		return (NULL);
-	ctx->env = env;
-	ctx->error_flag = error_flag;
-	ctx->quote_type = quote_type;
-	return (token);
-}
-
-static	void	handle_regular_characters(char **input,
-	char **token, t_env_cpy *env)
-{
-	int	i;
-
-	if (**input == '$')
+	if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) == '"')
 	{
-		i = 0;
-		*token = expand_variable(*input, &i, env, *token);
-		*input += i;
+		write(1, "$", 1);
+		(*input) += 2;
 	}
-	else
+	else if (**input == '\\' && *(*input + 1) == '$')
 	{
-		*token = append_char(*token, **input);
-		(*input)++;
+		write(1, "$", 1);
+		(*input) += 2;
 	}
 }
 
-static void	handle_token_processing(char **input, char **token,
-	t_token **token_list, t_token_context *ctx)
+static	void	handle_token_content(t_redirection_params *redir_params, int *i)
 {
-	if ((**input == '<' || **input == '>'))
-	{
-		if (handle_redirection_token(input, token, token_list, ctx))
-			return ;
-	}
-	handle_special_cases(input);
-	if (**input == '"')
-		handle_quotes_and_expansion(input, token, ctx->env, ctx->quote_type);
-	else if (**input == '\'')
-		handle_quote(input, token, ctx->quote_type);
+	if (**redir_params->input == '"')
+		handle_quotes_and_expansion(redir_params->input, redir_params->token,
+			redir_params->env, redir_params->quote_type);
+	else if (**redir_params->input == '\'')
+		handle_quote(redir_params->input, redir_params->token,
+			redir_params->quote_type);
 	else
-		handle_regular_characters(input, token, ctx->env);
+		handle_special_chars(redir_params, i);
+}
+
+static	void	finalize_token(t_redirection_params *redir_params)
+{
+	if (*redir_params->error_flag == 0 && (ft_strlen(*redir_params->token) > 0
+			|| *redir_params->quote_type != 0))
+		add_token(redir_params->token_list,
+			*redir_params->token, redir_params->env, *redir_params->quote_type);
+	free(*redir_params->token);
 }
 
 void	process_token(char **input, t_token **token_list,
 	t_env_cpy *env, int *error_flag)
 {
-	char			*token;
-	char			quote_type;
-	t_token_context	ctx;
+	char					*token;
+	char					quote_type;
+	int						i;
+	t_redirection_params	redir_params;
 
+	token = ft_strdup("");
 	quote_type = 0;
-	token = initialize_token_context(&ctx, env, error_flag, &quote_type);
+	i = 0;
+	redir_params = (t_redirection_params){input, &token,
+		token_list, env, error_flag, &quote_type};
 	if (!token)
 		return ;
 	while (**input && **input != ' ' && *error_flag == 0)
 	{
-		handle_token_processing(input, &token, token_list, &ctx);
+		handle_special_cases(input);
+		if ((**input == '<' || **input == '>'))
+		{
+			if (handle_redirection_token(&redir_params))
+				return ;
+			break ;
+		}
+		handle_token_content(&redir_params, &i);
 	}
-	if (*error_flag == 0 && (ft_strlen(token) > 0 || quote_type != 0))
-		add_token(token_list, token, env, quote_type);
-	free(token);
+	finalize_token(&redir_params);
 }

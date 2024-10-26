@@ -33,22 +33,23 @@ int	handle_quote(char **input, char **token, char *quote_type)
 		return (0);
 }
 
-int	handle_redirection_token(char **input, char **token,
-	t_token **token_list, t_token_context *ctx)
+int	handle_redirection_token(t_redirection_params *params)
 {
-	if (ft_strlen(*token) > 0)
+	if (ft_strlen(*(params->token)) > 0)
 	{
-		add_token(token_list, *token, ctx->env, *(ctx->quote_type));
-		free(*token);
-		*token = ft_strdup("");
-		*(ctx->quote_type) = 0;
-		if (!*token)
+		add_token(params->token_list, *(params->token),
+			params->env, *(params->quote_type));
+		free(*(params->token));
+		*(params->token) = ft_strdup("");
+		*(params->quote_type) = 0;
+		if (!*(params->token))
 			return (1);
 	}
-	handle_redirection(input, token_list, ctx->env, ctx->error_flag);
-	if (*(ctx->error_flag))
+	handle_redirection(params->input, params->token_list,
+		params->env, params->error_flag);
+	if (*(params->error_flag))
 	{
-		free(*token);
+		free(*(params->token));
 		return (1);
 	}
 	return (0);
@@ -79,16 +80,18 @@ void	handle_quotes_and_expansion(char **input, char **token,
 		(*input)++;
 }
 
-void	handle_special_cases(char **input)
+void	handle_special_chars(t_redirection_params *redir_params, int *i)
 {
-	if (**input == '"' && *(*input + 1) == '$' && *(*input + 2) == '"')
+	if (**redir_params->input == '$')
 	{
-		write(1, "$", 1);
-		(*input) += 2;
+		*redir_params->token = expand_variable(*redir_params->input,
+				i, redir_params->env, *redir_params->token);
+		*redir_params->input += *i;
 	}
-	else if (**input == '\\' && *(*input + 1) == '$')
+	else
 	{
-		write(1, "$", 1);
-		(*input) += 2;
+		*redir_params->token = append_char(*redir_params->token,
+				**redir_params->input);
+		(*redir_params->input)++;
 	}
 }

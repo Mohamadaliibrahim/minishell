@@ -100,10 +100,10 @@ typedef struct s_env_cpy
 	int					flag;
 	struct s_env_cpy	*next;
 	struct s_env_cpy	*previous;
-}					t_env_cpy;
+}						t_env_cpy;
 
 typedef struct s_command
-{		
+{
 	char				**argv;
 	t_token				*token_list;
 	char				*infile;
@@ -111,23 +111,26 @@ typedef struct s_command
 	int					append;
 }						t_command;
 
-typedef struct s_token_context
+typedef struct s_redirection_params
 {
-    t_env_cpy *env;
-    int *error_flag;
-    char *quote_type;
-} t_token_context;
+	char				**input;
+	char				**token;
+	t_token				**token_list;
+	t_env_cpy			*env;
+	int					*error_flag;
+	char				*quote_type;
+}						t_redirection_params;
 
 typedef struct s_var_expansion
 {
-    char *result;
-    char *var_name;
-    int var_len;
-    int *i;
-} t_var_expansion;
+	char				*result;
+	char				*var_name;
+	int					var_len;
+	int					*i;
+}						t_var_expansion;
 
 /* Global Variable */
-extern volatile	sig_atomic_t g_last_signal;
+extern volatile sig_atomic_t	g_last_signal;
 
 /* Execution */
 void		do_comand(t_token *token, t_env_cpy *env_cpy);
@@ -175,13 +178,14 @@ void		check_main_token(t_token **token, t_env_cpy *env_cpy);
 
 /* Tokenize Tools */
 int			handle_quote(char **input, char **token, char *quote_type);
-void		handle_special_cases(char **input);
-int			handle_redirection_token(char **input, char **token,
-				t_token **token_list, t_token_context *ctx);
+int			handle_redirection_token(t_redirection_params *params);
+void		handle_special_chars(t_redirection_params *redir_params, int *i);
 void		handle_quotes_and_expansion(char **input, char **token,
 				t_env_cpy *env, char *quote_type);
 void		process_token(char **input, t_token **token_list,
 				t_env_cpy *env, int *error_flag);
+char		*return_type(char *env);
+char		*return_path(char *env);
 
 /* Command Handling */
 char		*find_in_path(char *cmd, t_env_cpy *env);
@@ -195,16 +199,11 @@ void		check_echo(t_token *token, t_env_cpy *env_list);
 void		ft_unset(t_token *token, t_env_cpy **env_cpy);
 void		remove_env(char *type, t_env_cpy **env_cpy);
 
-/* expand */
-void		expand(t_token *head, t_env_cpy *env);
-char		*find(char *str, t_env_cpy *head);
-
 /* Export */
 void		ft_export(t_token *token, t_env_cpy *env_cpy);
 void		print_sorted(t_env_cpy *head);
 void		print_export(t_env_cpy *env_cpy);
 t_env_cpy	*a_env(t_env_cpy **head, char *type, char *env, bool equal);
-
 
 void		add_env_node(t_env_cpy **head, t_env_cpy *new_node);
 t_env_cpy	*create_env_node(char *type, char *env, bool equal);
@@ -217,7 +216,6 @@ int			find_dollar(char *env);
 t_env_cpy	*find_env_node(t_env_cpy *head, char *type);
 t_export	init_export(char *env, char *type, bool equal);
 void		free_export(t_export export, int flag);
-
 
 /* Environment */
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
@@ -277,42 +275,41 @@ char		*expand_variable(char *token, int *i,
 				t_env_cpy *env_list, char *result);
 char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
 
-
 /* Signals */
 void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
 
 /* Redirection Handling */
 int			check_token(t_token *head);
-void 		handle_redirection(char **input, t_token **token_list, t_env_cpy *env, int *error_flag);
+void		handle_redirection(char **input, t_token **token_list,
+				t_env_cpy *env, int *error_flag);
 void		handle_heredoc(char **input, t_env_cpy *env, int *error_flag);
 
 /* Pipe and Command Execution */
-char 		**allocate_arguments(t_token *token);
-char 		*get_command_path(char **av, t_env_cpy *env_cpy);
-void 		execute_command(char *cmd_path, char **av, char **env, t_env_cpy *env_cpy);
-void 		pipe_commands(t_token *token, t_env_cpy *env_cpy);
+char		**allocate_arguments(t_token *token);
+char		*get_command_path(char **av, t_env_cpy *env_cpy);
+void		execute_command(char *cmd_path, char **av,
+				char **env, t_env_cpy *env_cpy);
+void		pipe_commands(t_token *token, t_env_cpy *env_cpy);
 int			containe_pipe(t_token *token1);
 
 /* Pipeline */
-t_command	**parse_commands(t_token *token_list, int *num_commands, t_env_cpy *env_cpy);
-void 		execute_pipeline(t_token *token_list, t_env_cpy *env_cpy);
+t_command	**parse_commands(t_token *token_list, int *num_commands,
+				t_env_cpy *env_cpy);
+void		execute_pipeline(t_token *token_list, t_env_cpy *env_cpy);
 
 /* Pipe Utils */
-int 		**create_pipes(int num_pipes);
-void 		close_pipes(int **pipes, int num_pipes);
-void 		free_pipes(int **pipes, int num_pipes);
-void 		free_commands(t_command **commands);
+int			**create_pipes(int num_pipes);
+void		close_pipes(int **pipes, int num_pipes);
+void		free_pipes(int **pipes, int num_pipes);
+void		free_commands(t_command **commands);
 
 /*Handle Redirections in Pipe*/
-int 		search_for_redirection_input(t_token *token_list);
-int 		search_for_redirection_output(t_token *token_list);
-int 		handle_input_redirection(t_token *token);
-int 		handle_output_redirection(t_token *token, int append);
-void 		free_pids_and_commands(pid_t *pids, t_command **commands);
-
-
-
+int			search_for_redirection_input(t_token *token_list);
+int			search_for_redirection_output(t_token *token_list);
+int			handle_input_redirection(t_token *token);
+int			handle_output_redirection(t_token *token, int append);
+void		free_pids_and_commands(pid_t *pids, t_command **commands);
 
 void		write_error(char *msg);
 
