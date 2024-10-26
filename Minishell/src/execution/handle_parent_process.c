@@ -21,7 +21,6 @@ char	*get_command_path(char **av, t_env_cpy *env_cpy)
 		cmd_path = ft_strdup(av[0]);
 	else
 		cmd_path = find_in_path(av[0], env_cpy);
-
 	if (!cmd_path)
 	{
 		write_error(av[0]);
@@ -30,7 +29,6 @@ char	*get_command_path(char **av, t_env_cpy *env_cpy)
 	}
 	return (cmd_path);
 }
-
 
 static	void	update_exit_status(int status, t_env_cpy *env_cpy)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/24 09:47:58 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/26 14:47:05 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,17 @@ typedef struct s_var_expansion
 	int					*i;
 }						t_var_expansion;
 
+typedef struct s_pipeline
+{
+	int         num_commands;
+	int         num_pipes;
+	int         **pipes;
+	pid_t       *pids;
+	t_command   **commands;
+	t_env_cpy   *env_cpy;
+}   t_pipeline;
+
+
 /* Global Variable */
 extern volatile sig_atomic_t	g_last_signal;
 
@@ -195,6 +206,9 @@ char		*return_path(char *env);
 /* Command Handling */
 char		*find_in_path(char *cmd, t_env_cpy *env);
 char		*get_old_path(t_env_cpy *env_cpy, char *msg);
+int			fill_and_shape_path(char **path_env, char ***paths, t_env_cpy *env);
+char		*find_in_path(char *cmd, t_env_cpy *env);
+void		ft_exit(t_token *token, t_env_cpy *env);
 void		ft_cmd(t_token *token, t_env_cpy *env_cpy, int is_main_shell);
 
 /* Built-in Echo */
@@ -299,22 +313,19 @@ void		pipe_commands(t_token *token, t_env_cpy *env_cpy);
 int			containe_pipe(t_token *token1);
 
 /* Pipeline */
-t_command	**parse_commands(t_token *token_list, int *num_commands,
-				t_env_cpy *env_cpy);
+t_command	**parse_commands(t_token *token_list,
+				int *num_commands, t_env_cpy *env_cpy);
+void		execute_child_process(t_pipeline *pl, int i);
+
 void		execute_pipeline(t_token *token_list, t_env_cpy *env_cpy);
 
 /* Pipe Utils */
-int			**create_pipes(int num_pipes);
 void		close_pipes(int **pipes, int num_pipes);
 void		free_pipes(int **pipes, int num_pipes);
 void		free_commands(t_command **commands);
-
-/*Handle Redirections in Pipe*/
-int			search_for_redirection_input(t_token *token_list);
-int			search_for_redirection_output(t_token *token_list);
-int			handle_input_redirection(t_token *token);
-int			handle_output_redirection(t_token *token, int append);
-void		free_pids_and_commands(pid_t *pids, t_command **commands);
+int			setup_pipeline(t_pipeline *pl, t_token *token_list);
+int			**create_pipes(int num_pipes);
+void		cleanup_pipeline(t_pipeline *pl);
 
 void		write_error(char *msg);
 

@@ -45,6 +45,9 @@ SRC = src/main.c \
       src/execution/allocate_arguments.c \
       src/execution/execute_command.c \
       src/execution/handle_parent_process.c \
+      src/execution/parse_commands.c \
+      src/execution/pipe_tools.c \
+      src/parsing/cmd_tools.c
 
 
 OBJS = $(SRC:.c=.o)

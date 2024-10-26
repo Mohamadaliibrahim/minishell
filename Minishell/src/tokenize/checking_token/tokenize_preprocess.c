@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_preprocess.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:25:04 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/23 17:11:21 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/26 14:49:41 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,20 +110,21 @@ int	fix_pipe(char *str, t_env_cpy *env)
 				quote = str[i];
 			else if (quote == str[i])
 				quote = 0;
-			// If different quote, stay in current quote
 		}
 		else if (str[i] == '|' && quote == 0)
 		{
 			if (str[i + 1] == '|')
 			{
 				env->last_exit_status = 2;
-				write_error("Minishell: syntax error near unexpected token `||'\n");
+				write_error("Minishell: syntax error near");
+				write_error(" unexpected token `||'\n");
 				return (1);
 			}
 			if (str[i + 1] == '\0' || (str[i + 1] == ' ' && str[i + 2] == '\0'))
 			{
 				env->last_exit_status = 2;
-				write_error("Minishell: syntax error near unexpected token `|'\n");
+				write_error("Minishell: syntax error near");
+				write_error(" unexpected token `||'\n");
 				return (1);
 			}
 			if (its(str, i, env))
@@ -133,5 +134,3 @@ int	fix_pipe(char *str, t_env_cpy *env)
 	}
 	return (0);
 }
-
-//stop!!
