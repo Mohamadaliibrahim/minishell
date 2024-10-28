@@ -5,6 +5,7 @@
         "typeinfo": "c",
         "type_traits": "c",
         "ctype.h": "c",
-        "compare": "c"
+        "compare": "c",
+        "readline.h": "c"
     }
 }

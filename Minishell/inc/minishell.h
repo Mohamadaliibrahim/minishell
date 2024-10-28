@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/26 15:29:38 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:36:04 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
+# define BUFFER_SIZE 1024
 
 # include "../libft/libft.h"
 # include <fcntl.h>
@@ -131,14 +132,20 @@ typedef struct s_var_expansion
 
 typedef struct s_pipeline
 {
-	int         num_commands;
-	int         num_pipes;
-	int         **pipes;
-	pid_t       *pids;
-	t_command   **commands;
-	t_env_cpy   *env_cpy;
-}   t_pipeline;
+	int					num_commands;
+	int					num_pipes;
+	int					**pipes;
+	pid_t				*pids;
+	t_command			**commands;
+	t_env_cpy			*env_cpy;
+}						t_pipeline;
 
+typedef struct s_result_buffer
+{
+	char				*buffer;
+	size_t				size;
+	size_t				index;
+}						t_result_buffer;
 
 /* Global Variable */
 extern volatile sig_atomic_t	g_last_signal;
@@ -146,7 +153,7 @@ extern volatile sig_atomic_t	g_last_signal;
 /* Execution */
 char		**allocate_arguments(t_token *token);
 void		execute_command(char *cmd_path, char **av,
-			char **env, t_env_cpy *env_cpy);
+				char **env, t_env_cpy *env_cpy);
 char		*get_command_path(char **av, t_env_cpy *env_cpy);
 void		handle_parent_process(int pid, t_env_cpy *env_cpy);
 void		do_comand(t_token *token, t_env_cpy *env_cpy);
@@ -301,6 +308,17 @@ void		handle_sigint(int sig);
 
 /* Redirection Handling */
 int			check_token(t_token *head);
+int			heredoc_append_char(t_result_buffer *res_buf, char c);
+int			heredoc_append_string(t_result_buffer *res_buf, const char *str);
+int			extract_variable_name(char **input, char **var_name);
+int			check_for_signal(void);
+int			is_line_delimiter(char *buffer, char *delimiter,
+				size_t delimiter_len);
+void		parse_heredoc_delimiter(char **input, char **delimiter,
+				int *error_flag, char *quote_char);
+void		expand_heredoc(char **str, t_env_cpy *env);
+int			handle_heredoc_file(char *heredoc_file,
+				char *delimiter, t_env_cpy *env);
 void		handle_redirection(char **input, t_token **token_list,
 				t_env_cpy *env, int *error_flag);
 void		handle_heredoc(char **input, t_env_cpy *env, int *error_flag);
@@ -329,5 +347,6 @@ int			**create_pipes(int num_pipes);
 void		cleanup_pipeline(t_pipeline *pl);
 
 void		write_error(char *msg);
+void		preparing(int ac, char **av, t_env_cpy **env_cpy, char **env);
 
 #endif

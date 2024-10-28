@@ -18,7 +18,7 @@ SRC = src/main.c \
       src/build_ins/pwd_cd/pwd.c\
       src/build_ins/pwd_cd/utils_pwd_cd.c\
       src/build_ins/pwd_cd/env_utils_editing_pwd.c\
-       src/build_ins/pwd_cd/geting_path.c\
+      src/build_ins/pwd_cd/geting_path.c\
       src/parsing/dollar.c \
       src/tokenize/env/env_tokenizeing.c \
       src/tokenize/env/env_utils.c \
@@ -48,8 +48,13 @@ SRC = src/main.c \
       src/execution/handle_parent_process.c \
       src/execution/parse_commands.c \
       src/execution/pipe_tools.c \
-      src/parsing/cmd_tools.c
-
+      src/parsing/cmd_tools.c \
+      src/execution/env_list.c \
+      src/preparing.c \
+      src/tokenize/expand_heredoc.c \
+      src/tokenize/handle_heredoc_file.c \
+      src/tokenize/herdoc_tools.c \
+      src/tokenize/parse_heredoc.c
 
 OBJS = $(SRC:.c=.o)
 
