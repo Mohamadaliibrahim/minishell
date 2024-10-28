@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 07:45:28 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/26 15:30:07 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/28 17:41:44 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ char	*get_cd_path_helper(t_token **token)
 		path = ".";
 	else if (ft_strcmp((*token)->next->tokens, "..") == 0)
 		path = "..";
+	else
+		path = (*token)->next->tokens;
 	return (path);
 }
 
@@ -59,7 +61,6 @@ void	error_statment(t_env_cpy *env_cpy, int x)
 	ft_putstr_fd("cd: invalid option\n", 2);
 }
 
-// hay el function btrj3lk el path lal token
 char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
 {
 	char	*path;
@@ -74,17 +75,16 @@ char	*get_cd_path(t_token *token, t_env_cpy *env_cpy, int *should_free)
 		return (NULL);
 	}
 	else if (ft_strcmp(token->next->tokens, "-") == 0)
-		path = if_cd_with_dash(env_cpy, should_free);
+	{
+		if (if_dash(env_cpy, should_free, &path))
+			return (NULL);
+	}
 	else if (dot(&token))
 		path = get_cd_path_helper(&token);
 	else
 	{
-		if (token->next->tokens[0] == '-' && ft_strlen(token->next->tokens) > 1)
-		{
-			error_statment(env_cpy, 1);
+		if (else_else(token, env_cpy, &path))
 			return (NULL);
-		}
-		path = token->next->tokens;
 	}
 	return (path);
 }

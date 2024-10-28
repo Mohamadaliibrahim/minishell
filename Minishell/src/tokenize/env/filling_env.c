@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   filling_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:56:52 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/23 08:56:53 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:38:24 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,5 +47,6 @@ t_env_cpy	*cpy_env_helper(char *env)
 	cpy->internal_pwd = NULL;
 	cpy->internal_oldpwd = NULL;
 	cpy->flag = 0;
+	cpy->old_flag = 0;
 	return (cpy);
 }

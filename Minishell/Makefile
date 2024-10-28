@@ -19,6 +19,7 @@ SRC = src/main.c \
       src/build_ins/pwd_cd/utils_pwd_cd.c\
       src/build_ins/pwd_cd/env_utils_editing_pwd.c\
       src/build_ins/pwd_cd/geting_path.c\
+      src/build_ins/pwd_cd/geting_path_utils.c \
       src/parsing/dollar.c \
       src/tokenize/env/env_tokenizeing.c \
       src/tokenize/env/env_utils.c \

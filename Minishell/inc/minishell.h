@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/28 14:36:04 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/28 17:41:22 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ typedef struct s_env_cpy
 	char				*internal_pwd;
 	char				*internal_oldpwd;
 	int					flag;
+	int					old_flag;
 	struct s_env_cpy	*next;
 	struct s_env_cpy	*previous;
 }						t_env_cpy;
@@ -247,6 +248,10 @@ void		free_export(t_export export, int flag);
 void		ft_env(t_token *token, t_env_cpy *env_cpy);
 
 /* PWD and CD */
+int			checking(t_cd cd, t_env_cpy *env_cpy);
+void		error_statment(t_env_cpy *env_cpy, int x);
+int			else_else(t_token *token, t_env_cpy *env_cpy, char **path);
+int			if_dash(t_env_cpy *env_cpy, int	*should_free, char **path);
 int			dot(t_token **token);
 int			old_pwd_is_null(t_cd cd, t_env_cpy *env_cpy);
 t_cd		init_cd(t_token *token, t_env_cpy *env_cpy);
