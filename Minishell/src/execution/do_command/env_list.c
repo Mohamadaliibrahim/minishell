@@ -6,11 +6,11 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/27 10:36:15 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/29 11:04:34 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include "../../../inc/minishell.h"
 
 static void	free_dest(char ***dest, int *i)
 {

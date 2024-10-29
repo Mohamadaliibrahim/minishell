@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 09:56:49 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/22 15:28:18 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/29 11:04:59 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/minishell.h"
+#include "../../../inc/minishell.h"
 
 int	setup_pipeline(t_pipeline *pl, t_token *token_list)
 {

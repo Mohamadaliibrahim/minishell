@@ -4,58 +4,60 @@ CFLAGS = -Wall -Wextra -Werror -g -Iinc/ -Ilibft/
 NAME = minishell
 
 SRC = src/main.c \
-      src/tokenize/tokenize.c \
+      src/preparing.c \
+      src/build_ins/export_edit/edit_env_node.c \
+      src/build_ins/export_edit/expanding.c \
+      src/build_ins/export_edit/ft_export_update.c \
+      src/build_ins/export_edit/utils_export_edit.c \
+      src/build_ins/pwd_cd/env_utils_editing_pwd.c \
+      src/build_ins/pwd_cd/cd.c \
+      src/build_ins/pwd_cd/getting_path.c \
+      src/build_ins/pwd_cd/getting_path_utils.c \
+      src/build_ins/pwd_cd/pwd.c \
+      src/build_ins/pwd_cd/utils_pwd_cd.c \
+      src/build_ins/echo.c \
+      src/build_ins/env.c \
+      src/build_ins/export.c \
+      src/build_ins/sort_export.c \
+      src/build_ins/unset.c \
+      src/build_ins/update_pwd.c \
+      src/execution/do_command/allocate_arguments.c \
+      src/execution/do_command/env_list.c \
+      src/execution/do_command/exec.c \
+      src/execution/do_command/execute_command.c \
+      src/execution/do_command/handle_parent_process.c \
+      src/execution/pipe/parse_commands.c \
+      src/execution/pipe/pipe_tools.c \
+      src/execution/pipe/pipe_utils.c \
+      src/execution/pipe/pipe.c \
+      src/parsing/cmd_tools.c \
+      src/parsing/cmd.c \
+      src/parsing/dollar.c \
+      src/parsing/expand.c \
+      src/parsing/signals.c \
+      src/redirections/ft_redirections.c \
+      src/redirections/redirection_checking.c \
+      src/redirections/redirection_t_a.c \
+      src/redirections/redirection_utils.c \
+      src/redirections/redirections.c \
       src/tokenize/checking_token/building.c \
       src/tokenize/checking_token/checking_utils.c \
       src/tokenize/checking_token/checking.c \
-      src/tokenize/checking_token/tokenize_preprocess.c \
       src/tokenize/checking_token/fix_pipe.c \
-      src/tokenize/tokenize_tools.c \
-      src/tokenize/utils.c \
-      src/parsing/cmd.c \
-      src/build_ins/echo.c \
-      src/build_ins/pwd_cd/ft_cd.c \
-      src/build_ins/pwd_cd/pwd.c\
-      src/build_ins/pwd_cd/utils_pwd_cd.c\
-      src/build_ins/pwd_cd/env_utils_editing_pwd.c\
-      src/build_ins/pwd_cd/geting_path.c\
-      src/build_ins/pwd_cd/geting_path_utils.c \
-      src/parsing/dollar.c \
+      src/tokenize/checking_token/tokenize_preprocess.c \
       src/tokenize/env/env_tokenizeing.c \
       src/tokenize/env/env_utils.c \
       src/tokenize/env/filling_env.c \
-      src/build_ins/ft_env.c \
-      src/build_ins/ft_export.c \
-      src/build_ins/sort_export.c \
-      src/build_ins/update_pwd.c \
-      src/build_ins/export_edit/ft_export_update.c \
-      src/build_ins/export_edit/edit_env_node.c \
-      src/build_ins/export_edit/expanding.c \
-      src/build_ins/export_edit/utils_export_edit.c \
-      src/build_ins/ft_unset.c \
-      src/parsing/signals.c \
-      src/execution/exec.c \
-      src/redirections/ft_redirections.c \
-      src/redirections/redirection_checking.c \
-      src/redirections/redirection_utils.c \
-      src/redirections/redirection_t_a.c \
-      src/tokenize/redirections.c \
-      src/execution/pipe.c \
-      src/execution/pipe_utils.c \
-      src/parsing/expand.c \
-      src/tokenize/process_token.c \
-      src/execution/allocate_arguments.c \
-      src/execution/execute_command.c \
-      src/execution/handle_parent_process.c \
-      src/execution/parse_commands.c \
-      src/execution/pipe_tools.c \
-      src/parsing/cmd_tools.c \
-      src/execution/env_list.c \
-      src/preparing.c \
-      src/tokenize/expand_heredoc.c \
-      src/tokenize/handle_heredoc_file.c \
-      src/tokenize/herdoc_tools.c \
-      src/tokenize/parse_heredoc.c
+      src/tokenize/heredoc/expand_heredoc.c \
+      src/tokenize/heredoc/handle_heredoc_file.c \
+      src/tokenize/heredoc/heredoc_tools.c \
+      src/tokenize/heredoc/parse_heredoc.c \
+      src/tokenize/token/process_token.c \
+      src/tokenize/token/tokenize_tools.c \
+      src/tokenize/token/tokenize.c \
+      src/tokenize/token/utils.c \
+
+      
 
 OBJS = $(SRC:.c=.o)
 

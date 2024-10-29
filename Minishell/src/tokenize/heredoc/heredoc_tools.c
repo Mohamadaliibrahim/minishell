@@ -6,11 +6,11 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/28 14:32:10 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/29 11:05:31 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/minishell.h"
+#include "../../../inc/minishell.h"
 
 int	heredoc_append_char(t_result_buffer *res_buf, char c)
 {
