@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/29 11:52:14 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/30 12:02:46 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,7 +320,7 @@ int			check_for_signal(void);
 int			is_line_delimiter(char *buffer, char *delimiter,
 				size_t delimiter_len);
 void		parse_heredoc_delimiter(char **input, char **delimiter,
-				int *error_flag, char *quote_char);
+				int *error_flag);
 void		expand_heredoc(char **str, t_env_cpy *env);
 int			handle_heredoc_file(char *heredoc_file,
 				char *delimiter, t_env_cpy *env);

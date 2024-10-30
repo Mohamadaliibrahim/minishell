@@ -6,11 +6,16 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/29 11:05:41 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/30 11:24:20 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../inc/minishell.h"
+
+static	int	is_valid_var_char(char c)
+{
+	return (ft_isalnum(c) || c == '_');
+}
 
 static void	handle_special_cases(char **input)
 {
@@ -34,6 +39,16 @@ static	void	handle_token_content(t_redirection_params *redir_params, int *i)
 	else if (**redir_params->input == '\'')
 		handle_quote(redir_params->input, redir_params->token,
 			redir_params->quote_type);
+	else if (**redir_params->input == '$')
+	{
+		if (!is_valid_var_char(*(*redir_params->input + 1)))
+		{
+			*redir_params->token = append_char(*redir_params->token, '$');
+			(*redir_params->input)++;
+		}
+		else
+			handle_special_chars(redir_params, i);
+	}
 	else
 		handle_special_chars(redir_params, i);
 }

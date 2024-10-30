@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/28 14:32:37 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/30 12:03:03 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,8 @@ static	void	process_heredoc(char *delimiter,
 void	handle_heredoc(char **input, t_env_cpy *env, int *error_flag)
 {
 	char	*delimiter;
-	char	quote_char;
 
-	quote_char = '\0';
-	parse_heredoc_delimiter(input, &delimiter, error_flag, &quote_char);
+	parse_heredoc_delimiter(input, &delimiter, error_flag);
 	if (*error_flag)
 		return ;
 	process_heredoc(delimiter, env, error_flag);
