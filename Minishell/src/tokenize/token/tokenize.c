@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:00 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/29 11:05:50 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/30 19:23:12 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	tokenize_input(char *input, t_token **token_list, t_env_cpy *env,
 {
 	while (*input)
 	{
-		while (*input == ' ')
+		while (*input == ' ' || *input == '	')
 			input++;
 		if (*input)
 			process_token(&input, token_list, env, flag);

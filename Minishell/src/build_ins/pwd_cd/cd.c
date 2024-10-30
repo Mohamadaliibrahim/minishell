@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_cd.c                                            :+:      :+:    :+:   */
+/*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:51 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/28 17:41:02 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/10/30 19:22:46 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	pwd_or_oldpwd_got_unseted(t_cd cd, t_env_cpy *env_cpy)
 	}
 	else if (find_env_node(env_cpy, "OLDPWD"))
 		else_if(env_cpy, cd);
-	else if (env_cpy->old_flag >= 2)
+	else if (env_cpy->old_flag >= 2 && cd.old_pwd)
 	{
 		if (env_cpy->internal_oldpwd)
 			free(env_cpy->internal_oldpwd);
