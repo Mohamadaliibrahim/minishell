@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/31 12:27:19 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/31 13:16:39 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ int	handle_heredoc_file(char *heredoc_file,
 	{
 		unlink(heredoc_file);
 		g_last_signal = 0;
+		env->last_exit_status = 130;
 		return (-1);
 	}
 	return (0);

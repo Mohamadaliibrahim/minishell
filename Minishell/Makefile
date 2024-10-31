@@ -56,8 +56,7 @@ SRC = src/main.c \
       src/tokenize/token/tokenize_tools.c \
       src/tokenize/token/tokenize.c \
       src/tokenize/token/utils.c \
-
-      
+      src/tokenize/token/handle_token_content.c 
 
 OBJS = $(SRC:.c=.o)
 

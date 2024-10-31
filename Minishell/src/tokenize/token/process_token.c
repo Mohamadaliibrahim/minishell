@@ -6,16 +6,11 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:28:55 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/30 11:24:20 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/31 13:03:04 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../inc/minishell.h"
-
-static	int	is_valid_var_char(char c)
-{
-	return (ft_isalnum(c) || c == '_');
-}
 
 static void	handle_special_cases(char **input)
 {
@@ -29,28 +24,6 @@ static void	handle_special_cases(char **input)
 		write(1, "$", 1);
 		(*input) += 2;
 	}
-}
-
-static	void	handle_token_content(t_redirection_params *redir_params, int *i)
-{
-	if (**redir_params->input == '"')
-		handle_quotes_and_expansion(redir_params->input, redir_params->token,
-			redir_params->env, redir_params->quote_type);
-	else if (**redir_params->input == '\'')
-		handle_quote(redir_params->input, redir_params->token,
-			redir_params->quote_type);
-	else if (**redir_params->input == '$')
-	{
-		if (!is_valid_var_char(*(*redir_params->input + 1)))
-		{
-			*redir_params->token = append_char(*redir_params->token, '$');
-			(*redir_params->input)++;
-		}
-		else
-			handle_special_chars(redir_params, i);
-	}
-	else
-		handle_special_chars(redir_params, i);
 }
 
 static	void	finalize_token(t_redirection_params *redir_params)

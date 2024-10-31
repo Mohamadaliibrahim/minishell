@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/31 12:22:05 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/31 13:02:17 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,7 @@ int			handle_redirection_token(t_redirection_params *params);
 void		handle_special_chars(t_redirection_params *redir_params, int *i);
 void		handle_quotes_and_expansion(char **input, char **token,
 				t_env_cpy *env, char *quote_type);
+void		handle_token_content(t_redirection_params *redir_params, int *i);
 void		process_token(char **input, t_token **token_list,
 				t_env_cpy *env, int *error_flag);
 char		*return_type(char *env);
