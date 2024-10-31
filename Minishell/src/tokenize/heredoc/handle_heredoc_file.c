@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 11:10:38 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/29 11:05:27 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/31 12:27:19 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static	int	open_heredoc_file(char *heredoc_file)
 }
 
 static	ssize_t	read_line_from_stdin(char *buffer,
-	size_t buffer_size, char *delimiter)
+			size_t buffer_size, char *delimiter)
 {
 	ssize_t	bytes_read;
 
@@ -42,6 +42,8 @@ static	ssize_t	read_line_from_stdin(char *buffer,
 	}
 	if (bytes_read < 0)
 	{
+		if (errno == EINTR)
+			return (-1);
 		perror("minishell: read");
 		return (-1);
 	}
@@ -92,19 +94,28 @@ static	int	read_and_process_heredoc_lines(int heredoc_fd,
 	return (0);
 }
 
-int	handle_heredoc_file(char *heredoc_file, char *delimiter, t_env_cpy *env)
+int	handle_heredoc_file(char *heredoc_file,
+		char *delimiter, t_env_cpy *env)
 {
-	int	heredoc_fd;
-	int	result;
+	t_custom_sigaction	sa;
+	t_custom_sigaction	old_sa;
+	int					heredoc_fd;
+	int					result;
 
 	heredoc_fd = open_heredoc_file(heredoc_file);
 	if (heredoc_fd < 0)
 		return (-1);
+	sa.handler = heredoc_sigint_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, (struct sigaction *)&sa, (struct sigaction *)&old_sa);
 	result = read_and_process_heredoc_lines(heredoc_fd, delimiter, env);
+	sigaction(SIGINT, (struct sigaction *)&old_sa, NULL);
 	close(heredoc_fd);
 	if (result == -1)
 	{
 		unlink(heredoc_file);
+		g_last_signal = 0;
 		return (-1);
 	}
 	return (0);

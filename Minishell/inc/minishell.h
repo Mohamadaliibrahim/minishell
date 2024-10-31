@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/30 12:02:46 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/31 12:22:05 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,14 @@ typedef struct s_result_buffer
 	size_t				size;
 	size_t				index;
 }						t_result_buffer;
+
+typedef struct custom_sigaction
+{
+	void                (*handler)(int);
+	sigset_t            sa_mask;
+	int                 sa_flags;
+}                       t_custom_sigaction;
+
 
 /* Global Variable */
 extern volatile sig_atomic_t	g_last_signal;
@@ -310,6 +318,7 @@ char		*expand_token_if_variable(char *token, t_env_cpy *env_list);
 /* Signals */
 void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
+void		heredoc_sigint_handler(int signo);
 
 /* Redirection Handling */
 int			check_token(t_token *head);

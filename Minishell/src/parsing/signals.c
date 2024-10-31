@@ -6,7 +6,7 @@
 /*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 11:24:57 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/27 11:10:02 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/31 11:58:04 by mustafa-mac      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,4 +28,11 @@ void	setup_signal_handlers(void)
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGTSTP, SIG_IGN);
+}
+
+void	heredoc_sigint_handler(int signo)
+{
+	(void)signo;
+	g_last_signal = SIGINT;
+	write(1, "\n", 1);
 }
