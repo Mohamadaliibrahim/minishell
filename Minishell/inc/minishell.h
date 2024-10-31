@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/31 13:02:17 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/10/31 13:45:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@
 # include <sys/stat.h>
 # include <errno.h>
 # include <setjmp.h>
+
+/* Global Variable */
+extern volatile sig_atomic_t	g_last_signal;
 
 /* Enum for Token Types */
 typedef enum e_token_type
@@ -150,14 +153,10 @@ typedef struct s_result_buffer
 
 typedef struct custom_sigaction
 {
-	void                (*handler)(int);
-	sigset_t            sa_mask;
-	int                 sa_flags;
-}                       t_custom_sigaction;
-
-
-/* Global Variable */
-extern volatile sig_atomic_t	g_last_signal;
+	void				(*handler)(int);
+	sigset_t			sa_mask;
+	int					sa_flags;
+}						t_custom_sigaction;
 
 /* Execution */
 char		**allocate_arguments(t_token *token);
