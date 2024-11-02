@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/31 13:45:02 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/11/02 15:22:20 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 # include <setjmp.h>
 
 /* Global Variable */
-extern volatile sig_atomic_t	g_last_signal;
+extern sig_atomic_t		g_last_signal;
 
 /* Enum for Token Types */
 typedef enum e_token_type
