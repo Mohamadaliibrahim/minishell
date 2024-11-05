@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   geting_path_utils.c                                :+:      :+:    :+:   */
+/*   getting_path_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 07:45:28 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/28 17:41:11 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/11/05 21:54:27 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,3 +60,32 @@ int	checking(t_cd cd, t_env_cpy *env_cpy)
 	}
 	return (0);
 }
+
+char	*get_cd_path_helper(t_token **token)
+{
+	char	*path;
+
+	if (ft_strcmp((*token)->next->tokens, ".") == 0)
+		path = ".";
+	else if (ft_strcmp((*token)->next->tokens, "..") == 0)
+		path = "..";
+	else
+		path = (*token)->next->tokens;
+	return (path);
+}
+
+char	*if_just_cd(t_env_cpy *env_cpy, int *should_free)
+{
+	char	*path;
+
+	path = get_env_msg(env_cpy, "HOME");
+	if (!path)
+	{
+		ft_putstr_fd("cd: HOME not set\n", 2);
+		env_cpy->last_exit_status = 1;
+		return (NULL);
+	}
+	*should_free = 1;
+	return (path);
+}
+//stop!
