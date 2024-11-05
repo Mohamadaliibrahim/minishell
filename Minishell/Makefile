@@ -10,6 +10,7 @@ SRC = src/main.c \
       src/build_ins/export_edit/ft_export_update.c \
       src/build_ins/export_edit/utils_export_edit.c \
       src/build_ins/pwd_cd/env_utils_editing_pwd.c \
+      src/build_ins/pwd_cd/helper.c \
       src/build_ins/pwd_cd/cd.c \
       src/build_ins/pwd_cd/getting_path.c \
       src/build_ins/pwd_cd/getting_path_utils.c \
