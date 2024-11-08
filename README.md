@@ -1,73 +1,142 @@
 # Minishell
 
-Minishell is a minimalistic, Unix-like shell implemented in C, created as part of the curriculum at 42 School. The project is designed to emulate essential shell functionalities, enabling users to execute commands, manage environment variables, handle redirections, and implement piping, among other features.
+Minishell is a simple Unix shell project developed as part of the 42 School curriculum. This shell aims to replicate the basic functionality of popular shells like `bash`, providing command execution, built-in commands, redirections, piping, environment variable expansion, and more.
+
+## Table of Contents
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Built-in Commands](#built-in-commands)
+- [Functionality Details](#functionality-details)
+- [Error Handling](#error-handling)
+- [Project Structure](#project-structure)
+- [Norminette Compliance](#norminette-compliance)
+- [Acknowledgments](#acknowledgments)
 
 ## Features
 
-- **Command Execution**: Executes built-in commands such as `echo`, `cd`, `pwd`, `export`, `unset`, `env`, and `exit`. For other commands, the shell forks a process to execute them.
-- **Variable Expansion**: Supports expanding environment variables, such as `$HOME` and `$PWD`, while handling cases with quotes or incomplete variable names.
-- **Redirection Handling**: Manages input (`<`), output (`>`), and append (`>>`) redirections for commands.
-- **Heredoc**: Implements heredoc (`<<`) functionality, allowing users to input multiple lines until a specified delimiter is reached.
-- **Piping**: Allows piping between commands (e.g., `ls | grep .c`).
-- **Signal Handling**: Manages signals, including `Ctrl+C`, `Ctrl+D`, and `Ctrl+\`, with appropriate behavior for each scenario.
-- **Error Management**: Provides error handling for various cases, including syntax errors and permission issues.
-- **Norm Compliance**: The code adheres to the 42 Norm, with function limits on line length, argument count, and structure.
-
-## Project Structure
-
-- `main.c`: Entry point for the shell.
-- `ft_cmd.c`: Implements built-in command functions.
-- `process_token.c`: Handles token processing, including quotes, variable expansion, and redirections.
-- `do_comand.c`: Manages non-built-in commands and forking processes.
-- Additional helper files for tokenization, parsing, redirections, and signal handling.
-
-## Setup and Usage
+Minishell implements various features to offer a similar experience to other Unix shells:
+- Command execution with arguments
+- Redirection (`>`, `<`, `>>`, `<<`)
+- Pipes (`|`) for chaining commands
+- Environment variable expansion (e.g., `$HOME`)
+- Signal handling (Ctrl+C, Ctrl+\)
+- Heredoc with delimiter
+- Basic built-in commands (`echo`, `cd`, `env`, `export`, `unset`, `pwd`, `exit`)
+  
+## Getting Started
 
 ### Prerequisites
-- **Operating System**: Linux-based system or WSL (Windows Subsystem for Linux).
-- **Compiler**: GCC or Clang.
-  
-### Compilation
-To compile the shell, run the following command in the project directory:
+- **Compiler**: GCC or Clang
+- **Operating System**: Unix-based (Linux or macOS)
 
+### Installation
+
+Clone the repository and navigate to the project directory:
+
+```bash
+git clone https://github.com/yourusername/minishell.git
+cd minishell
+```
+
+Then, compile the shell with:
 ```bash
 make
 ```
 
-This will generate an executable named `minishell`.
+This will generate the `minishell` executable.
 
-### Running Minishell
-After compilation, start Minishell by running:
+### Running the Shell
 
+To start the shell, run:
 ```bash
 ./minishell
 ```
 
-From here, you can execute commands as you would in a typical shell.
+## Usage
 
-## Key Notes
+Once you start `minishell`, you can type commands as you would in a standard shell. Here are a few examples:
 
-- **Built-in Commands**: The shell has a set of built-in commands. These commands are implemented within `ft_cmd` to handle actions like changing directories (`cd`) and setting environment variables (`export`).
-- **Quotes**: Double and single quotes are handled to preserve whitespace or suppress variable expansion as needed.
-- **Error Messages**: Minishell provides informative error messages, including syntax errors when an invalid command structure is entered.
-- **Environment Variables**: Variables such as `$HOME`, `$PWD`, and custom variables are supported.
-- **Heredoc with Delimiter**: In cases where a delimiter is not provided or `Ctrl+D` is pressed, the shell issues a warning message.
+```bash
+# Running a simple command
+$ ls -l
 
-## Known Issues
+# Using pipes
+$ ls | grep "filename"
 
-- **Syntax Handling**: Certain complex cases involving heredoc and piping may have edge-case handling issues.
-- **Signal Handling Limitations**: Although signals are managed, behaviors in certain combinations of signals may not align perfectly with standard shells.
+# Redirecting output to a file
+$ echo "Hello, Minishell!" > hello.txt
 
-## Future Improvements
+# Using environment variables
+$ echo $HOME
 
-- Implement advanced redirection and piping features.
-- Refine signal handling for seamless interaction.
-- Enhance variable expansion logic for complex cases.
+# Running built-in commands
+$ cd /path/to/directory
+$ export MY_VAR=value
+$ unset MY_VAR
+```
 
-## Contributing
+## Built-in Commands
 
-If you're interested in contributing, feel free to fork this repository, make changes, and open a pull request. Contributions are welcome and encouraged to help improve the project!
+The following built-in commands are implemented in Minishell:
 
-## License
+- **`echo`**: Prints arguments to the standard output
+- **`cd`**: Changes the current directory
+- **`env`**: Displays the environment variables
+- **`export`**: Adds or modifies environment variables
+- **`unset`**: Removes environment variables
+- **`pwd`**: Prints the current working directory
+- **`exit`**: Exits the shell
 
-This project is for educational purposes as part of the 42 School curriculum and follows the 42 School's license.
+Each command follows a specific implementation to replicate standard shell behavior as closely as possible.
+
+## Functionality Details
+
+- **Redirection**: Supports input and output redirection (`<`, `>`, `>>`), allowing commands to read from or write to files.
+- **Piping**: Enables chaining commands, where the output of one command serves as the input to the next.
+- **Heredoc**: Implements a heredoc (`<<`) for multiline input, supporting a custom delimiter.
+- **Variable Expansion**: Expands variables like `$HOME`, `$USER`, `$PWD`. Invalid or undefined variables expand to an empty string.
+- **Signal Handling**: Catches signals such as `SIGINT` and `SIGQUIT` to manage shell interruption (e.g., Ctrl+C handling).
+  
+## Error Handling
+
+Minishell provides informative error messages similar to `bash`. Errors include:
+- Command not found
+- Syntax errors (e.g., invalid use of pipes or redirections)
+- Permission errors
+- Undefined variable expansion errors
+
+## Project Structure
+
+Here's a brief overview of the project's structure:
+
+```plaintext
+minishell/
+├── src/
+│   ├── builtins/               # Built-in commands implementations
+│   ├── exec/                   # Command execution functions
+│   ├── parser/                 # Tokenization and parsing logic
+│   ├── signals/                # Signal handling functions
+│   ├── main.c                  # Entry point
+│   ├── ft_cmd.c                # Built-in command handling
+│   ├── process_token.c         # Token processing and expansion
+│   └── ...
+├── include/
+│   ├── minishell.h             # Main header file
+│   └── ...
+├── Makefile                    # Compilation instructions
+└── README.md                   # Documentation
+```
+
+Each component serves a specific purpose to maintain modularity and clarity.
+
+## Norminette Compliance
+
+This project adheres to the 42 Norminette style guide:
+- Functions are under 25 lines and use fewer than 4 arguments.
+- Proper handling of file descriptors and memory management.
+- Modular code structure for readability and maintainability.
+
+## Acknowledgments
+
+This project was developed as part of the 42 School curriculum, which encourages a deep understanding of Unix systems and shell behavior. Special thanks to the 42 community for their support and resources.
