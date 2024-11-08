@@ -71,3 +71,6 @@ If you're interested in contributing, feel free to fork this repository, make ch
 ## License
 
 This project is for educational purposes as part of the 42 School curriculum and follows the 42 School's license.
+
+![Launch Minishell](path/to/launch_minishell.gif)
+
