@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 10:08:35 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/18 07:21:32 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/12/26 11:11:39 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,12 @@ void	echo_loop(int *first, t_token *token, t_env_cpy *env_list)
 	char	*output;
 
 	if (!*first)
-		printf(" ");
+		ft_printf(" ");
 	if (token->qoute_type == '\'')
 		output = ft_strdup(token->tokens);
 	else
 		output = expand_token_if_variable(token->tokens, env_list);
-	printf("%s", output);
+	ft_printf("%s", output);
 	*first = 0;
 	free(output);
 }
@@ -58,7 +58,7 @@ void	check_echo(t_token *token, t_env_cpy *env_list)
 
 	if (!token->next)
 	{
-		printf("\n");
+		ft_printf("\n");
 		env_list->last_exit_status = 0;
 		return ;
 	}
@@ -71,6 +71,6 @@ void	check_echo(t_token *token, t_env_cpy *env_list)
 		token = token->next;
 	}
 	if (!n)
-		printf("\n");
+		ft_printf("\n");
 	env_list->last_exit_status = 0;
 }

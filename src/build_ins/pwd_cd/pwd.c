@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 07:45:37 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/28 16:07:47 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/12/26 11:11:39 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	if_pwd_avialable(t_env_cpy *env, char *pwd)
 {
 	char	*hello;
 
-	printf("%s\n", pwd);
+	ft_printf("%s\n", pwd);
 	update_env_var(env, "PWD", pwd);
 	hello = get_env_msg(env, "PWD");
 	if (!hello)
@@ -89,7 +89,7 @@ void	ft_pwd(t_token *token, t_env_cpy *env)
 		env_pwd = get_pwd(env);
 		if (env_pwd)
 		{
-			printf("%s\n", env_pwd);
+			ft_printf("%s\n", env_pwd);
 			free(env_pwd);
 		}
 		else

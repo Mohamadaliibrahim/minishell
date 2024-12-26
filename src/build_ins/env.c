@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_env.c                                           :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 13:12:58 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/09/28 18:45:40 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/12/26 11:11:39 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	ft_env(t_token *token, t_env_cpy *env_cpy)
 	if (!env_check(token))
 	{
 		env_cpy->last_exit_status = 127;
-		printf("env : No such file or directory");
+		ft_printf("env : No such file or directory");
 		return ;
 	}
 	env_cpy = update_env(env_cpy);
@@ -39,9 +39,9 @@ void	ft_env(t_token *token, t_env_cpy *env_cpy)
 	{
 		if (env_cpy->equal == true)
 		{
-			printf("%s", env_cpy->type);
-			printf("=");
-			printf("%s\n", env_cpy->env);
+			ft_printf("%s", env_cpy->type);
+			ft_printf("=");
+			ft_printf("%s\n", env_cpy->env);
 		}
 		env_cpy = env_cpy->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 13:07:23 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/11/02 15:22:20 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/12/26 10:57:02 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # define BUFFER_SIZE 1024
 
 # include "../libft/libft.h"
+# include "../ft_printf/inc/ft_printf.h"
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>

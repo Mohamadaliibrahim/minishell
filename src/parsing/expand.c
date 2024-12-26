@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dollar.c                                           :+:      :+:    :+:   */
+/*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:24:44 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/20 12:45:10 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/12/26 10:43:09 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,7 @@ char	*handle_special_expansion(char *result, int *i,
 	char	*value_str;
 	char	*temp;
 
-	if (is_uid)
-		value_str = ft_itoa(getuid());
-	else
-		value_str = ft_itoa(env_list->last_exit_status);
+	value_str = ft_itoa(env_list->last_exit_status);
 	temp = ft_strjoin(result, value_str);
 	free(value_str);
 	free(result);

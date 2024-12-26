@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_export.c                                        :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/15 15:13:03 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/26 15:05:13 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/12/26 11:11:39 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 void	print_export(t_env_cpy *env_cpy)
 {
-	printf("declare -x %s", env_cpy->type);
+	ft_printf("declare -x %s", env_cpy->type);
 	if (env_cpy->equal == true)
-		printf("=\"%s\"\n", env_cpy->env);
+		ft_printf("=\"%s\"\n", env_cpy->env);
 	else
-		printf("\n");
+		ft_printf("\n");
 	env_cpy = env_cpy->next;
 }
 

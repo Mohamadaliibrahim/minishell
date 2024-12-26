@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa-machlouch <mustafa-machlouch@st    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 15:24:25 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/10/26 14:44:58 by mustafa-mac      ###   ########.fr       */
+/*   Updated: 2024/12/26 11:11:39 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	prepare_to_exit(t_token *token, t_env_cpy *env_cpy, int shell)
 		return (1);
 	}
 	if (shell)
-		printf("exit\n");
+		ft_printf("exit\n");
 	ft_exit(token, env_cpy);
 	return (0);
 }

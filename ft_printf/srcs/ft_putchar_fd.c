@@ -5,14 +5,15 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/18 13:51:32 by mmachlou          #+#    #+#             */
-/*   Updated: 2024/12/26 11:05:20 by mohamibr         ###   ########.fr       */
+/*   Created: 2024/06/13 17:06:01 by mohamibr          #+#    #+#             */
+/*   Updated: 2024/12/26 11:05:50 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../inc/ft_printf.h"
 
-void	ft_putchar_fd1(char c, int fd)
+int	ft_putchar_fd1(char c, int fd)
 {
 	write(fd, &c, 1);
+	return (1);
 }

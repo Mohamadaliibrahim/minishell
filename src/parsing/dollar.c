@@ -6,7 +6,7 @@
 /*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/17 14:24:44 by mustafa-mac       #+#    #+#             */
-/*   Updated: 2024/10/20 12:45:10 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/12/26 10:43:23 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ char	*expand_variable(char *token, int *i, t_env_cpy *env_list, char *result)
 		return (handle_single_quoted_variable(token, i, result));
 	if (var_name[0] == '"')
 		return (handle_double_quoted_variable(token, i, result));
-	if (ft_strncmp(var_name, "UID", 3) == 0 || var_name[0] == '?')
+	if (var_name[0] == '?')
 		return (handle_special_expansion(result, i, env_list,
 				(var_name[0] == 'U')));
 	if (!ft_isalnum(var_name[0]) && var_name[0] != '_')

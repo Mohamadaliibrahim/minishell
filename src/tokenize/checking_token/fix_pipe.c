@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fix_pipe.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamibr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mohamibr <mohamibr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/26 15:48:43 by mohamibr          #+#    #+#             */
-/*   Updated: 2024/10/26 15:48:45 by mohamibr         ###   ########.fr       */
+/*   Updated: 2024/12/26 10:49:59 by mohamibr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ int	fix_pipe(char *str, t_env_cpy *env)
 	quote = 0;
 	while (str[i])
 	{
+		if (str[i] == '$' && str[i + 1] == '$')
+			return (1);
 		if (str[i] == '"' || str[i] == '\'')
 		{
 			if (quote == 0)

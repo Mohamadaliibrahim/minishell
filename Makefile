@@ -60,14 +60,19 @@ SRC = src/main.c \
       src/tokenize/token/handle_token_content.c 
 
 OBJS = $(SRC:.c=.o)
-
 LIBFT = libft/libft.a
+FT_PRINTF = ft_printf/libftprintf.a
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT)
+$(NAME): $(OBJS) $(LIBFT) $(FT_PRINTF)
 	@echo "\033[0;32mBuilding $(NAME)...\033[0m"
-	@$(CC) $(CFLAGS) $(OBJS) -Llibft -lft -lreadline -o $(NAME)
+	@echo "\033[0;32m$(CC) $(CFLAGS) $(OBJS) -Llibft -lft -Lft_printf -lftprintf -lreadline -o $(NAME)\033[0m"
+	@$(CC) $(CFLAGS) $(OBJS) \
+		-Llibft -lft \
+		-Lft_printf -lftprintf \
+		-lreadline \
+		-o $(NAME)
 	@echo "\033[0;32m$(NAME) built successfully!\033[0m"
 
 $(LIBFT):
@@ -75,21 +80,29 @@ $(LIBFT):
 	@$(MAKE) -C libft > /dev/null
 	@echo "\033[0;32mLibft built successfully!\033[0m"
 
+$(FT_PRINTF):
+	@echo "\033[0;32mBuilding ft_printf...\033[0m"
+	@$(MAKE) -C ft_printf > /dev/null
+	@echo "\033[0;32mft_printf built successfully!\033[0m"
+
 %.o: %.c
 	@echo "\033[0;32mCompiling $<...\033[0m"
-	@$(CC) $(CFLAGS) -c $< -o $@ > /dev/null
+	@$(CC) $(CFLAGS) -c $< -o $@ 
 
 clean:
 	@echo "\033[0;32mCleaning up object files...\033[0m"
 	@rm -f $(OBJS)
-	@$(MAKE) -C libft clean > /dev/null
+	@$(MAKE) -C libft clean > /dev/null || true
+	@$(MAKE) -C ft_printf clean > /dev/null || true
 	@echo "\033[0;32mObject files removed.\033[0m"
 
+
 fclean: clean
-	@echo "\033[0;32mRemoving $(NAME) and libft...\033[0m"
+	@echo "\033[0;32mRemoving $(NAME), libft, and ft_printf...\033[0m"
 	@rm -f $(NAME)
-	@$(MAKE) -C libft fclean > /dev/null
-	@echo "\033[0;32m$(NAME) and libft removed.\033[0m"
+	@$(MAKE) -C libft fclean > /dev/null || true
+	@rm -f $(FT_PRINTF)
+	@echo "\033[0;32m$(NAME) and libraries removed.\033[0m"
 
 re: fclean all
 
