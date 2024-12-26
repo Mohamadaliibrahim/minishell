@@ -1,6 +1,6 @@
 NAME = libftprintf.a
 
-SOURCES = srcs/ft_printf.c \
+SOURCES = srcs/ft_printf.c \ 
 		  srcs/ft_check.c \
 		  srcs/ft_putchar_fd.c \
 		  srcs/ft_putstr_fd.c \
